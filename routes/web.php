@@ -14,18 +14,18 @@ Route::post('/reset', [MenuController::class, 'resetProgress'])->name('reset.pro
 // ========== МАРШРУТЫ КАМЕР ==========
 Route::get('/camera/{name}', function (\Illuminate\Http\Request $request, $name) {
     // ===== ПОЛУЧАЕМ ПОЗИЦИИ ИЗ QUERY (ОТ JS) =====
-    $freddy_pos = $request->query('freddy_pos', 'stage');
-    $bonnie_pos = $request->query('bonnie_pos', 'backstage');
-    $chica_pos = $request->query('chica_pos', 'stage');
-    $foxy_pos = $request->query('foxy_pos', 'cove');
+    $freddy_pos = $request->query('freddy', 'stage');
+    $bonnie_pos = $request->query('bonnie', 'backstage');
+    $chica_pos = $request->query('chica', 'stage');
+    $foxy_pos = $request->query('foxy', 'cove');
 
     // ===== СТАДИЯ ФОКСИ =====
     $foxy_stage = (int) $request->query('foxy_stage', 1);
     $foxy_running = $request->query('foxy_running', '0') === '1';
 
-    // ===== СОСТОЯНИЕ СВЕТА =====
-    $light_left = Session::get('light_left', false);
-    $light_right = Session::get('light_right', false);
+    // ===== СОСТОЯНИЕ СВЕТА (ОТ JS, А НЕ ИЗ СЕССИИ — ТУДА ЕГО НИКТО НЕ ПИСАЛ) =====
+    $light_left = $request->query('light_left', '0') === '1';
+    $light_right = $request->query('light_right', '0') === '1';
 
     // ===== СПИСОК ВСЕХ 11 КАМЕР =====
     $validCameras = [

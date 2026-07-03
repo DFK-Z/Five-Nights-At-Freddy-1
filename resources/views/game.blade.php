@@ -18,17 +18,54 @@
 
         <!-- Левая панель -->
         <div class="left-panel">
-            <button class="camera-btn active" data-camera="cam_1a">1A СЦЕНА</button>
-            <button class="camera-btn" data-camera="cam_1b">1B ЗАЛ</button>
-            <button class="camera-btn" data-camera="cam_1c">1C КОВ</button>
-            <button class="camera-btn" data-camera="cam_2a">2A ЗАП. ХОЛЛ</button>
-            <button class="camera-btn" data-camera="cam_2b">2B УГ. ЗАП.</button>
-            <button class="camera-btn" data-camera="cam_3">3 ЧУЛАН</button>
-            <button class="camera-btn" data-camera="cam_4a">4A ВОСТ. ХОЛЛ</button>
-            <button class="camera-btn" data-camera="cam_4b">4B УГ. ВОСТ.</button>
-            <button class="camera-btn" data-camera="cam_5">5 ЗАД. СЦ.</button>
-            <button class="camera-btn" data-camera="cam_6">6 КУХНЯ</button>
-            <button class="camera-btn" data-camera="cam_7">7 ТУАЛЕТ</button>
+            <div class="camera-map">
+                <div class="static-overlay"></div>
+
+                <svg class="map-lines" viewBox="0 0 401 330" preserveAspectRatio="none">
+                    <!-- 1A -> 1B -->
+                    <line x1="153" y1="36" x2="153" y2="63" />
+                    <!-- 1B -> 5 -->
+                    <line x1="95" y1="87" x2="70" y2="87" />
+                    <!-- 1B -> 7 -->
+                    <line x1="207" y1="87" x2="337" y2="100" />
+                    <!-- 1B -> 1C -->
+                    <line x1="150" y1="111" x2="150" y2="133" />
+                    <!-- 1C -> нижняя шина -->
+                    <line x1="120" y1="181" x2="120" y2="205" />
+                    <line x1="185" y1="181" x2="185" y2="205" />
+                    <!-- горизонтальная шина -->
+                    <line x1="45" y1="205" x2="360" y2="205" />
+                    <!-- шина -> 3, 2A, 4A, 6 -->
+                    <line x1="45" y1="205" x2="45" y2="222" />
+                    <line x1="154" y1="205" x2="154" y2="217" />
+                    <line x1="284" y1="205" x2="284" y2="217" />
+                    <line x1="360" y1="205" x2="360" y2="217" />
+                    <!-- 2A -> 2B -->
+                    <line x1="154" y1="259" x2="154" y2="258" />
+                    <!-- 4A -> 4B -->
+                    <line x1="284" y1="259" x2="284" y2="258" />
+                    <!-- к офису (YOU) -->
+                    <line x1="190" y1="270" x2="218" y2="270" />
+                    <line x1="218" y1="262" x2="218" y2="290" />
+                </svg>
+
+                <button class="camera-btn map-btn active" data-camera="cam_1a" style="left:26.9%; top:0.9%; width:22.4%; height:10%;">1A</button>
+                <button class="camera-btn map-btn" data-camera="cam_5" style="left:0.5%; top:21.8%; width:17%; height:10.6%;">5</button>
+                <button class="camera-btn map-btn" data-camera="cam_1b" style="left:23.7%; top:19.1%; width:27.9%; height:14.5%;">1B</button>
+                <button class="camera-btn map-btn" data-camera="cam_7" style="left:84%; top:20.6%; width:15.5%; height:22.7%;">7</button>
+                <button class="camera-btn map-btn" data-camera="cam_1c" style="left:19.5%; top:40.3%; width:27%; height:14.5%;">1C</button>
+                <button class="camera-btn map-btn" data-camera="cam_3" style="left:3.7%; top:67.3%; width:15.5%; height:14.5%;">3</button>
+                <button class="camera-btn map-btn" data-camera="cam_2a" style="left:29.4%; top:65.8%; width:18%; height:12.7%;">2A</button>
+                <button class="camera-btn map-btn" data-camera="cam_2b" style="left:29.4%; top:78.2%; width:18%; height:14.5%;">2B</button>
+                <button class="camera-btn map-btn" data-camera="cam_4a" style="left:61.8%; top:65.8%; width:18%; height:12.7%;">4A</button>
+                <button class="camera-btn map-btn" data-camera="cam_4b" style="left:61.8%; top:78.2%; width:18%; height:14.5%;">4B</button>
+                <button class="camera-btn map-btn" data-camera="cam_6" style="left:83%; top:65.8%; width:15.5%; height:14.5%;">6</button>
+
+                <div class="you-marker" style="left:49.4%; top:79.4%; width:10%; height:11.5%;">
+                    <span>YOU</span>
+                    <div class="you-dot"></div>
+                </div>
+            </div>
         </div>
 
         <!-- Центр -->
@@ -271,7 +308,9 @@
             leftDoorClosed: false,
             rightDoorClosed: false,
             isTabletMode: true,
-            isLightOn: false
+            isLightOn: false,
+            leftLightOn: false,
+            rightLightOn: false
         };
 
         // ===== DOM-ЭЛЕМЕНТЫ =====
@@ -658,7 +697,9 @@
                 chica: toLabel(aiState.positions.chica),
                 foxy: toLabel(aiState.positions.foxy),
                 foxy_stage: aiState.foxyStage,
-                foxy_running: aiState.isFoxyRunning ? '1' : '0'
+                foxy_running: aiState.isFoxyRunning ? '1' : '0',
+                light_left: gameState.leftLightOn ? '1' : '0',
+                light_right: gameState.rightLightOn ? '1' : '0'
             }).toString();
 
             fetch(`/camera/${camera}?${query}`)
@@ -720,7 +761,12 @@
                 return;
             }
             if (gameState.isGameOver) return;
-            gameState.isLightOn = !gameState.isLightOn;
+            if (door === 'left') {
+                gameState.leftLightOn = !gameState.leftLightOn;
+            } else if (door === 'right') {
+                gameState.rightLightOn = !gameState.rightLightOn;
+            }
+            gameState.isLightOn = gameState.leftLightOn || gameState.rightLightOn;
             if (gameState.power > 0) {
                 gameState.power = Math.max(0, gameState.power - CONFIG.POWER_DRAIN_LIGHT);
                 updatePower();
@@ -728,7 +774,7 @@
             const view = document.querySelector('.camera-view');
             view.style.boxShadow = '0 0 60px rgba(255,255,200,0.4)';
             setTimeout(() => view.style.boxShadow = 'none', 400);
-            console.log(`🔦 Свет на ${door} двери ${gameState.isLightOn ? 'включён' : 'выключен'}`);
+            console.log(`🔦 Свет на ${door} двери ${gameState[door + 'LightOn'] ? 'включён' : 'выключен'}`);
             updateUsage();
         }
 
