@@ -6,9 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Ночь {{ $session->night }} - Five Nights At Freddy's</title>
     <style>
-        /* ============================================================
-           ВСЕ СТИЛИ
-           ============================================================ */
+        /* ===== ОСНОВНЫЕ СТИЛИ ===== */
         * {
             margin: 0;
             padding: 0;
@@ -32,9 +30,30 @@
             gap: 4px;
             padding: 8px;
             background: #0a0a0a;
+            transition: all 0.5s;
         }
 
-        /* Верхняя панель */
+        /* ===== РЕЖИМ "ПЛАНШЕТ" (КАМЕРЫ ВИДНЫ) ===== */
+        .game-container.tablet-mode .left-panel,
+        .game-container.tablet-mode .camera-view {
+            display: flex;
+        }
+
+        .game-container.tablet-mode .office-view {
+            display: none;
+        }
+
+        /* ===== РЕЖИМ "ОФИС" (ПЛАНШЕТ СКРЫТ) ===== */
+        .game-container.office-mode .left-panel,
+        .game-container.office-mode .camera-view {
+            display: none;
+        }
+
+        .game-container.office-mode .office-view {
+            display: flex;
+        }
+
+        /* ===== ВЕРХНЯЯ ПАНЕЛЬ ===== */
         .top-panel {
             grid-column: 1 / -1;
             grid-row: 1;
@@ -45,13 +64,14 @@
             align-items: center;
             padding: 0 20px;
             font-size: 16px;
+            z-index: 10;
         }
 
         .top-panel .time { color: #44ff44; }
         .top-panel .night { color: #ffaa44; }
         .top-panel .power { color: #ff4444; }
 
-        /* Левая панель (камеры) */
+        /* ===== ЛЕВАЯ ПАНЕЛЬ (КАМЕРЫ) ===== */
         .left-panel {
             grid-column: 1;
             grid-row: 2;
@@ -61,19 +81,29 @@
             flex-direction: column;
             gap: 4px;
             padding: 8px;
+            overflow-y: auto;
+        }
+
+        .left-panel::-webkit-scrollbar {
+            width: 4px;
+        }
+        .left-panel::-webkit-scrollbar-thumb {
+            background: #2a2a2a;
+            border-radius: 2px;
         }
 
         .camera-btn {
             background: #0a0a0a;
             border: 1px solid #2a2a2a;
             color: #888;
-            padding: 10px 8px;
+            padding: 8px 6px;
             cursor: pointer;
             transition: all 0.3s;
             font-family: 'Courier New', monospace;
-            font-size: 11px;
+            font-size: 10px;
             text-transform: uppercase;
             letter-spacing: 1px;
+            text-align: left;
         }
 
         .camera-btn:hover {
@@ -89,7 +119,12 @@
             box-shadow: inset 0 0 20px rgba(255,0,0,0.1);
         }
 
-        /* Центральное поле (камера) */
+        .camera-btn.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* ===== ЦЕНТРАЛЬНОЕ ПОЛЕ (КАМЕРА) ===== */
         .camera-view {
             grid-column: 2;
             grid-row: 2;
@@ -111,104 +146,6 @@
             align-items: center;
             font-size: 48px;
             color: #1a1a1a;
-        }
-
-        /* Стили для контента камер (внутри #cameraImage) */
-        .camera-content {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #0a0a0a;
-        }
-
-        .camera-scene {
-            text-align: center;
-            padding: 20px;
-            background: rgba(0,0,0,0.5);
-            border: 1px solid #2a2a2a;
-            border-radius: 10px;
-            min-width: 200px;
-        }
-
-        .camera-scene h3 {
-            color: #ffaa44;
-            font-size: 18px;
-            margin-bottom: 15px;
-            letter-spacing: 2px;
-        }
-
-        .animatronics {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin: 15px 0;
-        }
-
-        .animatronic {
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-weight: bold;
-            font-size: 14px;
-            animation: pulse 2s infinite;
-        }
-
-        .animatronic.freddy {
-            background: #8B4513;
-            color: #ffd700;
-            border: 2px solid #ffd700;
-        }
-
-        .animatronic.bonnie {
-            background: #4B0082;
-            color: #9B59B6;
-            border: 2px solid #9B59B6;
-        }
-
-        .animatronic.chica {
-            background: #FFD700;
-            color: #8B4513;
-            border: 2px solid #8B4513;
-        }
-
-        .animatronic.foxy {
-            background: #8B0000;
-            color: #ff4444;
-            border: 2px solid #ff4444;
-        }
-
-        .curtain {
-            color: #666;
-            font-size: 16px;
-            padding: 20px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-        }
-
-        .light-effect {
-            margin-top: 10px;
-            color: #ffaa44;
-            font-size: 14px;
-            animation: flicker-light 0.5s infinite;
-        }
-
-        .camera-hint {
-            margin-top: 15px;
-            color: #444;
-            font-size: 11px;
-            letter-spacing: 1px;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        @keyframes flicker-light {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
         }
 
         .camera-label {
@@ -247,7 +184,42 @@
             100% { opacity: 0.3; }
         }
 
-        /* Правая панель (двери) */
+        /* ===== ВИД ОФИСА (БЕЗ ПЛАНШЕТА) ===== */
+        .office-view {
+            grid-column: 2;
+            grid-row: 2;
+            background: #0a0a0a;
+            border: 2px solid #2a2a2a;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .office-view .office-content {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .office-view .office-title {
+            color: #666;
+            font-size: 14px;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+        }
+
+        .office-view .office-desc {
+            color: #333;
+            font-size: 12px;
+            line-height: 2;
+        }
+
+        .office-view .office-desc .highlight {
+            color: #ffaa44;
+        }
+
+        /* ===== ПРАВАЯ ПАНЕЛЬ (ДВЕРИ) ===== */
         .right-panel {
             grid-column: 3;
             grid-row: 2;
@@ -288,7 +260,7 @@
             margin: 3px 0;
         }
 
-        .door-btn:hover {
+        .door-btn:hover:not(.disabled) {
             background: #1a1a1a;
             border-color: #444;
         }
@@ -297,6 +269,11 @@
             border-color: #ff4444;
             color: #ff4444;
             background: #1a0a0a;
+        }
+
+        .door-btn.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
         }
 
         .door-btn .status {
@@ -321,13 +298,18 @@
             margin: 2px 0;
         }
 
-        .light-btn:hover {
+        .light-btn:hover:not(.disabled) {
             background: #1a1a0a;
             border-color: #ffaa44;
             box-shadow: 0 0 20px rgba(255,170,68,0.1);
         }
 
-        /* Нижняя панель */
+        .light-btn.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* ===== НИЖНЯЯ ПАНЕЛЬ ===== */
         .bottom-panel {
             grid-column: 1 / -1;
             grid-row: 3;
@@ -447,6 +429,7 @@
         .door-status-item .led.green { background: #44ff44; }
         .door-status-item .led.red { background: #ff4444; }
 
+        /* ===== КНОПКИ ===== */
         .back-btn {
             position: fixed;
             top: 12px;
@@ -468,6 +451,62 @@
             color: #ff4444;
         }
 
+        .tablet-toggle-btn {
+            position: fixed;
+            bottom: 160px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            color: #ffaa44;
+            border: 2px solid #2a2a2a;
+            padding: 12px 30px;
+            cursor: pointer;
+            z-index: 100;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            letter-spacing: 3px;
+            transition: all 0.3s;
+        }
+
+        .tablet-toggle-btn:hover {
+            border-color: #ffaa44;
+            background: #1a1a0a;
+            box-shadow: 0 0 30px rgba(255,170,68,0.2);
+        }
+
+        .tablet-toggle-btn.office-mode-btn {
+            border-color: #44ff44;
+            color: #44ff44;
+        }
+
+        /* ===== ПРЕДУПРЕЖДЕНИЕ ===== */
+        .warning-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.95);
+            color: #ff4444;
+            padding: 30px 40px;
+            border: 2px solid #ff4444;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            z-index: 1000;
+            text-align: center;
+            animation: fadeInOut 2s ease-in-out forwards;
+            box-shadow: 0 0 50px rgba(255,0,0,0.3);
+            pointer-events: none;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            15% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            85% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+        }
+
+        /* ===== АНИМАЦИИ ===== */
         @keyframes flicker {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.97; }
@@ -479,44 +518,51 @@
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <!-- Верхняя панель -->
+    <div class="game-container tablet-mode" id="gameContainer">
+        <!-- ===== ВЕРХНЯЯ ПАНЕЛЬ ===== -->
         <div class="top-panel">
             <div class="time" id="gameTime">12:00 AM</div>
             <div class="night">НОЧЬ {{ $session->night }}</div>
             <div class="power">⚡ <span id="powerLevel">100</span>%</div>
         </div>
 
-        <!-- Левая панель -->
+        <!-- ===== ЛЕВАЯ ПАНЕЛЬ (камеры) ===== -->
         <div class="left-panel">
-            <button class="camera-btn active" data-camera="show">СЦЕНА</button>
-            <button class="camera-btn" data-camera="backstage">ЗАДНЯЯ СЦЕНА</button>
-            <button class="camera-btn" data-camera="west">ЗАПАДНЫЙ КОР.</button>
-            <button class="camera-btn" data-camera="east">ВОСТОЧНЫЙ КОР.</button>
-            <button class="camera-btn" data-camera="restrooms">ТУАЛЕТЫ</button>
+            <button class="camera-btn active" data-camera="cam_1a">1A СЦЕНА</button>
+            <button class="camera-btn" data-camera="cam_1b">1B ЗАЛ</button>
+            <button class="camera-btn" data-camera="cam_1c">1C КОВ</button>
+            <button class="camera-btn" data-camera="cam_2a">2A ЗАП. ХОЛЛ</button>
+            <button class="camera-btn" data-camera="cam_2b">2B УГ. ЗАП.</button>
+            <button class="camera-btn" data-camera="cam_3">3 ЧУЛАН</button>
+            <button class="camera-btn" data-camera="cam_4a">4A ВОСТ. ХОЛЛ</button>
+            <button class="camera-btn" data-camera="cam_4b">4B УГ. ВОСТ.</button>
+            <button class="camera-btn" data-camera="cam_5">5 ЗАД. СЦ.</button>
+            <button class="camera-btn" data-camera="cam_6">6 КУХНЯ</button>
+            <button class="camera-btn" data-camera="cam_7">7 ТУАЛЕТ</button>
         </div>
 
-        <!-- Центр -->
+        <!-- ===== ЦЕНТР (камера) ===== -->
         <div class="camera-view" id="cameraView">
             <div id="cameraImage">
-                <!-- Сюда будет загружаться контент камеры -->
-                <div class="camera-content">
-                    <div class="camera-scene">
-                        <h3>📹 СЦЕНА</h3>
-                        <div class="animatronics">
-                            <div class="animatronic freddy">🐻 ФРЕДДИ</div>
-                            <div class="animatronic bonnie">🐰 БОННИ</div>
-                            <div class="animatronic chica">🐤 ЧИКА</div>
-                        </div>
-                        <div class="camera-hint">Нажмите на камеру для увеличения</div>
-                    </div>
-                </div>
+                <!-- Сюда через AJAX подгружаются файлы из cameras/ -->
             </div>
             <div class="static-overlay"></div>
-            <div class="camera-label" id="cameraLabel">СЦЕНА</div>
+            <div class="camera-label" id="cameraLabel">CAM 1A — СЦЕНА</div>
         </div>
 
-        <!-- Правая панель -->
+        <!-- ===== ВИД ОФИСА (без планшета) ===== -->
+        <div class="office-view" id="officeView">
+            <div class="office-content">
+                <div class="office-title">🏢 ОФИС</div>
+                <div class="office-desc">
+                    <div>👁️ Вы в кабинете охраны</div>
+                    <div>🚪 Слева и справа — двери</div>
+                    <div>📹 <span class="highlight">Нажмите кнопку</span> чтобы поднять планшет</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== ПРАВАЯ ПАНЕЛЬ (двери) ===== -->
         <div class="right-panel">
             <div class="door-control">
                 <div class="label">ЛЕВАЯ ДВЕРЬ</div>
@@ -534,7 +580,7 @@
             </div>
         </div>
 
-        <!-- Нижняя панель -->
+        <!-- ===== НИЖНЯЯ ПАНЕЛЬ ===== -->
         <div class="bottom-panel">
             <div class="power-block">
                 <div class="power-label">⚡ ЭНЕРГИЯ</div>
@@ -576,11 +622,13 @@
         </div>
     </div>
 
+    <!-- ===== КНОПКИ ===== -->
     <a href="{{ route('menu') }}" class="back-btn">✕ В МЕНЮ</a>
+    <button class="tablet-toggle-btn" id="tabletToggle">📱 ОПУСТИТЬ ПЛАНШЕТ</button>
 
     <script>
         // ============================================================
-        //  ПОЛНАЯ ИГРОВАЯ ЛОГИКА
+        //  ПОЛНАЯ ИГРОВАЯ ЛОГИКА (С ПЕРЕКЛЮЧЕНИЕМ ОФИС/ПЛАНШЕТ)
         // ============================================================
 
         const CONFIG = {
@@ -596,18 +644,15 @@
             time: 0,
             power: 100,
             isGameOver: false,
-            currentCamera: 'show',
+            currentCamera: 'cam_1a',
             leftDoorClosed: false,
             rightDoorClosed: false,
-            animatronics: {
-                freddy: { position: 'stage', isActive: true },
-                bonnie: { position: 'backstage', isActive: true },
-                chica: { position: 'stage', isActive: true },
-                foxy: { position: 'cove', isActive: true }
-            }
+            isTabletMode: true // true = планшет поднят, false = виден офис
         };
 
+        // ===== DOM-ЭЛЕМЕНТЫ =====
         const el = {
+            container: document.getElementById('gameContainer'),
             time: document.getElementById('gameTime'),
             powerLevel: document.getElementById('powerLevel'),
             powerDisplay: document.getElementById('powerDisplay'),
@@ -621,6 +666,7 @@
             leftDoorLed: document.getElementById('leftDoorLed'),
             rightDoorLed: document.getElementById('rightDoorLed'),
             cameraBtns: document.querySelectorAll('.camera-btn'),
+            tabletToggle: document.getElementById('tabletToggle'),
             leds: {
                 freddy: document.getElementById('freddyLed'),
                 bonnie: document.getElementById('bonnieLed'),
@@ -631,8 +677,76 @@
 
         let gameLoopInterval = null;
 
-        // ========== ФУНКЦИИ ==========
+        // ===== ФУНКЦИЯ ДЛЯ ПРЕДУПРЕЖДЕНИЙ =====
+        function showWarning(message) {
+            // Удаляем старые предупреждения
+            document.querySelectorAll('.warning-message').forEach(el => el.remove());
 
+            const warning = document.createElement('div');
+            warning.className = 'warning-message';
+            warning.textContent = message;
+            document.body.appendChild(warning);
+
+            setTimeout(() => {
+                if (warning.parentNode) {
+                    warning.remove();
+                }
+            }, 2000);
+        }
+
+        // ===== ПЕРЕКЛЮЧЕНИЕ ПЛАНШЕТ/ОФИС =====
+        function toggleTablet() {
+            gameState.isTabletMode = !gameState.isTabletMode;
+
+            if (gameState.isTabletMode) {
+                // Режим планшета
+                el.container.classList.remove('office-mode');
+                el.container.classList.add('tablet-mode');
+                el.tabletToggle.textContent = '📱 ОПУСТИТЬ ПЛАНШЕТ';
+                el.tabletToggle.classList.remove('office-mode-btn');
+                el.tabletToggle.style.borderColor = '#ffaa44';
+                el.tabletToggle.style.color = '#ffaa44';
+
+                // Включаем кнопки камер
+                el.cameraBtns.forEach(btn => {
+                    btn.classList.remove('disabled');
+                    btn.style.opacity = '1';
+                    btn.style.cursor = 'pointer';
+                });
+
+                // Выключаем кнопки дверей и света
+                el.leftDoor.classList.add('disabled');
+                el.rightDoor.classList.add('disabled');
+                el.leftLight.classList.add('disabled');
+                el.rightLight.classList.add('disabled');
+
+                // Обновляем текущую камеру
+                switchCamera(gameState.currentCamera);
+            } else {
+                // Режим офиса
+                el.container.classList.remove('tablet-mode');
+                el.container.classList.add('office-mode');
+                el.tabletToggle.textContent = '📱 ПОДНЯТЬ ПЛАНШЕТ';
+                el.tabletToggle.classList.add('office-mode-btn');
+                el.tabletToggle.style.borderColor = '#44ff44';
+                el.tabletToggle.style.color = '#44ff44';
+
+                // Выключаем кнопки камер
+                el.cameraBtns.forEach(btn => {
+                    btn.classList.add('disabled');
+                    btn.style.opacity = '0.3';
+                    btn.style.cursor = 'not-allowed';
+                });
+
+                // Включаем кнопки дверей и света
+                el.leftDoor.classList.remove('disabled');
+                el.rightDoor.classList.remove('disabled');
+                el.leftLight.classList.remove('disabled');
+                el.rightLight.classList.remove('disabled');
+            }
+        }
+
+        // ===== ФУНКЦИИ ИГРЫ =====
         function updateTime() {
             const hours = 12 + gameState.time;
             const ampm = hours >= 12 ? 'AM' : 'PM';
@@ -648,13 +762,18 @@
 
             const isLow = p < 20;
             const isMedium = p >= 20 && p < 50;
-
             el.powerLevel.style.color = isLow ? '#ff4444' : isMedium ? '#ffaa44' : '#44ff44';
             el.powerDisplay.style.color = isLow ? '#ff4444' : isMedium ? '#ffaa44' : '#44ff44';
             el.powerBar.style.background = isLow ? '#ff4444' : isMedium ? '#ffaa44' : '#44ff44';
         }
 
         function switchCamera(camera) {
+            // ⛔ НЕЛЬЗЯ, ЕСЛИ ПЛАНШЕТ ОПУЩЕН
+            if (!gameState.isTabletMode) {
+                showWarning('⛔ Поднимите планшет чтобы смотреть камеры!');
+                return;
+            }
+
             if (gameState.isGameOver) return;
 
             gameState.currentCamera = camera;
@@ -664,35 +783,33 @@
             });
 
             const names = {
-                show: 'СЦЕНА',
-                backstage: 'ЗАДНЯЯ СЦЕНА',
-                west: 'ЗАПАДНЫЙ КОР.',
-                east: 'ВОСТОЧНЫЙ КОР.',
-                restrooms: 'ТУАЛЕТЫ'
+                cam_1a: 'CAM 1A — СЦЕНА',
+                cam_1b: 'CAM 1B — ЗАЛ',
+                cam_1c: 'CAM 1C — КОВ',
+                cam_2a: 'CAM 2A — ЗАП. ХОЛЛ',
+                cam_2b: 'CAM 2B — УГ. ЗАП.',
+                cam_3: 'CAM 3 — ЧУЛАН',
+                cam_4a: 'CAM 4A — ВОСТ. ХОЛЛ',
+                cam_4b: 'CAM 4B — УГ. ВОСТ.',
+                cam_5: 'CAM 5 — ЗАД. СЦ.',
+                cam_6: 'CAM 6 — КУХНЯ',
+                cam_7: 'CAM 7 — ТУАЛЕТ'
             };
 
             el.cameraLabel.textContent = names[camera] || camera;
 
-            // ===== ЗАГРУЖАЕМ КАРТИНКУ КАМЕРЫ ЧЕРЕЗ AJAX =====
             fetch(`/camera/${camera}`)
                 .then(response => response.text())
                 .then(html => {
                     el.cameraImage.innerHTML = html;
                 })
                 .catch(() => {
-                    // Если не загрузилось — показываем заглушку
                     el.cameraImage.innerHTML = `
-                        <div class="camera-content">
-                            <div class="camera-scene">
-                                <h3>📹 ${names[camera] || camera}</h3>
-                                <div style="color: #333; font-size: 14px;">Камера не активна</div>
-                                <div class="camera-hint">⚡ Энергия: ${Math.round(gameState.power)}%</div>
-                            </div>
-                        </div>
+                        <div style="color: #333; font-size: 24px;">📹 ${names[camera] || camera}</div>
+                        <div style="color: #444; font-size: 14px; margin-top: 10px;">Камера не активна</div>
                     `;
                 });
 
-            // Расход энергии
             if (gameState.power > 0) {
                 gameState.power = Math.max(0, gameState.power - CONFIG.POWER_DRAIN_CAMERA);
                 updatePower();
@@ -700,6 +817,12 @@
         }
 
         function toggleDoor(door) {
+            // ⛔ НЕЛЬЗЯ, ЕСЛИ ПЛАНШЕТ ПОДНЯТ
+            if (gameState.isTabletMode) {
+                showWarning('⛔ Опустите планшет чтобы управлять дверями!');
+                return;
+            }
+
             if (gameState.isGameOver) return;
 
             if (door === 'left') {
@@ -708,7 +831,6 @@
                 status.textContent = gameState.leftDoorClosed ? 'ЗАКРЫТА' : 'ОТКРЫТА';
                 el.leftDoor.classList.toggle('closed', gameState.leftDoorClosed);
                 el.leftDoorLed.className = 'led ' + (gameState.leftDoorClosed ? 'red' : 'green');
-
                 if (gameState.leftDoorClosed && gameState.power > 0) {
                     gameState.power = Math.max(0, gameState.power - CONFIG.POWER_DRAIN_DOOR);
                     updatePower();
@@ -719,7 +841,6 @@
                 status.textContent = gameState.rightDoorClosed ? 'ЗАКРЫТА' : 'ОТКРЫТА';
                 el.rightDoor.classList.toggle('closed', gameState.rightDoorClosed);
                 el.rightDoorLed.className = 'led ' + (gameState.rightDoorClosed ? 'red' : 'green');
-
                 if (gameState.rightDoorClosed && gameState.power > 0) {
                     gameState.power = Math.max(0, gameState.power - CONFIG.POWER_DRAIN_DOOR);
                     updatePower();
@@ -728,6 +849,12 @@
         }
 
         function toggleLight(door) {
+            // ⛔ НЕЛЬЗЯ, ЕСЛИ ПЛАНШЕТ ПОДНЯТ
+            if (gameState.isTabletMode) {
+                showWarning('⛔ Опустите планшет чтобы включить свет!');
+                return;
+            }
+
             if (gameState.isGameOver) return;
 
             if (gameState.power > 0) {
@@ -740,38 +867,18 @@
             setTimeout(() => view.style.boxShadow = 'none', 400);
 
             console.log(`🔦 Свет на ${door} двери`);
-
-            // Обновляем текущую камеру, чтобы показать свет
-            switchCamera(gameState.currentCamera);
-        }
-
-        function moveAnimatronics() {
-            const names = ['freddy', 'bonnie', 'chica', 'foxy'];
-            names.forEach(name => {
-                if (Math.random() < 0.08) {
-                    const colors = ['orange', 'red', 'green'];
-                    const color = colors[Math.floor(Math.random() * colors.length)];
-                    el.leds[name].className = 'led ' + color;
-                    setTimeout(() => {
-                        if (el.leds[name]) el.leds[name].className = 'led';
-                    }, 2000);
-                }
-            });
         }
 
         function gameOver(reason) {
             if (gameState.isGameOver) return;
             gameState.isGameOver = true;
-
             clearInterval(gameLoopInterval);
-
             alert(`💀 ${reason}\nВы прожили до ${el.time.textContent}`);
             window.location.href = '{{ route('menu') }}';
         }
 
         function advanceHour() {
             if (gameState.isGameOver) return;
-
             gameState.time += 1;
             updateTime();
 
@@ -795,15 +902,28 @@
                 return;
             }
 
-            moveAnimatronics();
+            // Мигание индикаторов
+            const names = ['freddy', 'bonnie', 'chica', 'foxy'];
+            names.forEach(name => {
+                if (Math.random() < 0.08) {
+                    const colors = ['orange', 'red', 'green'];
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    el.leds[name].className = 'led ' + color;
+                    setTimeout(() => {
+                        if (el.leds[name]) el.leds[name].className = 'led';
+                    }, 2000);
+                }
+            });
+
             console.log(`⏰ ${gameState.time}:00 AM, Энергия: ${Math.round(gameState.power)}%`);
         }
 
-        // ========== ОБРАБОТЧИКИ СОБЫТИЙ ==========
-
+        // ===== ОБРАБОТЧИКИ СОБЫТИЙ =====
         el.cameraBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                if (!gameState.isGameOver) switchCamera(btn.dataset.camera);
+                if (!gameState.isGameOver && gameState.isTabletMode) {
+                    switchCamera(btn.dataset.camera);
+                }
             });
         });
 
@@ -811,12 +931,25 @@
         el.rightDoor.addEventListener('click', () => toggleDoor('right'));
         el.leftLight.addEventListener('click', () => toggleLight('left'));
         el.rightLight.addEventListener('click', () => toggleLight('right'));
+        el.tabletToggle.addEventListener('click', toggleTablet);
 
-        // ========== ЗАПУСК ИГРЫ ==========
+        // ===== ЗАПУСК =====
+        // По умолчанию — режим планшета
+        el.container.classList.add('tablet-mode');
+        el.container.classList.remove('office-mode');
+        el.tabletToggle.textContent = '📱 ОПУСТИТЬ ПЛАНШЕТ';
+        el.tabletToggle.style.borderColor = '#ffaa44';
+        el.tabletToggle.style.color = '#ffaa44';
+
+        // Кнопки дверей и света заблокированы (планшет поднят)
+        el.leftDoor.classList.add('disabled');
+        el.rightDoor.classList.add('disabled');
+        el.leftLight.classList.add('disabled');
+        el.rightLight.classList.add('disabled');
 
         updateTime();
         updatePower();
-        switchCamera('show');
+        switchCamera('cam_1a');
 
         gameLoopInterval = setInterval(advanceHour, CONFIG.HOUR_DURATION);
 
@@ -828,7 +961,9 @@
         }, 1200);
 
         console.log('🎮 FNAF 1 - Ночь', gameState.night);
-        console.log('⏰ Длительность часа:', CONFIG.HOUR_DURATION / 1000, 'сек');
+        console.log('📹 Загружено 11 камер');
+        console.log('📱 Нажмите кнопку чтобы опустить/поднять планшет');
+        console.log('🔒 Планшет поднят — двери и свет заблокированы');
     </script>
 </body>
 </html>
