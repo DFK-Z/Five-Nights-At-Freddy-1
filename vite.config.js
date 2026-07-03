@@ -7,7 +7,7 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
-                'resources/js/game.js' // ← Добавляем game.js
+                'resources/js/game.js', // ← ЭТА СТРОКА ДОЛЖНА БЫТЬ
             ],
             refresh: true,
         }),

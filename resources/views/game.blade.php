@@ -1,31 +1,40 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Ночь {{ $session->night }} - Five Nights At Freddy's</title>
-    <style>
-        /* ... ВСЕ СТИЛИ ОСТАВЛЯЕМ ТАКИМИ ЖЕ ... */
-        /* (скопируй стили из предыдущего game.blade.php) */
-    </style>
+    <title>Ночь {{ $session->night }}</title>
 </head>
 <body>
-    <!-- ===== ВЕСЬ HTML ОСТАВЛЯЕМ ТАКИМ ЖЕ ===== -->
-    <div class="game-container">
-        <!-- ... ВСЯ РАЗМЕТКА БЕЗ ИЗМЕНЕНИЙ ... -->
-    </div>
+    <h1>ИГРА ЗАПУЩЕНА!</h1>
+    <p>Ночь: {{ $session->night }}</p>
+    <p id="time">12:00 AM</p>
+    <p>⚡ <span id="power">100</span>%</p>
+    <a href="/">В МЕНЮ</a>
 
-    <a href="{{ route('menu') }}" class="back-btn">✕ В МЕНЮ</a>
-
-    <!-- ===== ПЕРЕДАЁМ ДАННЫЕ ИЗ PHP В JS ===== -->
     <script>
-        window.gameConfig = {
-            night: {{ $session->night }}
-        };
-    </script>
+        // Простой тест
+        console.log('✅ Скрипт работает!');
+        console.log('Ночь:', {{ $session->night }});
 
-    <!-- ===== ПОДКЛЮЧАЕМ ВНЕШНИЙ JS ===== -->
-    <script src="{{ asset('js/game.js') }}"></script>
+        let time = 0;
+        let power = 100;
+        const timeEl = document.getElementById('time');
+        const powerEl = document.getElementById('power');
+
+        setInterval(() => {
+            time++;
+            power -= 5;
+            timeEl.textContent = `${12 + time}:00 AM`;
+            powerEl.textContent = Math.round(power);
+
+            if (time >= 6) {
+                alert('🎉 Ночь пройдена!');
+                window.location.href = '/';
+            }
+            if (power <= 0) {
+                alert('💀 Энергия кончилась!');
+                window.location.href = '/';
+            }
+        }, 5000);
+    </script>
 </body>
 </html>
