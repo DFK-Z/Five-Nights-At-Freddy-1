@@ -2,6 +2,7 @@
 //  УПРАВЛЕНИЕ ДВЕРЯМИ И СВЕТОМ
 // ============================================================
 
+import { CONFIG } from './config.js';
 import { gameState } from './gameState.js';
 import { showWarning } from './utils.js';
 import { updatePower, updateUsage } from './ui.js';
