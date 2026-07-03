@@ -170,6 +170,8 @@
         const gameState = {
             night: {{ $session->night }},
             time: 0,
+            minute: 0,
+            hourStartTimestamp: Date.now(),
             power: 100,
             isGameOver: false,
             currentCamera: 'cam_1a',
@@ -195,6 +197,7 @@
 
         let foxyLoopInterval = null;
         let foxyRunTimeout = null;
+        let minuteLoopInterval = null;
 
         // ===== DOM-ЭЛЕМЕНТЫ =====
         const el = {
@@ -243,7 +246,18 @@
             const hours = 12 + gameState.time;
             const ampm = hours >= 12 ? 'AM' : 'PM';
             const displayHours = hours > 12 ? hours - 12 : hours;
-            el.time.textContent = `${displayHours}:00 ${ampm}`;
+            const displayMinutes = String(gameState.minute).padStart(2, '0');
+            el.time.textContent = `${displayHours}:${displayMinutes} ${ampm}`;
+        }
+
+        // ===== ТИК МИНУТ =====
+        // 1 игровая минута = HOUR_DURATION / 60 мс (при 90000мс/час это 1500мс на минуту)
+        function minuteTick() {
+            if (gameState.isGameOver) return;
+            const msPerGameMinute = CONFIG.HOUR_DURATION / 60;
+            const elapsed = Date.now() - gameState.hourStartTimestamp;
+            gameState.minute = Math.min(59, Math.floor(elapsed / msPerGameMinute));
+            updateTime();
         }
 
         // ===== ОБНОВЛЕНИЕ ЭНЕРГИИ =====
@@ -456,16 +470,20 @@
             gameState.isGameOver = true;
             clearInterval(gameLoopInterval);
             clearInterval(foxyLoopInterval);
+            clearInterval(minuteLoopInterval);
             clearTimeout(foxyRunTimeout);
             alert(`💀 ${reason}\nВы прожили до ${el.time.textContent}`);
             window.location.href = '{{ route('menu') }}';
         }
 
         // ===== ЛОГИКА ФОКСИ =====
+        // По канону у Фокси AI = 0 на первую ночь — он вообще не двигается,
+        // спит за закрытым занавесом всю ночь. Активничать начинает с ночи 2.
         // Каждые FOXY_CHECK_INTERVAL мс: если смотрим на CAM 1C — Фокси успокаивается
         // (стадия сбрасывается на 1), иначе — есть шанс продвинуться дальше.
         function foxyTick() {
             if (gameState.isGameOver || gameState.foxy.running) return;
+            if (gameState.night < 2) return; // ночь 1 — Фокси неактивен
 
             const watchingCove = gameState.isTabletMode && gameState.currentCamera === 'cam_1c';
 
@@ -536,6 +554,8 @@
             if (gameState.isGameOver) return;
 
             gameState.time += 1;
+            gameState.minute = 0;
+            gameState.hourStartTimestamp = Date.now();
             updateTime();
 
             // Ровно в начале 2-го часа планируем событие на его середину
@@ -613,6 +633,7 @@
 
         gameLoopInterval = setInterval(advanceHour, CONFIG.HOUR_DURATION);
         foxyLoopInterval = setInterval(foxyTick, CONFIG.FOXY_CHECK_INTERVAL);
+        minuteLoopInterval = setInterval(minuteTick, 250);
 
         setInterval(() => {
             const overlay = document.querySelector('.static-overlay');

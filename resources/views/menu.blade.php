@@ -12,206 +12,296 @@
         }
 
         body {
-            background: #0a0a0a;
+            background: #000;
             min-height: 100vh;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Courier New', monospace;
             overflow: hidden;
+            color: #d8d8d8;
         }
 
-        .menu-container {
-            background: linear-gradient(180deg, #1a0a0a 0%, #0d0d0d 100%);
-            padding: 60px 80px;
-            border-radius: 20px;
-            border: 2px solid #3a1a1a;
-            box-shadow: 0 0 80px rgba(150, 0, 0, 0.3);
-            text-align: center;
+        .menu-screen {
             position: relative;
-            animation: flicker 4s infinite;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            background: radial-gradient(ellipse at 70% 50%, #0a0a0a 0%, #000 70%);
+        }
+
+        /* ===== СТАТИЧНЫЙ ШУМ (VHS) ===== */
+        .static-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 10;
+            opacity: 0.09;
+            background-image: repeating-linear-gradient(
+                0deg, #fff 0px, transparent 1px, transparent 2px, #fff 3px
+            ), repeating-linear-gradient(
+                90deg, transparent 0 3px, rgba(255,255,255,0.4) 3px 4px
+            );
+            mix-blend-mode: overlay;
+            animation: staticShift 0.2s steps(4) infinite;
+        }
+        @keyframes staticShift {
+            0% { background-position: 0 0, 0 0; }
+            25% { background-position: -30px 15px, 10px 0; }
+            50% { background-position: 20px -10px, -15px 0; }
+            75% { background-position: -10px 25px, 25px 0; }
+            100% { background-position: 0 0, 0 0; }
+        }
+
+        /* ===== СКАНЛАЙН-ПОЛОСА ПОСЕРЕДИНЕ ===== */
+        .scan-bar {
+            position: absolute;
+            left: 0; right: 0;
+            top: 42%;
+            height: 34px;
+            background: rgba(210,210,210,0.10);
+            z-index: 5;
+            pointer-events: none;
+            animation: scanDrift 6s ease-in-out infinite;
+        }
+        @keyframes scanDrift {
+            0%, 100% { top: 40%; opacity: 0.7; }
+            50% { top: 46%; opacity: 1; }
         }
 
         @keyframes flicker {
             0%, 100% { opacity: 1; }
-            3% { opacity: 0.8; }
+            3% { opacity: 0.85; }
             6% { opacity: 1; }
-            7% { opacity: 0.9; }
-            10% { opacity: 1; }
-            50% { opacity: 1; }
-            53% { opacity: 0.85; }
-            56% { opacity: 1; }
+            41% { opacity: 1; }
+            43% { opacity: 0.8; }
+            45% { opacity: 1; }
         }
 
-        .title {
-            font-size: 64px;
-            font-weight: 900;
-            color: #cc2222;
-            text-shadow:
-                0 0 20px rgba(200, 0, 0, 0.5),
-                0 0 60px rgba(200, 0, 0, 0.3),
-                0 0 100px rgba(200, 0, 0, 0.2);
-            margin-bottom: 10px;
-            letter-spacing: 4px;
-        }
-
-        .subtitle {
-            font-size: 18px;
-            color: #884444;
-            margin-bottom: 40px;
-            letter-spacing: 8px;
-            font-weight: 300;
-        }
-
-        .nights-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin: 30px 0;
-        }
-
-        .night-btn {
-            background: #1a0a0a;
-            border: 2px solid #3a1a1a;
-            color: #aa5555;
-            padding: 20px 10px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            border-radius: 10px;
-            text-decoration: none;
-            display: block;
+        /* ===== ЛЕВАЯ ЧАСТЬ: ТЕКСТ ===== */
+        .menu-left {
             position: relative;
+            z-index: 6;
+            padding: 60px 0 60px 70px;
+            width: 55%;
+            animation: flicker 5s infinite;
         }
 
-        .night-btn:hover:not(.locked) {
-            background: #2a0a0a;
-            border-color: #aa2222;
-            color: #ff6666;
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(200, 0, 0, 0.3);
+        .title-line {
+            font-size: 44px;
+            font-weight: bold;
+            color: #eee;
+            line-height: 1.15;
+            letter-spacing: 1px;
+            text-shadow: 0 0 12px rgba(255,255,255,0.15);
         }
 
-        .night-btn.locked {
-            opacity: 0.3;
-            cursor: not-allowed;
-            filter: grayscale(1);
+        .divider-space {
+            height: 90px;
         }
 
-        .night-btn .lock-icon {
+        .menu-list {
+            list-style: none;
+        }
+
+        .menu-list li {
+            font-size: 26px;
+            padding: 6px 0 6px 34px;
+            position: relative;
+            color: #666;
+        }
+
+        .menu-list li.active {
+            color: #eee;
+        }
+        .menu-list li.active::before {
+            content: '>>';
             position: absolute;
-            top: 5px;
-            right: 10px;
-            font-size: 14px;
+            left: 0;
+            color: #eee;
         }
 
-        .night-btn .stars {
-            display: block;
-            font-size: 12px;
-            margin-top: 5px;
-            color: #ffaa00;
-        }
-
-        .night-btn.completed {
-            border-color: #44aa44;
-        }
-
-        .menu-footer {
-            margin-top: 30px;
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-        }
-
-        .menu-btn {
-            background: transparent;
-            border: 1px solid #3a1a1a;
-            color: #884444;
-            padding: 12px 30px;
+        .menu-list a,
+        .menu-list button {
+            all: unset;
+            color: inherit;
             cursor: pointer;
-            transition: all 0.3s;
-            border-radius: 5px;
-            font-size: 14px;
-            text-transform: uppercase;
+            font-family: inherit;
+            font-size: inherit;
+        }
+
+        .menu-list li.locked {
+            color: #3a3a3a;
+            cursor: not-allowed;
+        }
+        .menu-list li.locked a { pointer-events: none; }
+
+        .menu-list .lock-icon {
+            font-size: 15px;
+            margin-left: 10px;
+            opacity: 0.6;
+        }
+        .menu-list .stars {
+            font-size: 13px;
+            margin-left: 10px;
+            color: #999;
             letter-spacing: 2px;
         }
 
-        .menu-btn:hover {
-            background: #1a0a0a;
-            border-color: #aa2222;
-            color: #ff6666;
+        .reset-item {
+            margin-top: 26px;
+            font-size: 16px !important;
+            color: #555 !important;
+        }
+        .reset-item:hover {
+            color: #ccc !important;
         }
 
-        .stats {
-            color: #664444;
-            font-size: 14px;
-            margin-top: 20px;
-            border-top: 1px solid #1a0a0a;
-            padding-top: 20px;
+        .stats-line {
+            margin-top: 30px;
+            font-size: 13px;
+            color: #444;
+            line-height: 1.8;
         }
 
-        .error-message {
-            color: #ff4444;
-            margin-top: 15px;
-            font-size: 14px;
+        .flash-message {
+            margin-top: 14px;
+            font-size: 13px;
+        }
+        .flash-message.error { color: #cc6666; }
+        .flash-message.success { color: #88bb88; }
+
+        /* ===== ПРАВАЯ ЧАСТЬ: СИЛУЭТ ===== */
+        .menu-right {
+            position: absolute;
+            right: 0; top: 0; bottom: 0;
+            width: 45%;
+            z-index: 3;
+            overflow: hidden;
         }
 
-        .success-message {
-            color: #44ff44;
-            margin-top: 15px;
-            font-size: 14px;
+        .silhouette-head {
+            position: absolute;
+            right: -8%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 480px;
+            height: 480px;
+            border-radius: 50% 50% 45% 45%;
+            background: radial-gradient(circle at 40% 35%, #2a2118 0%, #100c08 55%, #000 80%);
+            filter: blur(1px);
+            opacity: 0.85;
+        }
+
+        .silhouette-ear {
+            position: absolute;
+            top: -40px;
+            width: 90px;
+            height: 130px;
+            background: radial-gradient(circle at 40% 35%, #2a2118, #0a0805);
+            border-radius: 50% 50% 40% 40%;
+        }
+        .silhouette-ear.left { right: 320px; }
+        .silhouette-ear.right { right: 130px; }
+
+        .silhouette-eye {
+            position: absolute;
+            top: 44%;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #fff 0%, #ffdd99 40%, transparent 75%);
+            box-shadow: 0 0 25px 8px rgba(255,220,150,0.5);
+            animation: eyeGlow 3.5s infinite;
+        }
+        .silhouette-eye.left { right: 250px; }
+        .silhouette-eye.right { right: 175px; top: 42%; }
+
+        @keyframes eyeGlow {
+            0%, 100% { opacity: 1; }
+            48% { opacity: 1; }
+            50% { opacity: 0.15; }
+            52% { opacity: 1; }
+        }
+
+        .menu-footer-bar {
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 24px;
+            font-size: 11px;
+            color: #444;
+            z-index: 6;
+            letter-spacing: 1px;
         }
     </style>
 </head>
 <body>
-    <div class="menu-container">
-        <!-- Заголовок -->
-        <div class="title">FIVE NIGHTS</div>
-        <div class="title" style="font-size: 36px; margin-top: -10px;">AT FREDDY'S</div>
-        <div class="subtitle">✦ НОЧНАЯ СМЕНА ✦</div>
+    <div class="menu-screen">
+        <div class="static-overlay"></div>
+        <div class="scan-bar"></div>
 
-        <!-- Сетка ночей -->
-        <div class="nights-grid">
-            @for ($i = 1; $i <= 7; $i++)
-                @php
-                    $isUnlocked = $i <= $session->max_night;
-                    $isCompleted = $session->max_night > $i;
-                @endphp
-
-                <a href="{{ $isUnlocked ? route('night.start', $i) : '#' }}"
-                   class="night-btn {{ !$isUnlocked ? 'locked' : '' }} {{ $isCompleted ? 'completed' : '' }}">
-                    НОЧЬ {{ $i }}
-                    @if (!$isUnlocked)
-                        <span class="lock-icon">🔒</span>
-                    @elseif ($isCompleted)
-                        <span class="stars">★★★</span>
-                    @endif
-                </a>
-            @endfor
+        <div class="menu-right">
+            <div class="silhouette-head"></div>
+            <div class="silhouette-ear left"></div>
+            <div class="silhouette-ear right"></div>
+            <div class="silhouette-eye left"></div>
+            <div class="silhouette-eye right"></div>
         </div>
 
-        <!-- Дополнительные кнопки -->
-        <div class="menu-footer">
-            <form action="{{ route('reset.progress') }}" method="POST" style="display: inline;">
-                @csrf
-                <button type="submit" class="menu-btn">🔄 Сбросить</button>
-            </form>
+        <div class="menu-left">
+            <div class="title-line">Five</div>
+            <div class="title-line">Nights</div>
+            <div class="title-line">at</div>
+            <div class="title-line">Freddy's</div>
+
+            <div class="divider-space"></div>
+
+            <ul class="menu-list">
+                @for ($i = 1; $i <= 7; $i++)
+                    @php
+                        $isUnlocked = $i <= $session->max_night;
+                        $isCompleted = $session->max_night > $i;
+                        $isCurrent = $i == $session->night;
+                    @endphp
+                    <li class="{{ !$isUnlocked ? 'locked' : '' }} {{ $isCurrent && $isUnlocked ? 'active' : '' }}">
+                        @if ($isUnlocked)
+                            <a href="{{ route('night.start', $i) }}">НОЧЬ {{ $i }}</a>
+                            @if ($isCompleted)
+                                <span class="stars">★★★</span>
+                            @endif
+                        @else
+                            НОЧЬ {{ $i }}
+                            <span class="lock-icon">🔒</span>
+                        @endif
+                    </li>
+                @endfor
+
+                <li class="reset-item">
+                    <form action="{{ route('reset.progress') }}" method="POST" style="display:inline;">
+                        @csrf
+                        <button type="submit">Сбросить прогресс</button>
+                    </form>
+                </li>
+            </ul>
+
+            <div class="stats-line">
+                Текущая ночь: {{ $session->night }}<br>
+                Рекорд: {{ $session->high_score }} очков
+            </div>
+
+            @if (session('error'))
+                <div class="flash-message error">{{ session('error') }}</div>
+            @endif
+            @if (session('success'))
+                <div class="flash-message success">{{ session('success') }}</div>
+            @endif
         </div>
 
-        <!-- Статистика -->
-        <div class="stats">
-            <div>Текущая ночь: {{ $session->night }}</div>
-            <div>Рекорд: {{ $session->high_score }} очков</div>
+        <div class="menu-footer-bar">
+            <span>v0.1</span>
+            <span>fan-made project</span>
         </div>
-
-        <!-- Сообщения -->
-        @if (session('error'))
-            <div class="error-message">{{ session('error') }}</div>
-        @endif
-        @if (session('success'))
-            <div class="success-message">{{ session('success') }}</div>
-        @endif
     </div>
 </body>
 </html>
