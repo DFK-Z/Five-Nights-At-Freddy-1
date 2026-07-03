@@ -25,7 +25,7 @@ class MenuController extends Controller
         return view('menu', compact('session'));
     }
 
-    public function startNight(Int $night)
+    public function startNight($night)
     {
         $session = GameSession::latest()->first();
 
@@ -38,6 +38,11 @@ class MenuController extends Controller
             'is_completed' => false,
             'power_used' => 0
         ]);
+
+        // Если это 7-я ночь — очищаем пользовательские настройки ИИ
+        if ($night == 7) {
+            session()->forget('custom_ai_levels');
+        }
 
         return view('game', compact('session'));
     }

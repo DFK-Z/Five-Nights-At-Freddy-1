@@ -159,43 +159,6 @@ body {
     border-radius: 1px;
 }
 
-
-    background: #2a2a2a;
-    border-radius: 2px;
-}
-
-.camera-btn {
-    background: #0a0a0a;
-    border: 1px solid #2a2a2a;
-    color: #888;
-    padding: 8px 6px;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-family: 'Courier New', monospace;
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    text-align: left;
-}
-
-.camera-btn:hover {
-    background: #1a1a1a;
-    border-color: #ff4444;
-    color: #ff4444;
-}
-
-.camera-btn.active {
-    background: #2a0a0a;
-    border-color: #ff4444;
-    color: #ff4444;
-    box-shadow: inset 0 0 20px rgba(255,0,0,0.1);
-}
-
-.camera-btn.disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-}
-
 /* ===== ЦЕНТРАЛЬНОЕ ПОЛЕ ===== */
 .camera-view {
     grid-column: 2;
@@ -924,7 +887,57 @@ body {
    КОНЕЦ НОВОГО ДИЗАЙНА ЗАПИСОК
    ============================================================ */
 
-/* ===== ИНДИКАТОРЫ АНИМАТРОНИКОВ (ЦВЕТА) ===== */
+/* ============================================================
+   АНИМАЦИИ ДЛЯ ФОКСИ
+   ============================================================ */
+
+/* Пульсация для стадии 3 (готов бежать) */
+@keyframes foxyStage3Pulse {
+    0%, 100% { filter: drop-shadow(0 0 14px rgba(200,60,30,0.4)); }
+    50% { filter: drop-shadow(0 0 30px rgba(200,60,30,0.8)); }
+}
+
+/* Мерцание для стадии 4 (бежит!) */
+@keyframes foxyPulse {
+    0%, 100% {
+        background: #ff4444;
+        border-color: #ff4444;
+        box-shadow: 0 0 20px rgba(255,68,68,0.4);
+        opacity: 1;
+    }
+    50% {
+        background: #ff2222;
+        border-color: #ff2222;
+        box-shadow: 0 0 40px rgba(255,68,68,0.8);
+        opacity: 0.5;
+    }
+}
+
+/* Пульсация для zzz (сон) */
+@keyframes zzzPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* ============================================================
+   АНИМАЦИИ ДЛЯ ИНДИКАТОРОВ ОПАСНОСТИ
+   ============================================================ */
+
+/* Мерцание опасности (у двери) */
+@keyframes dangerPulse {
+    0%, 100% {
+        opacity: 1;
+        box-shadow: 0 0 20px rgba(255,68,68,0.4);
+    }
+    50% {
+        opacity: 0.4;
+        box-shadow: 0 0 40px rgba(255,68,68,0.6);
+    }
+}
+
+/* ============================================================
+   ИНДИКАТОРЫ АНИМАТРОНИКОВ (ДЕТАЛЬНАЯ ЦВЕТОВАЯ СХЕМА)
+   ============================================================ */
 .indicator .led {
     width: 14px;
     height: 14px;
@@ -934,32 +947,54 @@ body {
     transition: all 0.5s ease;
 }
 
-/* Неактивен (ИИ = 0) — ЧЁРНЫЙ */
-.indicator .led.inactive {
+/* Выключен (ИИ = 0 или на сцене) — ЧЁРНЫЙ */
+.indicator .led {
     background: #1a1a1a;
     border-color: #2a2a2a;
     box-shadow: none;
 }
 
-/* Далеко (на камерах) — ЗЕЛЁНЫЙ */
+/* Далеко (столовая, задняя сцена) — ЗЕЛЁНЫЙ */
 .indicator .led.green {
     background: #44ff44;
     border-color: #44ff44;
     box-shadow: 0 0 15px rgba(68,255,68,0.3);
 }
 
-/* Приближается (коридоры 2A, 2B, 4A, 4B) — ЖЁЛТЫЙ */
-.indicator .led.orange {
+/* Салатовый (туалеты) — ЗЕЛЁНЫЙ + ЖЁЛТЫЙ */
+.indicator .led.lime {
+    background: #88dd44;
+    border-color: #88dd44;
+    box-shadow: 0 0 15px rgba(136,221,68,0.3);
+}
+
+/* Жёлтый (кухня, чулан) */
+.indicator .led.yellow {
     background: #ffaa44;
     border-color: #ffaa44;
     box-shadow: 0 0 15px rgba(255,170,68,0.3);
 }
 
-/* У двери — КРАСНЫЙ (опасность!) */
+/* Оранжевый (коридоры 2A, 4A) */
+.indicator .led.orange {
+    background: #ff8800;
+    border-color: #ff8800;
+    box-shadow: 0 0 15px rgba(255,136,0,0.3);
+}
+
+/* Красный (углы 2B, 4B) */
 .indicator .led.red {
     background: #ff4444;
     border-color: #ff4444;
     box-shadow: 0 0 20px rgba(255,68,68,0.4);
+}
+
+/* Красный мерцающий (у двери) */
+.indicator .led.danger {
+    background: #ff4444;
+    border-color: #ff4444;
+    box-shadow: 0 0 20px rgba(255,68,68,0.4);
+    animation: dangerPulse 0.5s infinite;
 }
 
 /* ===== ПРАВАЯ ПАНЕЛЬ ===== */

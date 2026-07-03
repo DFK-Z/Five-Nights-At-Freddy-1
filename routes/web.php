@@ -4,6 +4,7 @@ use App\Http\Controllers\MenuController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\CustomNightController;
 
 // ========== МАРШРУТЫ МЕНЮ ==========
 Route::get('/', [MenuController::class, 'index'])->name('menu');
@@ -58,3 +59,7 @@ Route::get('/camera/{name}', function (\Illuminate\Http\Request $request, $name)
     // ===== ЕСЛИ КАМЕРА НЕ НАЙДЕНА — ПОКАЗЫВАЕМ ЗАГЛУШКУ =====
     return view('cameras._default', ['name' => $name]);
 })->name('camera');
+
+// ===== ПОЛЬЗОВАТЕЛЬСКАЯ НОЧЬ (CUSTOM NIGHT) =====
+Route::get('/custom-night', [CustomNightController::class, 'index'])->name('custom.night');
+Route::post('/night/custom', [CustomNightController::class, 'start'])->name('night.start.custom');
