@@ -11,15 +11,38 @@ Route::get('/night/{night}', [MenuController::class, 'startNight'])->name('night
 Route::post('/reset', [MenuController::class, 'resetProgress'])->name('reset.progress');
 
 // ========== МАРШРУТЫ КАМЕР ==========
-Route::get('/camera/{name}', function ($name) {
+Route::get('/camera/{name}', function (\Illuminate\Http\Request $request, $name) {
     // ===== ПОЛУЧАЕМ СОСТОЯНИЕ ИГРЫ ИЗ СЕССИИ =====
-    // Временно используем заглушки, пока не настроили сохранение состояния
-    $positions = Session::get('animatronics_positions', [
+    $stored = Session::get('animatronics_positions', [
         'freddy' => 'stage',
-        'bonnie' => 'backstage',
+        'bonnie' => 'stage',
         'chica' => 'stage',
         'foxy' => 'cove'
     ]);
+
+    // ===== КЛИЕНТ (JS) МОЖЕТ ПРИСЛАТЬ АКТУАЛЬНЫЕ ПОЗИЦИИ ЧЕРЕЗ QUERY =====
+    // Это чинит разрыв между игровым состоянием в JS и сессией на сервере:
+    // раньше сюда никто ничего не писал, и позиции навсегда оставались дефолтными.
+    $positions = [
+        'freddy' => $request->query('freddy', $stored['freddy']),
+        'bonnie' => $request->query('bonnie', $stored['bonnie']),
+        'chica'  => $request->query('chica', $stored['chica']),
+        'foxy'   => $request->query('foxy', $stored['foxy']),
+    ];
+    Session::put('animatronics_positions', $positions);
+
+    // ===== СТАДИЯ ФОКСИ (1-4) =====
+    // 1 — спит за закрытым занавесом
+    // 2 — выглядывает из-за занавеса
+    // 3 — готовится бежать (занавес открыт полностью)
+    // 4 — бухта пуста, Фокси уже в коридоре (CAM 2A)
+    $foxyStage = (int) $request->query('foxy_stage', Session::get('foxy_stage', 1));
+    $foxyStage = max(1, min(4, $foxyStage));
+    Session::put('foxy_stage', $foxyStage);
+
+    // Бежит ли Фокси к офису прямо сейчас (после того как его спалили на CAM 2A)
+    $foxyRunning = $request->query('foxy_running', Session::get('foxy_running', '0')) === '1';
+    Session::put('foxy_running', $foxyRunning ? '1' : '0');
 
     // Состояние света (получаем из сессии)
     $light_left = Session::get('light_left', false);
@@ -43,6 +66,8 @@ Route::get('/camera/{name}', function ($name) {
                 'bonnie_position' => $positions['bonnie'],
                 'chica_position' => $positions['chica'],
                 'foxy_position' => $positions['foxy'],
+                'foxy_stage' => $foxyStage,
+                'foxy_running' => $foxyRunning,
                 'light_left' => $light_left,
                 'light_right' => $light_right,
                 // Добавляем дополнительную информацию для камер

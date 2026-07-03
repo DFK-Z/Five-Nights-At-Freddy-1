@@ -5,571 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Ночь {{ $session->night }} - Five Nights At Freddy's</title>
-    <style>
-        /* ============================================================
-           ВСЕ СТИЛИ
-           ============================================================ */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: #000;
-            color: #fff;
-            font-family: 'Courier New', monospace;
-            height: 100vh;
-            overflow: hidden;
-            user-select: none;
-        }
-
-        .game-container {
-            display: grid;
-            grid-template-columns: 180px 1fr 180px;
-            grid-template-rows: 50px 1fr 140px;
-            height: 100vh;
-            gap: 4px;
-            padding: 8px;
-            background: #0a0a0a;
-            transition: all 0.5s;
-        }
-
-        /* ===== РЕЖИМ "ПЛАНШЕТ" ===== */
-        .game-container.tablet-mode .left-panel,
-        .game-container.tablet-mode .camera-view {
-            display: flex;
-        }
-
-        .game-container.tablet-mode .office-view {
-            display: none;
-        }
-
-        /* ===== РЕЖИМ "ОФИС" ===== */
-        .game-container.office-mode .left-panel,
-        .game-container.office-mode .camera-view {
-            display: none;
-        }
-
-        .game-container.office-mode .office-view {
-            display: flex;
-        }
-
-        /* ===== ВЕРХНЯЯ ПАНЕЛЬ ===== */
-        .top-panel {
-            grid-column: 1 / -1;
-            grid-row: 1;
-            background: #1a1a1a;
-            border: 2px solid #2a2a2a;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            font-size: 16px;
-            z-index: 10;
-        }
-
-        .top-panel .time { color: #44ff44; }
-        .top-panel .night { color: #ffaa44; }
-        .top-panel .power { color: #ff4444; }
-
-        /* ===== ЛЕВАЯ ПАНЕЛЬ ===== */
-        .left-panel {
-            grid-column: 1;
-            grid-row: 2;
-            background: #1a1a1a;
-            border: 2px solid #2a2a2a;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            padding: 8px;
-            overflow-y: auto;
-        }
-
-        .left-panel::-webkit-scrollbar {
-            width: 4px;
-        }
-        .left-panel::-webkit-scrollbar-thumb {
-            background: #2a2a2a;
-            border-radius: 2px;
-        }
-
-        .camera-btn {
-            background: #0a0a0a;
-            border: 1px solid #2a2a2a;
-            color: #888;
-            padding: 8px 6px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: 'Courier New', monospace;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-align: left;
-        }
-
-        .camera-btn:hover {
-            background: #1a1a1a;
-            border-color: #ff4444;
-            color: #ff4444;
-        }
-
-        .camera-btn.active {
-            background: #2a0a0a;
-            border-color: #ff4444;
-            color: #ff4444;
-            box-shadow: inset 0 0 20px rgba(255,0,0,0.1);
-        }
-
-        .camera-btn.disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-
-        /* ===== ЦЕНТРАЛЬНОЕ ПОЛЕ ===== */
-        .camera-view {
-            grid-column: 2;
-            grid-row: 2;
-            background: #050505;
-            border: 2px solid #2a2a2a;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #cameraImage {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-size: 48px;
-            color: #1a1a1a;
-        }
-
-        .camera-label {
-            position: absolute;
-            bottom: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.85);
-            padding: 5px 25px;
-            border: 1px solid #2a2a2a;
-            color: #aaa;
-            font-size: 14px;
-            letter-spacing: 3px;
-        }
-
-        .static-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(0,0,0,0.08) 2px,
-                rgba(0,0,0,0.08) 4px
-            );
-            pointer-events: none;
-            animation: static 0.15s infinite;
-        }
-
-        @keyframes static {
-            0% { opacity: 0.3; }
-            50% { opacity: 0.9; }
-            100% { opacity: 0.3; }
-        }
-
-        /* ===== ОФИС ===== */
-        .office-view {
-            grid-column: 2;
-            grid-row: 2;
-            background: #0a0a0a;
-            border: 2px solid #2a2a2a;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-
-        .office-view .office-content {
-            text-align: center;
-            padding: 20px;
-        }
-
-        .office-view .office-title {
-            color: #666;
-            font-size: 14px;
-            letter-spacing: 4px;
-            margin-bottom: 20px;
-        }
-
-        .office-view .office-desc {
-            color: #333;
-            font-size: 12px;
-            line-height: 2;
-        }
-
-        .office-view .office-desc .highlight {
-            color: #ffaa44;
-        }
-
-        /* ===== ПРАВАЯ ПАНЕЛЬ ===== */
-        .right-panel {
-            grid-column: 3;
-            grid-row: 2;
-            background: #1a1a1a;
-            border: 2px solid #2a2a2a;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            padding: 15px 10px;
-            justify-content: center;
-        }
-
-        .door-control {
-            text-align: center;
-            background: #0a0a0a;
-            padding: 10px;
-            border: 1px solid #1a1a1a;
-        }
-
-        .door-control .label {
-            color: #666;
-            font-size: 10px;
-            letter-spacing: 2px;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-        }
-
-        .door-btn {
-            background: #0a0a0a;
-            border: 2px solid #2a2a2a;
-            color: #888;
-            padding: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: 'Courier New', monospace;
-            width: 100%;
-            font-size: 13px;
-            margin: 3px 0;
-        }
-
-        .door-btn:hover:not(.disabled) {
-            background: #1a1a1a;
-            border-color: #444;
-        }
-
-        .door-btn.closed {
-            border-color: #ff4444;
-            color: #ff4444;
-            background: #1a0a0a;
-        }
-
-        .door-btn.disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-
-        .door-btn .status {
-            font-size: 10px;
-            color: #666;
-        }
-
-        .door-btn.closed .status {
-            color: #ff4444;
-        }
-
-        .light-btn {
-            background: #0a0a0a;
-            border: 1px solid #2a2a2a;
-            color: #ffaa44;
-            padding: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: 'Courier New', monospace;
-            width: 100%;
-            font-size: 12px;
-            margin: 2px 0;
-        }
-
-        .light-btn:hover:not(.disabled) {
-            background: #1a1a0a;
-            border-color: #ffaa44;
-            box-shadow: 0 0 20px rgba(255,170,68,0.1);
-        }
-
-        .light-btn.disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-
-        /* ===== НИЖНЯЯ ПАНЕЛЬ ===== */
-        .bottom-panel {
-            grid-column: 1 / -1;
-            grid-row: 3;
-            background: #1a1a1a;
-            border: 2px solid #2a2a2a;
-            display: grid;
-            grid-template-columns: 180px 1fr 180px;
-            padding: 10px;
-            gap: 10px;
-        }
-
-        .power-block {
-            grid-column: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: #0a0a0a;
-            border: 1px solid #1a1a1a;
-            padding: 10px;
-        }
-
-        .power-block .power-label {
-            color: #666;
-            font-size: 10px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-        }
-
-        .power-block .power-value {
-            font-size: 28px;
-            font-weight: bold;
-            color: #44ff44;
-            margin: 5px 0;
-        }
-
-        .power-bar {
-            width: 80%;
-            height: 6px;
-            background: #1a1a1a;
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: 5px;
-        }
-
-        .power-bar .fill {
-            height: 100%;
-            background: #44ff44;
-            transition: width 0.5s;
-            border-radius: 3px;
-        }
-
-        .indicators-block {
-            grid-column: 2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            background: #0a0a0a;
-            border: 1px solid #1a1a1a;
-            padding: 10px;
-        }
-
-        .indicator {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .indicator .name {
-            color: #666;
-            font-size: 9px;
-            letter-spacing: 1px;
-        }
-
-        .indicator .led {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
-            transition: all 0.5s;
-        }
-
-        .indicator .led.green { background: #44ff44; border-color: #44ff44; box-shadow: 0 0 15px rgba(68,255,68,0.3); }
-        .indicator .led.red { background: #ff4444; border-color: #ff4444; box-shadow: 0 0 20px rgba(255,68,68,0.4); }
-        .indicator .led.orange { background: #ffaa44; border-color: #ffaa44; box-shadow: 0 0 15px rgba(255,170,68,0.3); }
-
-        .door-status-block {
-            grid-column: 3;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            background: #0a0a0a;
-            border: 1px solid #1a1a1a;
-            padding: 10px;
-        }
-
-        .door-status-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            color: #888;
-        }
-
-        .door-status-item .led {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
-        }
-
-        .door-status-item .led.green { background: #44ff44; }
-        .door-status-item .led.red { background: #ff4444; }
-
-        /* ===== БЛОК USAGE ===== */
-        .usage-block {
-            grid-column: 3;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: #0a0a0a;
-            border: 1px solid #1a1a1a;
-            padding: 5px 10px;
-        }
-
-        .usage-label {
-            color: #666;
-            font-size: 9px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
-
-        .usage-bars {
-            display: flex;
-            gap: 3px;
-            align-items: center;
-        }
-
-        .usage-bar {
-            width: 20px;
-            height: 8px;
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
-            transition: all 0.3s;
-            border-radius: 1px;
-        }
-
-        .usage-bar.green.active {
-            background: #44ff44;
-            border-color: #44ff44;
-            box-shadow: 0 0 10px rgba(68,255,68,0.3);
-        }
-
-        .usage-bar.yellow.active {
-            background: #ffaa44;
-            border-color: #ffaa44;
-            box-shadow: 0 0 10px rgba(255,170,68,0.3);
-        }
-
-        .usage-bar.red.active {
-            background: #ff4444;
-            border-color: #ff4444;
-            box-shadow: 0 0 10px rgba(255,68,68,0.3);
-        }
-
-        /* ===== КНОПКИ ===== */
-        .back-btn {
-            position: fixed;
-            top: 12px;
-            right: 15px;
-            background: rgba(0,0,0,0.9);
-            color: #666;
-            border: 1px solid #2a2a2a;
-            padding: 6px 15px;
-            cursor: pointer;
-            z-index: 100;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .back-btn:hover {
-            border-color: #ff4444;
-            color: #ff4444;
-        }
-
-        .tablet-toggle-btn {
-            position: fixed;
-            bottom: 160px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.9);
-            color: #ffaa44;
-            border: 2px solid #2a2a2a;
-            padding: 12px 30px;
-            cursor: pointer;
-            z-index: 100;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            letter-spacing: 3px;
-            transition: all 0.3s;
-        }
-
-        .tablet-toggle-btn:hover {
-            border-color: #ffaa44;
-            background: #1a1a0a;
-            box-shadow: 0 0 30px rgba(255,170,68,0.2);
-        }
-
-        .tablet-toggle-btn.office-mode-btn {
-            border-color: #44ff44;
-            color: #44ff44;
-        }
-
-        /* ===== ПРЕДУПРЕЖДЕНИЕ ===== */
-        .warning-message {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.95);
-            color: #ff4444;
-            padding: 30px 40px;
-            border: 2px solid #ff4444;
-            border-radius: 10px;
-            font-family: 'Courier New', monospace;
-            font-size: 18px;
-            z-index: 1000;
-            text-align: center;
-            animation: fadeInOut 2s ease-in-out forwards;
-            box-shadow: 0 0 50px rgba(255,0,0,0.3);
-            pointer-events: none;
-        }
-
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-            15% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            85% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-        }
-
-        @keyframes flicker {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.97; }
-        }
-
-        .game-container {
-            animation: flicker 3s infinite;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/game.css') }}">
 </head>
 <body>
     <div class="game-container tablet-mode" id="gameContainer">
@@ -606,13 +42,38 @@
 
         <!-- Офис -->
         <div class="office-view" id="officeView">
-            <div class="office-content">
-                <div class="office-title">🏢 ОФИС</div>
-                <div class="office-desc">
-                    <div>👁️ Вы в кабинете охраны</div>
-                    <div>🚪 Слева и справа — двери</div>
-                    <div>📹 <span class="highlight">Нажмите кнопку</span> чтобы поднять планшет</div>
+            <div class="office-lamp"></div>
+
+            <div class="cobweb tl"></div>
+            <div class="cobweb tr"></div>
+
+            <div class="office-wall">
+                <div class="office-poster small-left">рисунки детей</div>
+                <div class="office-poster main">ПРАЗДНИК!</div>
+                <div class="office-poster small-right">расписание</div>
+            </div>
+
+            <div class="office-doorframe left" id="officeDoorLeft">
+                <div class="office-door-panel"></div>
+            </div>
+            <div class="office-doorframe right" id="officeDoorRight">
+                <div class="office-door-panel"></div>
+            </div>
+
+            <div class="office-floor"></div>
+
+            <div class="office-desk">
+                <div class="desk-monitor">MON</div>
+                <div class="desk-fan"></div>
+                <div class="desk-tally">
+                    <div>НОЧЬ {{ $session->night }}</div>
+                    <div>★ ★ ★</div>
                 </div>
+            </div>
+
+            <div class="office-hint">
+                🚪 Двери и свет — кнопками справа &nbsp;•&nbsp;
+                <span class="highlight">поднимите планшет</span>, чтобы смотреть камеры
             </div>
         </div>
 
@@ -699,7 +160,11 @@
             POWER_DRAIN_PER_HOUR: 8,
             POWER_DRAIN_CAMERA: 0.5,
             POWER_DRAIN_DOOR: 2,
-            POWER_DRAIN_LIGHT: 1
+            POWER_DRAIN_LIGHT: 1,
+            // ===== ФОКСИ =====
+            FOXY_CHECK_INTERVAL: 5000,   // как часто "проверяется" стадия Фокси
+            FOXY_ADVANCE_CHANCE: 0.18,   // шанс продвинуться на стадию, если не смотрят на CAM 1C
+            FOXY_RUN_TIME: 4000          // сколько есть времени закрыть левую дверь, когда он побежал
         };
 
         const gameState = {
@@ -711,8 +176,25 @@
             leftDoorClosed: false,
             rightDoorClosed: false,
             isTabletMode: true,
-            isLightOn: false
+            isLightOn: false,
+            // ===== ПОЗИЦИИ АНИМАТРОНИКОВ =====
+            // Источник правды теперь тут, на клиенте — при каждом запросе камеры
+            // эти значения уходят на сервер через query и сохраняются в сессии.
+            positions: {
+                freddy: 'stage',
+                bonnie: 'stage',
+                chica: 'stage',
+                foxy: 'cove'
+            },
+            // ===== СОСТОЯНИЕ ФОКСИ =====
+            foxy: {
+                stage: 1,       // 1-4
+                running: false  // true, когда он уже сорвался и бежит к офису
+            }
         };
+
+        let foxyLoopInterval = null;
+        let foxyRunTimeout = null;
 
         // ===== DOM-ЭЛЕМЕНТЫ =====
         const el = {
@@ -729,6 +211,8 @@
             rightLight: document.getElementById('rightLight'),
             leftDoorLed: document.getElementById('leftDoorLed'),
             rightDoorLed: document.getElementById('rightDoorLed'),
+            officeDoorLeft: document.getElementById('officeDoorLeft'),
+            officeDoorRight: document.getElementById('officeDoorRight'),
             cameraBtns: document.querySelectorAll('.camera-btn'),
             tabletToggle: document.getElementById('tabletToggle'),
             usageBars: document.querySelectorAll('.usage-bar'),
@@ -831,10 +315,23 @@
 
             el.cameraLabel.textContent = names[camera] || camera;
 
-            fetch(`/camera/${camera}`)
+            // Передаём текущие позиции аниматроников и стадию Фокси на сервер,
+            // чтобы вьюха камеры рисовала актуальную картину, а не дефолт из сессии
+            const query = new URLSearchParams({
+                ...gameState.positions,
+                foxy_stage: gameState.foxy.stage,
+                foxy_running: gameState.foxy.running ? '1' : '0'
+            }).toString();
+
+            fetch(`/camera/${camera}?${query}`)
                 .then(response => response.text())
                 .then(html => {
                     el.cameraImage.innerHTML = html;
+
+                    // Фокси замечен на CAM 2A в 4-й стадии — сорвался и побежал к офису
+                    if (camera === 'cam_2a' && gameState.foxy.stage === 4 && !gameState.foxy.running) {
+                        foxyStartRun();
+                    }
                 })
                 .catch(() => {
                     el.cameraImage.innerHTML = `
@@ -864,6 +361,7 @@
                 status.textContent = gameState.leftDoorClosed ? 'ЗАКРЫТА' : 'ОТКРЫТА';
                 el.leftDoor.classList.toggle('closed', gameState.leftDoorClosed);
                 el.leftDoorLed.className = 'led ' + (gameState.leftDoorClosed ? 'red' : 'green');
+                el.officeDoorLeft.classList.toggle('shut', gameState.leftDoorClosed);
                 if (gameState.leftDoorClosed && gameState.power > 0) {
                     gameState.power = Math.max(0, gameState.power - CONFIG.POWER_DRAIN_DOOR);
                     updatePower();
@@ -874,6 +372,7 @@
                 status.textContent = gameState.rightDoorClosed ? 'ЗАКРЫТА' : 'ОТКРЫТА';
                 el.rightDoor.classList.toggle('closed', gameState.rightDoorClosed);
                 el.rightDoorLed.className = 'led ' + (gameState.rightDoorClosed ? 'red' : 'green');
+                el.officeDoorRight.classList.toggle('shut', gameState.rightDoorClosed);
                 if (gameState.rightDoorClosed && gameState.power > 0) {
                     gameState.power = Math.max(0, gameState.power - CONFIG.POWER_DRAIN_DOOR);
                     updatePower();
@@ -956,8 +455,80 @@
             if (gameState.isGameOver) return;
             gameState.isGameOver = true;
             clearInterval(gameLoopInterval);
+            clearInterval(foxyLoopInterval);
+            clearTimeout(foxyRunTimeout);
             alert(`💀 ${reason}\nВы прожили до ${el.time.textContent}`);
             window.location.href = '{{ route('menu') }}';
+        }
+
+        // ===== ЛОГИКА ФОКСИ =====
+        // Каждые FOXY_CHECK_INTERVAL мс: если смотрим на CAM 1C — Фокси успокаивается
+        // (стадия сбрасывается на 1), иначе — есть шанс продвинуться дальше.
+        function foxyTick() {
+            if (gameState.isGameOver || gameState.foxy.running) return;
+
+            const watchingCove = gameState.isTabletMode && gameState.currentCamera === 'cam_1c';
+
+            if (watchingCove) {
+                if (gameState.foxy.stage !== 1) {
+                    gameState.foxy.stage = 1;
+                    console.log('🦊 Фокси спрятался обратно за занавес');
+                }
+            } else if (gameState.foxy.stage < 4) {
+                if (Math.random() < CONFIG.FOXY_ADVANCE_CHANCE) {
+                    gameState.foxy.stage += 1;
+                    console.log(`🦊 Стадия Фокси: ${gameState.foxy.stage}`);
+                }
+            }
+
+            // Если смотрим прямо сейчас на CAM 1C или CAM 2A — перерисовываем,
+            // чтобы изменение стадии было видно без переключения камер
+            if (gameState.isTabletMode && (gameState.currentCamera === 'cam_1c' || gameState.currentCamera === 'cam_2a')) {
+                switchCamera(gameState.currentCamera);
+            }
+        }
+
+        // Фокси сорвался с места на CAM 2A — гонка с левой дверью
+        function foxyStartRun() {
+            gameState.foxy.running = true;
+            showWarning('🦊 ФОКСИ СОРВАЛСЯ С МЕСТА!');
+            console.log('🏃 Фокси бежит к офису!');
+
+            foxyRunTimeout = setTimeout(() => {
+                if (gameState.isGameOver) return;
+
+                if (gameState.leftDoorClosed) {
+                    // Успели закрыть дверь — Фокси стучится и уходит обратно в бухту
+                    showWarning('💥 ДВЕРЬ ВЫДЕРЖАЛА!');
+                    setTimeout(() => {
+                        gameState.foxy.stage = 1;
+                        gameState.foxy.running = false;
+                        if (gameState.isTabletMode && gameState.currentCamera === 'cam_1c') {
+                            switchCamera('cam_1c');
+                        }
+                    }, 1500);
+                } else {
+                    gameOver('🦊 Фокси добрался до офиса!');
+                }
+            }, CONFIG.FOXY_RUN_TIME);
+        }
+
+        // ===== ДВИЖЕНИЕ АНИМАТРОНИКОВ (НОЧЬ 1) =====
+        // На первой ночи Бонни и Чика уходят со сцены в середине 2-го часа (~2:30 AM)
+        // и направляются в столовую (CAM 1B) — первая точка на их маршруте к офису.
+        function moveNight1Animatronics() {
+            if (gameState.isGameOver) return;
+
+            gameState.positions.bonnie = 'dining_area';
+            gameState.positions.chica = 'dining_area';
+
+            console.log('👀 Бонни и Чика покинули сцену и пришли в столовую...');
+
+            // Перерисовываем текущую камеру, если смотрим на 1A (сцена опустела)
+            // или 1B (туда они как раз пришли)
+            if (gameState.isTabletMode && (gameState.currentCamera === 'cam_1a' || gameState.currentCamera === 'cam_1b')) {
+                switchCamera(gameState.currentCamera);
+            }
         }
 
         // ===== ИГРОВОЙ ЦИКЛ =====
@@ -966,6 +537,11 @@
 
             gameState.time += 1;
             updateTime();
+
+            // Ровно в начале 2-го часа планируем событие на его середину
+            if (gameState.night === 1 && gameState.time === 2) {
+                setTimeout(moveNight1Animatronics, CONFIG.HOUR_DURATION / 2);
+            }
 
             if (gameState.time >= 6) {
                 clearInterval(gameLoopInterval);
@@ -1036,6 +612,7 @@
         updateUsage();
 
         gameLoopInterval = setInterval(advanceHour, CONFIG.HOUR_DURATION);
+        foxyLoopInterval = setInterval(foxyTick, CONFIG.FOXY_CHECK_INTERVAL);
 
         setInterval(() => {
             const overlay = document.querySelector('.static-overlay');

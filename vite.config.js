@@ -6,8 +6,9 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css',
+                'resources/css/game.css',
                 'resources/js/app.js',
-                'resources/js/game.js', // ← ЭТА СТРОКА ДОЛЖНА БЫТЬ
+                'resources/js/game.js',
             ],
             refresh: true,
         }),
