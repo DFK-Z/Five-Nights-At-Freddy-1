@@ -8,43 +8,22 @@ use Illuminate\Support\Facades\Session;
 // ========== МАРШРУТЫ МЕНЮ ==========
 Route::get('/', [MenuController::class, 'index'])->name('menu');
 Route::get('/night/{night}', [MenuController::class, 'startNight'])->name('night.start');
+Route::post('/night/complete', [MenuController::class, 'completeNight'])->name('night.complete');
 Route::post('/reset', [MenuController::class, 'resetProgress'])->name('reset.progress');
 
 // ========== МАРШРУТЫ КАМЕР ==========
 Route::get('/camera/{name}', function (\Illuminate\Http\Request $request, $name) {
-    // ===== ПОЛУЧАЕМ СОСТОЯНИЕ ИГРЫ ИЗ СЕССИИ =====
-    $stored = Session::get('animatronics_positions', [
-        'freddy' => 'stage',
-        'bonnie' => 'stage',
-        'chica' => 'stage',
-        'foxy' => 'cove'
-    ]);
+    // ===== ПОЛУЧАЕМ ПОЗИЦИИ ИЗ QUERY (ОТ JS) =====
+    $freddy_pos = $request->query('freddy_pos', 'stage');
+    $bonnie_pos = $request->query('bonnie_pos', 'backstage');
+    $chica_pos = $request->query('chica_pos', 'stage');
+    $foxy_pos = $request->query('foxy_pos', 'cove');
 
-    // ===== КЛИЕНТ (JS) МОЖЕТ ПРИСЛАТЬ АКТУАЛЬНЫЕ ПОЗИЦИИ ЧЕРЕЗ QUERY =====
-    // Это чинит разрыв между игровым состоянием в JS и сессией на сервере:
-    // раньше сюда никто ничего не писал, и позиции навсегда оставались дефолтными.
-    $positions = [
-        'freddy' => $request->query('freddy', $stored['freddy']),
-        'bonnie' => $request->query('bonnie', $stored['bonnie']),
-        'chica'  => $request->query('chica', $stored['chica']),
-        'foxy'   => $request->query('foxy', $stored['foxy']),
-    ];
-    Session::put('animatronics_positions', $positions);
+    // ===== СТАДИЯ ФОКСИ =====
+    $foxy_stage = (int) $request->query('foxy_stage', 1);
+    $foxy_running = $request->query('foxy_running', '0') === '1';
 
-    // ===== СТАДИЯ ФОКСИ (1-4) =====
-    // 1 — спит за закрытым занавесом
-    // 2 — выглядывает из-за занавеса
-    // 3 — готовится бежать (занавес открыт полностью)
-    // 4 — бухта пуста, Фокси уже в коридоре (CAM 2A)
-    $foxyStage = (int) $request->query('foxy_stage', Session::get('foxy_stage', 1));
-    $foxyStage = max(1, min(4, $foxyStage));
-    Session::put('foxy_stage', $foxyStage);
-
-    // Бежит ли Фокси к офису прямо сейчас (после того как его спалили на CAM 2A)
-    $foxyRunning = $request->query('foxy_running', Session::get('foxy_running', '0')) === '1';
-    Session::put('foxy_running', $foxyRunning ? '1' : '0');
-
-    // Состояние света (получаем из сессии)
+    // ===== СОСТОЯНИЕ СВЕТА =====
     $light_left = Session::get('light_left', false);
     $light_right = Session::get('light_right', false);
 
@@ -62,15 +41,14 @@ Route::get('/camera/{name}', function (\Illuminate\Http\Request $request, $name)
 
         if (View::exists($view)) {
             return view($view, [
-                'freddy_position' => $positions['freddy'],
-                'bonnie_position' => $positions['bonnie'],
-                'chica_position' => $positions['chica'],
-                'foxy_position' => $positions['foxy'],
-                'foxy_stage' => $foxyStage,
-                'foxy_running' => $foxyRunning,
+                'freddy_position' => $freddy_pos,
+                'bonnie_position' => $bonnie_pos,
+                'chica_position' => $chica_pos,
+                'foxy_position' => $foxy_pos,
+                'foxy_stage' => $foxy_stage,
+                'foxy_running' => $foxy_running,
                 'light_left' => $light_left,
                 'light_right' => $light_right,
-                // Добавляем дополнительную информацию для камер
                 'current_night' => Session::get('current_night', 1),
                 'power' => Session::get('power', 100)
             ]);

@@ -12,14 +12,20 @@ class GameSession extends Model
     protected $fillable = [
         'night',
         'max_night',
+        'completed_night',
         'high_score',
         'power_used',
         'is_completed'
     ];
 
-    // Метод для проверки, можно ли открыть следующую ночь
-    public function canUnlockNextNight(): bool
+    public function unlockNextNight()
     {
-        return $this->is_completed && $this->night < 7;
+        if ($this->night >= 7) return;
+
+        $nextNight = $this->night + 1;
+        if ($nextNight > $this->max_night) {
+            $this->max_night = $nextNight;
+            $this->save();
+        }
     }
 }

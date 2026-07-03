@@ -261,7 +261,7 @@
                 @for ($i = 1; $i <= 7; $i++)
                     @php
                         $isUnlocked = $i <= $session->max_night;
-                        $isCompleted = $session->max_night > $i;
+                        $isCompleted = $session->completed_night >= $i;
                         $isCurrent = $i == $session->night;
                     @endphp
                     <li class="{{ !$isUnlocked ? 'locked' : '' }} {{ $isCurrent && $isUnlocked ? 'active' : '' }}">

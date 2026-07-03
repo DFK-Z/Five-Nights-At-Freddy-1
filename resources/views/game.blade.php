@@ -43,31 +43,83 @@
         <!-- Офис -->
         <div class="office-view" id="officeView">
             <div class="office-lamp"></div>
-
             <div class="cobweb tl"></div>
             <div class="cobweb tr"></div>
-
             <div class="office-wall">
                 <div class="office-poster small-left">рисунки детей</div>
                 <div class="office-poster main">ПРАЗДНИК!</div>
                 <div class="office-poster small-right">расписание</div>
             </div>
-
             <div class="office-doorframe left" id="officeDoorLeft">
                 <div class="office-door-panel"></div>
             </div>
             <div class="office-doorframe right" id="officeDoorRight">
                 <div class="office-door-panel"></div>
             </div>
-
             <div class="office-floor"></div>
-
             <div class="office-desk">
                 <div class="desk-monitor">MON</div>
                 <div class="desk-fan"></div>
                 <div class="desk-tally">
                     <div>НОЧЬ {{ $session->night }}</div>
                     <div>★ ★ ★</div>
+                </div>
+            </div>
+
+            <!-- ===== КНОПКА ЗАПИСКИ ===== -->
+            <button class="note-btn" id="noteBtn">📋 ЗАПИСКА</button>
+
+            <!-- ===== ОКНО ЗАПИСКИ ===== -->
+            <div class="note-overlay hidden" id="noteOverlay">
+                <div class="note-container" id="noteContainer">
+                    <div class="note-header">
+                        <span class="note-title">📋 ЗАПИСКА ОТ ФОН ГАЯ</span>
+                        <button class="note-close-btn" id="noteCloseBtn">✕</button>
+                    </div>
+                    <div class="note-body" id="noteBody">
+                        @if($session->night <= 4)
+                            @include("calls.night{$session->night}")
+                        @elseif($session->night == 5)
+                            <div class="call-content">
+                                <div class="call-title" style="color: #555; letter-spacing: 6px;">📡 ...</div>
+                                <div class="call-text" style="text-align: center; color: #444;">
+                                    <p style="font-size: 32px; color: #222;">❚❚❚❚❚❚❚❚❚❚</p>
+                                    <p style="color: #555; font-size: 14px; margin-top: 10px;">В эфире тишина.</p>
+                                    <p style="color: #444; font-size: 13px;">Вы ждёте звонка, но никто не звонит.</p>
+                                    <p style="color: #333; font-size: 12px; margin-top: 15px; font-style: italic;">— Вчера он обещал поговорить завтра. —</p>
+                                    <p style="color: #2a2a2a; font-size: 11px; margin-top: 5px;">[статический шум...]</p>
+                                </div>
+                                <div class="call-footer" style="color: #2a2a2a;">🕒 Ночь 5 — 12:00 AM</div>
+                            </div>
+                        @elseif($session->night == 6)
+                            <div class="call-content">
+                                <div class="call-title" style="color: #663333; letter-spacing: 4px;">📻 СТАТИКА</div>
+                                <div class="call-text" style="text-align: center; color: #444;">
+                                    <p style="font-size: 28px; color: #333;">❚❚❚❚❚❚❚❚❚❚</p>
+                                    <p style="color: #555; font-size: 13px;">Белый шум. Только белый шум.</p>
+                                    <p style="color: #444; font-size: 12px;">Иногда сквозь помехи слышно что-то...</p>
+                                    <p style="color: #883333; font-size: 13px; margin-top: 15px; font-style: italic;">"...он идёт..."</p>
+                                    <p style="color: #333; font-size: 11px;">...но это просто ветер.</p>
+                                    <p style="color: #2a2a2a; font-size: 10px;">[звук шагов за стеной]</p>
+                                </div>
+                                <div class="call-footer" style="color: #2a2a2a;">🕒 Ночь 6 — 12:00 AM</div>
+                            </div>
+                        @elseif($session->night == 7)
+                            <div class="call-content">
+                                <div class="call-title" style="color: #cc2222; letter-spacing: 6px;">🔴 ТЫ СПИШЬ?</div>
+                                <div class="call-text" style="text-align: center; color: #884444;">
+                                    <p style="font-size: 48px; color: #cc4444;">🎵</p>
+                                    <p style="color: #883333; font-size: 15px; letter-spacing: 2px;">Ты слышишь эту мелодию?</p>
+                                    <p style="color: #663333; font-size: 13px;">Она звучит всё ближе.</p>
+                                    <p style="color: #552222; font-size: 13px; margin-top: 15px; font-style: italic;">— Он никогда не уходит. —</p>
+                                    <p style="color: #442222; font-size: 11px;">Он просто ждёт.</p>
+                                    <p style="color: #333; font-size: 10px; margin-top: 10px;">[скрип половиц за дверью]</p>
+                                    <p style="color: #222; font-size: 9px;">...и ты знаешь это.</p>
+                                </div>
+                                <div class="call-footer" style="color: #442222;">🕒 Ночь 7 — ПОСЛЕДНЯЯ</div>
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
 
@@ -95,13 +147,24 @@
             </div>
         </div>
 
-        <!-- Нижняя панель -->
+        <!-- ===== НИЖНЯЯ ПАНЕЛЬ ===== -->
         <div class="bottom-panel">
-            <div class="power-block">
-                <div class="power-label">⚡ ЭНЕРГИЯ</div>
-                <div class="power-value" id="powerDisplay">100%</div>
-                <div class="power-bar">
-                    <div class="fill" id="powerBar" style="width: 100%"></div>
+            <div class="left-group">
+                <div class="power-block">
+                    <div class="power-label">⚡ ЭНЕРГИЯ</div>
+                    <div class="power-value" id="powerDisplay">100%</div>
+                    <div class="power-bar">
+                        <div class="fill" id="powerBar" style="width: 100%"></div>
+                    </div>
+                </div>
+                <div class="usage-block">
+                    <div class="usage-label">⚡ USAGE</div>
+                    <div class="usage-bars" id="usageBars">
+                        <div class="usage-bar green active"></div>
+                        <div class="usage-bar green"></div>
+                        <div class="usage-bar yellow"></div>
+                        <div class="usage-bar red"></div>
+                    </div>
                 </div>
             </div>
 
@@ -134,16 +197,6 @@
                     <span>ПРАВ. ДВ.</span>
                 </div>
             </div>
-
-            <div class="usage-block">
-                <div class="usage-label">⚡ USAGE</div>
-                <div class="usage-bars" id="usageBars">
-                    <div class="usage-bar green active"></div>
-                    <div class="usage-bar green"></div>
-                    <div class="usage-bar yellow"></div>
-                    <div class="usage-bar red"></div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -160,13 +213,53 @@
             POWER_DRAIN_PER_HOUR: 8,
             POWER_DRAIN_CAMERA: 0.5,
             POWER_DRAIN_DOOR: 2,
-            POWER_DRAIN_LIGHT: 1,
-            // ===== ФОКСИ =====
-            FOXY_CHECK_INTERVAL: 5000,   // как часто "проверяется" стадия Фокси
-            FOXY_ADVANCE_CHANCE: 0.18,   // шанс продвинуться на стадию, если не смотрят на CAM 1C
-            FOXY_RUN_TIME: 4000          // сколько есть времени закрыть левую дверь, когда он побежал
+            POWER_DRAIN_LIGHT: 1
         };
 
+        // ============================================================
+        //  НОВАЯ СИСТЕМА ИИ (FNAF 1)
+        // ============================================================
+
+        // Базовые уровни по ночам
+        const AI_LEVELS = {
+            1: { freddy: 0, bonnie: 3, chica: 3, foxy: 0 },
+            2: { freddy: 0, bonnie: 5, chica: 5, foxy: 0 },
+            3: { freddy: 1, bonnie: 6, chica: 6, foxy: 1 },
+            4: { freddy: 2, bonnie: 8, chica: 8, foxy: 2 },
+            5: { freddy: 3, bonnie: 9, chica: 9, foxy: 3 },
+            6: { freddy: 6, bonnie: 15, chica: 15, foxy: 6 },
+            7: { freddy: 20, bonnie: 20, chica: 20, foxy: 20 }
+        };
+
+        // Повышения уровней по времени
+        const AI_BOOSTS = {
+            2: { bonnie: 1 },
+            3: { bonnie: 1, chica: 1, foxy: 1 },
+            4: { bonnie: 1, chica: 1, foxy: 1 }
+        };
+
+        // Состояние ИИ
+        const aiState = {
+            levels: { freddy: 0, bonnie: 0, chica: 0, foxy: 0 },
+            positions: {
+                freddy: 'cam_1a',
+                bonnie: 'cam_5',
+                chica: 'cam_1a',
+                foxy: 'cam_1c'
+            },
+            foxyStage: 1,
+            isFoxyRunning: false
+        };
+
+        // ===== ПРАВИЛЬНЫЕ КАРТЫ ДВИЖЕНИЯ (FNAF 1) =====
+        const PATHS = {
+            freddy: ['cam_1a', 'cam_1b', 'cam_7', 'cam_6', 'cam_4a', 'cam_4b', 'office_right'],
+            bonnie: ['cam_5', 'cam_1a', 'cam_2a', 'cam_2b', 'office_left'],
+            chica: ['cam_1a', 'cam_1b', 'cam_4a', 'cam_4b', 'office_right'],
+            foxy: ['cam_1c', 'cam_2a', 'cam_4a', 'office_right']
+        };
+
+        // ===== ИГРОВОЕ СОСТОЯНИЕ =====
         const gameState = {
             night: {{ $session->night }},
             time: 0,
@@ -178,26 +271,8 @@
             leftDoorClosed: false,
             rightDoorClosed: false,
             isTabletMode: true,
-            isLightOn: false,
-            // ===== ПОЗИЦИИ АНИМАТРОНИКОВ =====
-            // Источник правды теперь тут, на клиенте — при каждом запросе камеры
-            // эти значения уходят на сервер через query и сохраняются в сессии.
-            positions: {
-                freddy: 'stage',
-                bonnie: 'stage',
-                chica: 'stage',
-                foxy: 'cove'
-            },
-            // ===== СОСТОЯНИЕ ФОКСИ =====
-            foxy: {
-                stage: 1,       // 1-4
-                running: false  // true, когда он уже сорвался и бежит к офису
-            }
+            isLightOn: false
         };
-
-        let foxyLoopInterval = null;
-        let foxyRunTimeout = null;
-        let minuteLoopInterval = null;
 
         // ===== DOM-ЭЛЕМЕНТЫ =====
         const el = {
@@ -219,6 +294,9 @@
             cameraBtns: document.querySelectorAll('.camera-btn'),
             tabletToggle: document.getElementById('tabletToggle'),
             usageBars: document.querySelectorAll('.usage-bar'),
+            noteBtn: document.getElementById('noteBtn'),
+            noteOverlay: document.getElementById('noteOverlay'),
+            noteCloseBtn: document.getElementById('noteCloseBtn'),
             leds: {
                 freddy: document.getElementById('freddyLed'),
                 bonnie: document.getElementById('bonnieLed'),
@@ -228,8 +306,235 @@
         };
 
         let gameLoopInterval = null;
+        let aiStepInterval = null;
+        let aiBoostInterval = null;
+        let aiFoxyInterval = null;
+        let minuteLoopInterval = null;
+        let foxyRunTimeout = null;
 
-        // ===== ФУНКЦИЯ ПРЕДУПРЕЖДЕНИЙ =====
+        // ============================================================
+        //  ФУНКЦИИ ИИ
+        // ============================================================
+
+        function initAI(night) {
+            const base = AI_LEVELS[night] || AI_LEVELS[1];
+            aiState.levels.freddy = base.freddy;
+            aiState.levels.bonnie = base.bonnie;
+            aiState.levels.chica = base.chica;
+            aiState.levels.foxy = base.foxy;
+
+            aiState.positions.freddy = 'cam_1a';
+            aiState.positions.bonnie = 'cam_5';
+            aiState.positions.chica = 'cam_1a';
+            aiState.positions.foxy = 'cam_1c';
+            aiState.foxyStage = 1;
+            aiState.isFoxyRunning = false;
+
+            console.log('🤖 ИИ инициализирован для ночи', night);
+            console.log('📊 Уровни:', aiState.levels);
+        }
+
+        function checkAIBoosts() {
+            const currentHour = gameState.time;
+            if (AI_BOOSTS[currentHour]) {
+                const boost = AI_BOOSTS[currentHour];
+                let changed = false;
+                Object.keys(boost).forEach(name => {
+                    if (aiState.levels[name] !== undefined) {
+                        aiState.levels[name] += boost[name];
+                        changed = true;
+                    }
+                });
+                if (changed) {
+                    console.log(`⬆️ ${currentHour}:00 AM — Повышение уровней ИИ!`);
+                    console.log('📊 Новые уровни:', aiState.levels);
+                }
+            }
+        }
+
+        function makeAIStep() {
+            if (gameState.isGameOver) return;
+            const names = ['freddy', 'bonnie', 'chica', 'foxy'];
+            names.forEach(name => {
+                const level = aiState.levels[name];
+                if (level <= 0) return;
+                const chance = level / 20;
+                if (Math.random() < chance) {
+                    moveAnimatronic(name);
+                }
+            });
+        }
+
+        function moveAnimatronic(name) {
+            console.log(`🚶 ${name.toUpperCase()} делает шаг...`);
+            const path = PATHS[name];
+            if (!path) return;
+
+            const currentPos = aiState.positions[name];
+            const currentIndex = path.indexOf(currentPos);
+
+            if (currentPos === 'office_left' || currentPos === 'office_right') {
+                if (name === 'foxy') {
+                    foxyAttack();
+                } else {
+                    attackAnimatronic(name);
+                }
+                return;
+            }
+
+            if (currentIndex >= path.length - 1) {
+                if (name === 'foxy') {
+                    foxyAttack();
+                } else {
+                    attackAnimatronic(name);
+                }
+                return;
+            }
+
+            const nextPos = path[currentIndex + 1];
+            aiState.positions[name] = nextPos;
+            updateAnimatronicIndicator(name);
+
+            if (name === 'foxy' && nextPos === 'cam_2a' && aiState.foxyStage === 4) {
+                foxyStartRun();
+            }
+        }
+
+        function attackAnimatronic(name) {
+            const door = aiState.positions[name] === 'office_left' ? 'left' : 'right';
+            const isClosed = door === 'left' ? gameState.leftDoorClosed : gameState.rightDoorClosed;
+
+            if (isClosed) {
+                console.log(`🚪 ${name.toUpperCase()} стучится в ${door} дверь, но она закрыта`);
+                const path = PATHS[name];
+                if (path) {
+                    aiState.positions[name] = path[0];
+                }
+            } else {
+                gameOver(`${name.toUpperCase()} проник в офис!`);
+            }
+        }
+
+        // ===== ОБНОВЛЕНИЕ ИНДИКАТОРОВ (С ЦВЕТАМИ) =====
+        function updateAnimatronicIndicator(name) {
+            const led = el.leds[name];
+            if (!led) return;
+
+            const pos = aiState.positions[name];
+            const level = aiState.levels[name];
+
+            // 1. Если ИИ = 0 или аниматроник неактивен — ЧЁРНЫЙ
+            if (level <= 0) {
+                led.className = 'led';
+                led.style.background = '#1a1a1a';
+                led.style.borderColor = '#2a2a2a';
+                led.style.boxShadow = 'none';
+                return;
+            }
+
+            // 2. У двери — КРАСНЫЙ (опасность!)
+            if (pos === 'office_left' || pos === 'office_right') {
+                led.className = 'led red';
+                return;
+            }
+
+            // 3. В коридорах (2A, 2B, 4A, 4B) — ЖЁЛТЫЙ (приближается)
+            if (pos === 'cam_2a' || pos === 'cam_2b' || pos === 'cam_4a' || pos === 'cam_4b') {
+                led.className = 'led orange';
+                return;
+            }
+
+            // 4. На других камерах — ЗЕЛЁНЫЙ (далеко)
+            if (pos.includes('cam_')) {
+                led.className = 'led green';
+                return;
+            }
+
+            // 5. Если ничего не подошло — ЗЕЛЁНЫЙ (по умолчанию)
+            led.className = 'led green';
+        }
+
+        // ===== ФОКСИ =====
+        function updateFoxy() {
+            if (gameState.isGameOver || aiState.isFoxyRunning) return;
+            if (gameState.night < 2) return;
+
+            const watchingCove = gameState.isTabletMode && gameState.currentCamera === 'cam_1c';
+
+            if (watchingCove) {
+                if (aiState.foxyStage > 1) {
+                    aiState.foxyStage = 1;
+                    console.log('🦊 Фокси спрятался обратно за занавес');
+                }
+            } else {
+                const level = aiState.levels.foxy;
+                const progressChance = level / 40;
+                if (Math.random() < progressChance && aiState.foxyStage < 4) {
+                    aiState.foxyStage += 1;
+                    console.log(`🦊 Стадия Фокси: ${aiState.foxyStage}`);
+                }
+            }
+
+            if (gameState.isTabletMode && gameState.currentCamera === 'cam_2a' && aiState.foxyStage === 4) {
+                foxyStartRun();
+            }
+        }
+
+        function foxyStartRun() {
+            if (aiState.isFoxyRunning) return;
+            aiState.isFoxyRunning = true;
+            showWarning('🦊 ФОКСИ СОРВАЛСЯ С МЕСТА!');
+            console.log('🏃 Фокси бежит к офису!');
+
+            foxyRunTimeout = setTimeout(() => {
+                if (gameState.isGameOver) return;
+                if (gameState.leftDoorClosed) {
+                    showWarning('💥 ДВЕРЬ ВЫДЕРЖАЛА!');
+                    aiState.foxyStage = 1;
+                    aiState.isFoxyRunning = false;
+                    aiState.positions.foxy = 'cam_1c';
+                } else {
+                    gameOver('🦊 Фокси добрался до офиса!');
+                }
+            }, 4000);
+        }
+
+        function foxyAttack() {
+            if (!gameState.leftDoorClosed) {
+                gameOver('🦊 Фокси ворвался в офис!');
+            }
+        }
+
+        // ============================================================
+        //  ОСТАЛЬНЫЕ ФУНКЦИИ
+        // ============================================================
+
+        function completeNight(score, powerUsed) {
+            fetch('{{ route('night.complete') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ score: score || 0, power_used: powerUsed || 0 })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`🎉 Ночь ${gameState.night} пройдена! Открыта ночь ${data.max_night}`);
+                    window.location.href = '{{ route('menu') }}';
+                } else {
+                    alert('❌ Ошибка сохранения прогресса!');
+                    window.location.href = '{{ route('menu') }}';
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('❌ Ошибка соединения!');
+                window.location.href = '{{ route('menu') }}';
+            });
+        }
+
         function showWarning(message) {
             document.querySelectorAll('.warning-message').forEach(el => el.remove());
             const warning = document.createElement('div');
@@ -241,7 +546,24 @@
             }, 2000);
         }
 
-        // ===== ОБНОВЛЕНИЕ ВРЕМЕНИ =====
+        function openNote() {
+            if (el.noteOverlay) {
+                el.noteOverlay.classList.remove('hidden');
+                el.noteOverlay.style.display = 'flex';
+                if (el.noteBtn) el.noteBtn.classList.remove('pulse');
+            }
+        }
+
+        function closeNote() {
+            if (el.noteOverlay) {
+                el.noteOverlay.classList.add('hidden');
+                el.noteOverlay.style.display = 'none';
+                if (el.noteBtn && !el.noteBtn.classList.contains('pulse')) {
+                    el.noteBtn.classList.add('pulse');
+                }
+            }
+        }
+
         function updateTime() {
             const hours = 12 + gameState.time;
             const ampm = hours >= 12 ? 'AM' : 'PM';
@@ -250,8 +572,6 @@
             el.time.textContent = `${displayHours}:${displayMinutes} ${ampm}`;
         }
 
-        // ===== ТИК МИНУТ =====
-        // 1 игровая минута = HOUR_DURATION / 60 мс (при 90000мс/час это 1500мс на минуту)
         function minuteTick() {
             if (gameState.isGameOver) return;
             const msPerGameMinute = CONFIG.HOUR_DURATION / 60;
@@ -260,13 +580,11 @@
             updateTime();
         }
 
-        // ===== ОБНОВЛЕНИЕ ЭНЕРГИИ =====
         function updatePower() {
             const p = Math.round(gameState.power);
             el.powerLevel.textContent = p;
             el.powerDisplay.textContent = p + '%';
             el.powerBar.style.width = p + '%';
-
             const isLow = p < 20;
             const isMedium = p >= 20 && p < 50;
             el.powerLevel.style.color = isLow ? '#ff4444' : isMedium ? '#ffaa44' : '#44ff44';
@@ -274,45 +592,35 @@
             el.powerBar.style.background = isLow ? '#ff4444' : isMedium ? '#ffaa44' : '#44ff44';
         }
 
-        // ===== ОБНОВЛЕНИЕ USAGE =====
         function updateUsage() {
             const bars = el.usageBars;
             if (!bars) return;
-
             let actions = 0;
             if (gameState.leftDoorClosed) actions++;
             if (gameState.rightDoorClosed) actions++;
             if (gameState.isTabletMode) actions++;
             if (gameState.isLightOn) actions++;
-
             let activeBars = 0;
             if (actions === 0) activeBars = 1;
             else if (actions === 1) activeBars = 2;
             else if (actions === 2) activeBars = 3;
             else if (actions >= 3) activeBars = 4;
-
             bars.forEach((bar, index) => {
                 bar.classList.remove('active');
-                if (index < activeBars) {
-                    bar.classList.add('active');
-                }
+                if (index < activeBars) bar.classList.add('active');
             });
         }
 
-        // ===== ПЕРЕКЛЮЧЕНИЕ КАМЕР =====
         function switchCamera(camera) {
             if (!gameState.isTabletMode) {
                 showWarning('⛔ Поднимите планшет чтобы смотреть камеры!');
                 return;
             }
             if (gameState.isGameOver) return;
-
             gameState.currentCamera = camera;
-
             el.cameraBtns.forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.camera === camera);
             });
-
             const names = {
                 cam_1a: 'CAM 1A — СЦЕНА',
                 cam_1b: 'CAM 1B — ЗАЛ',
@@ -326,24 +634,22 @@
                 cam_6: 'CAM 6 — КУХНЯ',
                 cam_7: 'CAM 7 — ТУАЛЕТ'
             };
-
             el.cameraLabel.textContent = names[camera] || camera;
 
-            // Передаём текущие позиции аниматроников и стадию Фокси на сервер,
-            // чтобы вьюха камеры рисовала актуальную картину, а не дефолт из сессии
             const query = new URLSearchParams({
-                ...gameState.positions,
-                foxy_stage: gameState.foxy.stage,
-                foxy_running: gameState.foxy.running ? '1' : '0'
+                freddy_pos: aiState.positions.freddy,
+                bonnie_pos: aiState.positions.bonnie,
+                chica_pos: aiState.positions.chica,
+                foxy_pos: aiState.positions.foxy,
+                foxy_stage: aiState.foxyStage,
+                foxy_running: aiState.isFoxyRunning ? '1' : '0'
             }).toString();
 
             fetch(`/camera/${camera}?${query}`)
                 .then(response => response.text())
                 .then(html => {
                     el.cameraImage.innerHTML = html;
-
-                    // Фокси замечен на CAM 2A в 4-й стадии — сорвался и побежал к офису
-                    if (camera === 'cam_2a' && gameState.foxy.stage === 4 && !gameState.foxy.running) {
+                    if (camera === 'cam_2a' && aiState.foxyStage === 4 && !aiState.isFoxyRunning) {
                         foxyStartRun();
                     }
                 })
@@ -353,7 +659,6 @@
                         <div style="color: #444; font-size: 14px; margin-top: 10px;">Камера не активна</div>
                     `;
                 });
-
             if (gameState.power > 0) {
                 gameState.power = Math.max(0, gameState.power - CONFIG.POWER_DRAIN_CAMERA);
                 updatePower();
@@ -361,14 +666,12 @@
             updateUsage();
         }
 
-        // ===== УПРАВЛЕНИЕ ДВЕРЯМИ =====
         function toggleDoor(door) {
             if (gameState.isTabletMode) {
                 showWarning('⛔ Опустите планшет чтобы управлять дверями!');
                 return;
             }
             if (gameState.isGameOver) return;
-
             if (door === 'left') {
                 gameState.leftDoorClosed = !gameState.leftDoorClosed;
                 const status = el.leftDoor.querySelector('.status');
@@ -395,33 +698,26 @@
             updateUsage();
         }
 
-        // ===== УПРАВЛЕНИЕ СВЕТОМ =====
         function toggleLight(door) {
             if (gameState.isTabletMode) {
                 showWarning('⛔ Опустите планшет чтобы включить свет!');
                 return;
             }
             if (gameState.isGameOver) return;
-
             gameState.isLightOn = !gameState.isLightOn;
-
             if (gameState.power > 0) {
                 gameState.power = Math.max(0, gameState.power - CONFIG.POWER_DRAIN_LIGHT);
                 updatePower();
             }
-
             const view = document.querySelector('.camera-view');
             view.style.boxShadow = '0 0 60px rgba(255,255,200,0.4)';
             setTimeout(() => view.style.boxShadow = 'none', 400);
-
             console.log(`🔦 Свет на ${door} двери ${gameState.isLightOn ? 'включён' : 'выключен'}`);
             updateUsage();
         }
 
-        // ===== ПЕРЕКЛЮЧЕНИЕ ПЛАНШЕТА =====
         function toggleTablet() {
             gameState.isTabletMode = !gameState.isTabletMode;
-
             if (gameState.isTabletMode) {
                 el.container.classList.remove('office-mode');
                 el.container.classList.add('tablet-mode');
@@ -429,18 +725,15 @@
                 el.tabletToggle.classList.remove('office-mode-btn');
                 el.tabletToggle.style.borderColor = '#ffaa44';
                 el.tabletToggle.style.color = '#ffaa44';
-
                 el.cameraBtns.forEach(btn => {
                     btn.classList.remove('disabled');
                     btn.style.opacity = '1';
                     btn.style.cursor = 'pointer';
                 });
-
                 el.leftDoor.classList.add('disabled');
                 el.rightDoor.classList.add('disabled');
                 el.leftLight.classList.add('disabled');
                 el.rightLight.classList.add('disabled');
-
                 switchCamera(gameState.currentCamera);
             } else {
                 el.container.classList.remove('tablet-mode');
@@ -449,13 +742,11 @@
                 el.tabletToggle.classList.add('office-mode-btn');
                 el.tabletToggle.style.borderColor = '#44ff44';
                 el.tabletToggle.style.color = '#44ff44';
-
                 el.cameraBtns.forEach(btn => {
                     btn.classList.add('disabled');
                     btn.style.opacity = '0.3';
                     btn.style.cursor = 'not-allowed';
                 });
-
                 el.leftDoor.classList.remove('disabled');
                 el.rightDoor.classList.remove('disabled');
                 el.leftLight.classList.remove('disabled');
@@ -464,117 +755,39 @@
             updateUsage();
         }
 
-        // ===== GAME OVER =====
         function gameOver(reason) {
             if (gameState.isGameOver) return;
             gameState.isGameOver = true;
             clearInterval(gameLoopInterval);
-            clearInterval(foxyLoopInterval);
+            clearInterval(aiStepInterval);
+            clearInterval(aiBoostInterval);
+            clearInterval(aiFoxyInterval);
             clearInterval(minuteLoopInterval);
             clearTimeout(foxyRunTimeout);
             alert(`💀 ${reason}\nВы прожили до ${el.time.textContent}`);
             window.location.href = '{{ route('menu') }}';
         }
 
-        // ===== ЛОГИКА ФОКСИ =====
-        // По канону у Фокси AI = 0 на первую ночь — он вообще не двигается,
-        // спит за закрытым занавесом всю ночь. Активничать начинает с ночи 2.
-        // Каждые FOXY_CHECK_INTERVAL мс: если смотрим на CAM 1C — Фокси успокаивается
-        // (стадия сбрасывается на 1), иначе — есть шанс продвинуться дальше.
-        function foxyTick() {
-            if (gameState.isGameOver || gameState.foxy.running) return;
-            if (gameState.night < 2) return; // ночь 1 — Фокси неактивен
-
-            const watchingCove = gameState.isTabletMode && gameState.currentCamera === 'cam_1c';
-
-            if (watchingCove) {
-                if (gameState.foxy.stage !== 1) {
-                    gameState.foxy.stage = 1;
-                    console.log('🦊 Фокси спрятался обратно за занавес');
-                }
-            } else if (gameState.foxy.stage < 4) {
-                if (Math.random() < CONFIG.FOXY_ADVANCE_CHANCE) {
-                    gameState.foxy.stage += 1;
-                    console.log(`🦊 Стадия Фокси: ${gameState.foxy.stage}`);
-                }
-            }
-
-            // Если смотрим прямо сейчас на CAM 1C или CAM 2A — перерисовываем,
-            // чтобы изменение стадии было видно без переключения камер
-            if (gameState.isTabletMode && (gameState.currentCamera === 'cam_1c' || gameState.currentCamera === 'cam_2a')) {
-                switchCamera(gameState.currentCamera);
-            }
-        }
-
-        // Фокси сорвался с места на CAM 2A — гонка с левой дверью
-        function foxyStartRun() {
-            gameState.foxy.running = true;
-            showWarning('🦊 ФОКСИ СОРВАЛСЯ С МЕСТА!');
-            console.log('🏃 Фокси бежит к офису!');
-
-            foxyRunTimeout = setTimeout(() => {
-                if (gameState.isGameOver) return;
-
-                if (gameState.leftDoorClosed) {
-                    // Успели закрыть дверь — Фокси стучится и уходит обратно в бухту
-                    showWarning('💥 ДВЕРЬ ВЫДЕРЖАЛА!');
-                    setTimeout(() => {
-                        gameState.foxy.stage = 1;
-                        gameState.foxy.running = false;
-                        if (gameState.isTabletMode && gameState.currentCamera === 'cam_1c') {
-                            switchCamera('cam_1c');
-                        }
-                    }, 1500);
-                } else {
-                    gameOver('🦊 Фокси добрался до офиса!');
-                }
-            }, CONFIG.FOXY_RUN_TIME);
-        }
-
-        // ===== ДВИЖЕНИЕ АНИМАТРОНИКОВ (НОЧЬ 1) =====
-        // На первой ночи Бонни и Чика уходят со сцены в середине 2-го часа (~2:30 AM)
-        // и направляются в столовую (CAM 1B) — первая точка на их маршруте к офису.
-        function moveNight1Animatronics() {
-            if (gameState.isGameOver) return;
-
-            gameState.positions.bonnie = 'dining_area';
-            gameState.positions.chica = 'dining_area';
-
-            console.log('👀 Бонни и Чика покинули сцену и пришли в столовую...');
-
-            // Перерисовываем текущую камеру, если смотрим на 1A (сцена опустела)
-            // или 1B (туда они как раз пришли)
-            if (gameState.isTabletMode && (gameState.currentCamera === 'cam_1a' || gameState.currentCamera === 'cam_1b')) {
-                switchCamera(gameState.currentCamera);
-            }
-        }
-
-        // ===== ИГРОВОЙ ЦИКЛ =====
         function advanceHour() {
             if (gameState.isGameOver) return;
-
             gameState.time += 1;
             gameState.minute = 0;
             gameState.hourStartTimestamp = Date.now();
             updateTime();
-
-            // Ровно в начале 2-го часа планируем событие на его середину
-            if (gameState.night === 1 && gameState.time === 2) {
-                setTimeout(moveNight1Animatronics, CONFIG.HOUR_DURATION / 2);
-            }
-
             if (gameState.time >= 6) {
                 clearInterval(gameLoopInterval);
+                clearInterval(aiStepInterval);
+                clearInterval(aiBoostInterval);
+                clearInterval(aiFoxyInterval);
+                clearInterval(minuteLoopInterval);
                 setTimeout(() => {
-                    alert(`🎉 Ночь ${gameState.night} пройдена!`);
-                    window.location.href = '{{ route('menu') }}';
+                    const powerUsed = 100 - gameState.power;
+                    completeNight(0, Math.round(powerUsed));
                 }, 500);
                 return;
             }
-
             gameState.power = Math.max(0, gameState.power - CONFIG.POWER_DRAIN_PER_HOUR);
             updatePower();
-
             if (gameState.power <= 0) {
                 clearInterval(gameLoopInterval);
                 setTimeout(() => {
@@ -582,24 +795,13 @@
                 }, 500);
                 return;
             }
-
-            // Мигание индикаторов
-            const names = ['freddy', 'bonnie', 'chica', 'foxy'];
-            names.forEach(name => {
-                if (Math.random() < 0.08) {
-                    const colors = ['orange', 'red', 'green'];
-                    const color = colors[Math.floor(Math.random() * colors.length)];
-                    el.leds[name].className = 'led ' + color;
-                    setTimeout(() => {
-                        if (el.leds[name]) el.leds[name].className = 'led';
-                    }, 2000);
-                }
-            });
-
             console.log(`⏰ ${gameState.time}:00 AM, Энергия: ${Math.round(gameState.power)}%`);
         }
 
-        // ===== ОБРАБОТЧИКИ СОБЫТИЙ =====
+        // ============================================================
+        //  ОБРАБОТЧИКИ СОБЫТИЙ
+        // ============================================================
+
         el.cameraBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 if (!gameState.isGameOver && gameState.isTabletMode) {
@@ -614,37 +816,49 @@
         el.rightLight.addEventListener('click', () => toggleLight('right'));
         el.tabletToggle.addEventListener('click', toggleTablet);
 
-        // ===== ЗАПУСК =====
+        if (el.noteBtn) el.noteBtn.addEventListener('click', openNote);
+        if (el.noteCloseBtn) el.noteCloseBtn.addEventListener('click', closeNote);
+
+        // ============================================================
+        //  ЗАПУСК
+        // ============================================================
+
         el.container.classList.add('tablet-mode');
         el.container.classList.remove('office-mode');
         el.tabletToggle.textContent = '📱 ОПУСТИТЬ ПЛАНШЕТ';
         el.tabletToggle.style.borderColor = '#ffaa44';
         el.tabletToggle.style.color = '#ffaa44';
-
         el.leftDoor.classList.add('disabled');
         el.rightDoor.classList.add('disabled');
         el.leftLight.classList.add('disabled');
         el.rightLight.classList.add('disabled');
+
+        initAI(gameState.night);
 
         updateTime();
         updatePower();
         switchCamera('cam_1a');
         updateUsage();
 
+        if (el.noteBtn) el.noteBtn.classList.add('pulse');
+
         gameLoopInterval = setInterval(advanceHour, CONFIG.HOUR_DURATION);
-        foxyLoopInterval = setInterval(foxyTick, CONFIG.FOXY_CHECK_INTERVAL);
+        aiStepInterval = setInterval(makeAIStep, 4500);
+        aiBoostInterval = setInterval(checkAIBoosts, 5000);
+        aiFoxyInterval = setInterval(updateFoxy, 3000);
         minuteLoopInterval = setInterval(minuteTick, 250);
 
         setInterval(() => {
             const overlay = document.querySelector('.static-overlay');
-            if (overlay) {
-                overlay.style.opacity = 0.2 + Math.random() * 0.6;
-            }
+            if (overlay) overlay.style.opacity = 0.2 + Math.random() * 0.6;
         }, 1200);
 
         console.log('🎮 FNAF 1 - Ночь', gameState.night);
         console.log('📹 Загружено 11 камер');
         console.log('⚡ Система USAGE активирована');
+        console.log('📋 Система записок активирована');
+        console.log('🤖 Система ИИ активирована (уровни 0-20)');
+        console.log('🟢 Индикаторы: ЧЁРНЫЙ(неактивен) → ЗЕЛЁНЫЙ(далеко) → ЖЁЛТЫЙ(близко) → КРАСНЫЙ(опасность!)');
     </script>
 </body>
 </html>

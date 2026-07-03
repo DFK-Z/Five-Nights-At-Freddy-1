@@ -7,16 +7,15 @@ use Illuminate\Http\Request;
 
 class MenuController extends Controller
 {
-    // Главное меню
     public function index()
     {
-        // Получаем последнюю сессию (или создаём новую)
         $session = GameSession::latest()->first();
 
         if (!$session) {
             $session = GameSession::create([
                 'night' => 1,
                 'max_night' => 1,
+                'completed_night' => 0,
                 'high_score' => 0,
                 'power_used' => 0,
                 'is_completed' => false
@@ -26,17 +25,14 @@ class MenuController extends Controller
         return view('menu', compact('session'));
     }
 
-    // Запуск конкретной ночи
-    public function startNight($night)
+    public function startNight(Int $night)
     {
         $session = GameSession::latest()->first();
 
-        // Проверяем, открыта ли эта ночь
         if ($night > $session->max_night) {
             return redirect()->route('menu')->with('error', 'Эта ночь ещё не открыта!');
         }
 
-        // Обновляем текущую ночь
         $session->update([
             'night' => $night,
             'is_completed' => false,
@@ -46,15 +42,39 @@ class MenuController extends Controller
         return view('game', compact('session'));
     }
 
-    // Сброс прогресса
+    public function completeNight(Request $request)
+    {
+        $session = GameSession::latest()->first();
+
+        if (!$session) {
+            return response()->json(['error' => 'Сессия не найдена'], 404);
+        }
+
+        // Отмечаем ночь как пройденную
+        $session->update([
+            'is_completed' => true,
+            'power_used' => $request->power_used ?? 0,
+            'high_score' => $request->score ?? 0
+        ]);
+
+        // Разблокируем следующую ночь
+        $session->unlockNextNight();
+
+        return response()->json([
+            'success' => true,
+            'max_night' => $session->max_night,
+            'next_night' => $session->night + 1
+        ]);
+    }
+
     public function resetProgress()
     {
-        GameSession::truncate(); // Удаляем все сессии
+        GameSession::truncate();
 
-        // Создаём новую с нуля
         GameSession::create([
             'night' => 1,
             'max_night' => 1,
+            'completed_night' => 0,
             'high_score' => 0,
             'power_used' => 0,
             'is_completed' => false
