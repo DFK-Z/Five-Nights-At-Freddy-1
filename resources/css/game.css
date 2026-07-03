@@ -1,0 +1,28 @@
+/* ===== ОСНОВНЫЕ СТИЛИ ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #000;
+    color: #fff;
+    font-family: 'Courier New', monospace;
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+}
+
+.game-container {
+    display: grid;
+    grid-template-columns: 180px 1fr 180px;
+    grid-template-rows: 50px 1fr 140px;
+    height: 100vh;
+    gap: 4px;
+    padding: 8px;
+    background: #0a0a0a;
+    transition: all 0.5s;
+}
+
+/* ... и ВСЕ остальные стили до конца ... */
