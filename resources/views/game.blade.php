@@ -636,11 +636,27 @@
             };
             el.cameraLabel.textContent = names[camera] || camera;
 
+            // ===== ПЕРЕВОД ПОЗИЦИЙ (cam_id) В СЛОВАРЬ, КОТОРЫЙ ПОНИМАЮТ BLADE-КАМЕРЫ =====
+            // aiState.positions хранит позиции как id камер ('cam_1a', 'cam_5', 'cam_1c'...),
+            // а вьюхи cameras/*.blade.php ждут метки ('stage', 'backstage', 'cove'...).
+            // Раньше эта трансляция терялась (плюс имена параметров были не те, что ждёт
+            // routes/web.php), из-за чего аниматроники не показывались в начале ночи.
+            const POSITION_LABELS = {
+                cam_1a: 'stage',
+                cam_1b: 'dining_area',
+                cam_1c: 'cove',
+                cam_2a: 'west_hall',
+                cam_3: 'closet',
+                cam_5: 'backstage'
+            };
+            const toLabel = (camId) => POSITION_LABELS[camId] || camId;
+
+            // routes/web.php ждёт именно freddy/bonnie/chica/foxy (без суффикса _pos)
             const query = new URLSearchParams({
-                freddy_pos: aiState.positions.freddy,
-                bonnie_pos: aiState.positions.bonnie,
-                chica_pos: aiState.positions.chica,
-                foxy_pos: aiState.positions.foxy,
+                freddy: toLabel(aiState.positions.freddy),
+                bonnie: toLabel(aiState.positions.bonnie),
+                chica: toLabel(aiState.positions.chica),
+                foxy: toLabel(aiState.positions.foxy),
                 foxy_stage: aiState.foxyStage,
                 foxy_running: aiState.isFoxyRunning ? '1' : '0'
             }).toString();
