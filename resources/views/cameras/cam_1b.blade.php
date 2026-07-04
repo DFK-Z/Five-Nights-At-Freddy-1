@@ -52,8 +52,14 @@
             @endfor
         </div>
 
-        {{-- Бонни и Чика, если пришли в столовую --}}
+        {{-- Фредди, Бонни и Чика, если пришли в столовую --}}
         <div style="position:absolute; bottom:16%; left:0; width:100%; display:flex; justify-content:center; gap:60px; z-index:4;">
+            @if($freddy_position === 'dining_area')
+                <div style="text-align:center; filter: drop-shadow(0 0 16px rgba(140,90,20,0.5));">
+                    <div style="font-size:74px; line-height:1;">🐻</div>
+                    <div style="color:#cc9944; font-size:10px; letter-spacing:2px;">ФРЕДДИ</div>
+                </div>
+            @endif
             @if($bonnie_position === 'dining_area')
                 <div style="text-align:center; filter: drop-shadow(0 0 14px rgba(100,60,200,0.5));">
                     <div style="font-size:66px; line-height:1;">🐰</div>
@@ -68,7 +74,7 @@
             @endif
         </div>
 
-        @if($bonnie_position !== 'dining_area' && $chica_position !== 'dining_area')
+        @if($freddy_position !== 'dining_area' && $bonnie_position !== 'dining_area' && $chica_position !== 'dining_area')
             <div style="position:absolute; bottom:5%; left:0; width:100%; text-align:center; color:#333355; font-size:11px; letter-spacing:1px; z-index:5;">
                 🍽️ пустые столы...
             </div>

@@ -68,7 +68,7 @@
         @endif
 
         {{-- Фредди — едва виден в глубине тёмного коридора справа, только силуэт --}}
-        @if($freddy_position === 'cam_7')
+        @if($freddy_position === 'restrooms' || $freddy_position === 'cam_7')
             <div style="position:absolute; bottom:24%; right:12%; z-index:4; text-align:center; opacity:0.55; filter: grayscale(0.6) drop-shadow(0 0 10px rgba(255,30,30,0.5));">
                 <div style="font-size:56px; line-height:1;">🐻</div>
                 <div style="color:#553322; font-size:9px; letter-spacing:2px;">●  ●</div>

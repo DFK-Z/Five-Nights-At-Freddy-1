@@ -307,7 +307,8 @@
             isTabletMode: false,
             isLightOn: false,
             leftLightOn: false,
-            rightLightOn: false
+            rightLightOn: false,
+            isBlackout: false
         };
 
         const el = {
@@ -326,6 +327,7 @@
             rightDoorLed: document.getElementById('rightDoorLed'),
             officeDoorLeft: document.getElementById('officeDoorLeft'),
             officeDoorRight: document.getElementById('officeDoorRight'),
+            officeView: document.getElementById('officeView'),
             cameraBtns: document.querySelectorAll('.camera-btn'),
             tabletToggle: document.getElementById('tabletToggle'),
             usageBars: document.querySelectorAll('.usage-bar'),
@@ -788,9 +790,59 @@
 
                 if (gameState.power <= 0) {
                     clearInterval(powerDrainInterval);
-                    gameOver('⚡ Энергия закончилась!');
+                    triggerBlackout();
                 }
             }, 1000);
+        }
+
+        // ===== ОТКЛЮЧЕНИЕ ЭЛЕКТРИЧЕСТВА =====
+        // Двери сами поднимаются (если были закрыты), кнопки дверей/света отключаются,
+        // офис визуально "умирает" — становится холодным, серым, безжизненным.
+        // Через небольшую паузу — гейм овер (Фредди/кто-то доберётся до тебя в темноте).
+        function triggerBlackout() {
+            if (gameState.isGameOver || gameState.isBlackout) return;
+            gameState.isBlackout = true;
+
+            // Двери принудительно открываются, если были закрыты — держать их закрытыми
+            // без электричества физически нечем
+            if (gameState.leftDoorClosed) {
+                gameState.leftDoorClosed = false;
+                el.leftDoor.querySelector('.status').textContent = 'ОТКРЫТА';
+                el.leftDoor.classList.remove('closed');
+                el.leftDoorLed.className = 'led';
+                el.officeDoorLeft.classList.remove('shut');
+            }
+            if (gameState.rightDoorClosed) {
+                gameState.rightDoorClosed = false;
+                el.rightDoor.querySelector('.status').textContent = 'ОТКРЫТА';
+                el.rightDoor.classList.remove('closed');
+                el.rightDoorLed.className = 'led';
+                el.officeDoorRight.classList.remove('shut');
+            }
+            gameState.leftLightOn = false;
+            gameState.rightLightOn = false;
+
+            // Кнопки дверей/света больше не реагируют
+            el.leftDoor.classList.add('disabled');
+            el.rightDoor.classList.add('disabled');
+            el.leftLight.classList.add('disabled');
+            el.rightLight.classList.add('disabled');
+
+            // Планшет тоже бесполезен без питания — камеры гаснут
+            el.tabletToggle.classList.add('disabled');
+            el.container.classList.remove('tablet-mode');
+            el.container.classList.add('office-mode');
+            gameState.isTabletMode = false;
+
+            // Холодный, мёртвый вид офиса — вентилятор и лампа замирают
+            el.officeView.classList.add('blackout');
+            el.container.classList.add('blackout');
+
+            showWarning('⚡ ЭНЕРГИЯ ЗАКОНЧИЛАСЬ...');
+
+            setTimeout(() => {
+                gameOver('💀 Электричество кончилось, и тьма забрала вас...');
+            }, 4000);
         }
 
         function completeNight(score, powerUsed) {
@@ -952,7 +1004,7 @@
                 showWarning('⛔ Опустите планшет чтобы управлять дверями!');
                 return;
             }
-            if (gameState.isGameOver) return;
+            if (gameState.isGameOver || gameState.isBlackout) return;
             if (door === 'left') {
                 gameState.leftDoorClosed = !gameState.leftDoorClosed;
                 const status = el.leftDoor.querySelector('.status');
@@ -984,7 +1036,7 @@
                 showWarning('⛔ Опустите планшет чтобы включить свет!');
                 return;
             }
-            if (gameState.isGameOver) return;
+            if (gameState.isGameOver || gameState.isBlackout) return;
             if (door === 'left') {
                 gameState.leftLightOn = !gameState.leftLightOn;
             } else if (door === 'right') {
@@ -1003,6 +1055,7 @@
         }
 
         function toggleTablet() {
+            if (gameState.isBlackout) return;
             gameState.isTabletMode = !gameState.isTabletMode;
             if (gameState.isTabletMode) {
                 el.container.classList.remove('office-mode');

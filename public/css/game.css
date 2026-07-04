@@ -1587,3 +1587,66 @@ body {
         margin-top: 12px;
     }
 }
+
+/* ============================================================
+   БЛЭКАУТ — ЭНЕРГИЯ ЗАКОНЧИЛАСЬ
+   Тёплый безопасный офис умирает: холодный, серый, синий, тусклый.
+   ============================================================ */
+
+/* Вся тёплая палитра офиса гасится одним фильтром вместо перекраски
+   каждого элемента по отдельности — так эффект применяется мгновенно
+   и одинаково ко всему содержимому .office-view */
+.office-view.blackout {
+    filter: grayscale(0.75) brightness(0.35) saturate(0.4);
+    transition: filter 1.5s ease;
+}
+
+/* Поверх — лёгкий холодный синий налёт, чтобы серый не читался как
+   "просто тёмный", а именно как мёртвый, бесцветный, ледяной */
+.office-view.blackout::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(40, 60, 100, 0.35);
+    mix-blend-mode: multiply;
+    z-index: 20;
+    pointer-events: none;
+}
+
+/* Лампа гаснет и перестаёт мигать */
+.office-view.blackout .office-lamp {
+    animation: none !important;
+    opacity: 0.15;
+    background: radial-gradient(circle, #556677 0%, #334455 60%, transparent 75%);
+    box-shadow: none;
+}
+
+/* Вентилятор останавливается */
+.office-view.blackout .desk-fan::before {
+    animation: none !important;
+}
+
+/* Монитор гаснет */
+.office-view.blackout .desk-monitor {
+    color: #445566 !important;
+    box-shadow: none !important;
+    background: #020202 !important;
+}
+
+/* Двери больше не подсвечены предупреждающе — просто мёртвый металл */
+.office-view.blackout .office-door-panel {
+    box-shadow: none !important;
+}
+
+/* Общая виньетка на весь контейнер — ощущение, что помещение проваливается в темноту */
+.game-container.blackout {
+    animation: none !important;
+}
+.game-container.blackout::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.6) 100%);
+    z-index: 200;
+    pointer-events: none;
+}
