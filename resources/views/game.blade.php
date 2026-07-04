@@ -6,8 +6,385 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Ночь {{ $session->night }} - Five Nights At Freddy's</title>
     <link rel="stylesheet" href="{{ asset('css/game.css') }}">
+    <style>
+        /* ===== СТИЛИ ДЛЯ СКРИМЕРА ===== */
+        .screamer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 99999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            cursor: none;
+            animation: none;
+            overflow: hidden;
+        }
+
+        .screamer-overlay.active {
+            display: flex;
+            animation: screamerFlash 0.08s ease 4;
+        }
+
+        .screamer-overlay .screamer-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 0;
+        }
+
+        .screamer-overlay .screamer-face {
+            position: relative;
+            z-index: 2;
+            font-size: 350px;
+            text-align: center;
+            user-select: none;
+            animation: screamerPulse 0.12s ease 4;
+            filter: brightness(0) saturate(100%) invert(1);
+            text-shadow: none;
+        }
+
+        /* ===== БОННИ - ФИОЛЕТОВЫЙ ===== */
+        .screamer-overlay .screamer-face.bonnie {
+            filter: none;
+            color: #cc44ff;
+            text-shadow:
+                0 0 50px #cc44ff,
+                0 0 100px #cc44ff,
+                0 0 200px #cc44ff,
+                0 0 400px #8800cc;
+            animation: screamerPulse 0.12s ease 4, bonnieGlow 0.3s ease 3;
+        }
+        .screamer-overlay.bonnie-style .screamer-bg {
+            background: radial-gradient(ellipse at center, #440066 0%, #000000 70%);
+        }
+        .screamer-overlay.bonnie-style {
+            background: rgba(68, 0, 102, 0.3);
+        }
+
+        /* ===== ЧИКА - ОРАНЖЕВЫЙ/ЖЁЛТЫЙ ===== */
+        .screamer-overlay .screamer-face.chica {
+            filter: none;
+            color: #ffaa00;
+            text-shadow:
+                0 0 50px #ffaa00,
+                0 0 100px #ffaa00,
+                0 0 200px #ffaa00,
+                0 0 400px #cc8800;
+            animation: screamerPulse 0.12s ease 4, chicaGlow 0.3s ease 3;
+        }
+        .screamer-overlay.chica-style .screamer-bg {
+            background: radial-gradient(ellipse at center, #664400 0%, #000000 70%);
+        }
+        .screamer-overlay.chica-style {
+            background: rgba(102, 68, 0, 0.3);
+        }
+
+        /* ===== ФРЕДДИ - КРАСНЫЙ ===== */
+        .screamer-overlay .screamer-face.freddy {
+            filter: none;
+            color: #ff2222;
+            text-shadow:
+                0 0 50px #ff2222,
+                0 0 100px #ff2222,
+                0 0 200px #ff2222,
+                0 0 400px #cc0000;
+            animation: screamerPulse 0.12s ease 4, freddyGlow 0.3s ease 3;
+        }
+        .screamer-overlay.freddy-style .screamer-bg {
+            background: radial-gradient(ellipse at center, #660000 0%, #000000 70%);
+        }
+        .screamer-overlay.freddy-style {
+            background: rgba(102, 0, 0, 0.3);
+        }
+
+        /* ===== ФОКСИ - ОГНЕННО-КРАСНЫЙ ===== */
+        .screamer-overlay .screamer-face.foxy {
+            filter: none;
+            color: #ff4400;
+            text-shadow:
+                0 0 50px #ff4400,
+                0 0 100px #ff4400,
+                0 0 200px #ff4400,
+                0 0 400px #cc3300;
+            animation: screamerPulse 0.12s ease 4, foxyGlow 0.2s ease 5;
+        }
+        .screamer-overlay.foxy-style .screamer-bg {
+            background: radial-gradient(ellipse at center, #662200 0%, #000000 70%);
+        }
+        .screamer-overlay.foxy-style {
+            background: rgba(102, 34, 0, 0.3);
+        }
+
+        /* ===== ЭФФЕКТЫ СВЕЧЕНИЯ ===== */
+        @keyframes bonnieGlow {
+            0%, 100% { text-shadow: 0 0 50px #cc44ff, 0 0 100px #cc44ff, 0 0 200px #cc44ff; }
+            50% { text-shadow: 0 0 80px #ff66ff, 0 0 150px #ff66ff, 0 0 300px #cc44ff, 0 0 500px #8800cc; }
+        }
+        @keyframes chicaGlow {
+            0%, 100% { text-shadow: 0 0 50px #ffaa00, 0 0 100px #ffaa00, 0 0 200px #ffaa00; }
+            50% { text-shadow: 0 0 80px #ffcc44, 0 0 150px #ffcc44, 0 0 300px #ffaa00, 0 0 500px #cc8800; }
+        }
+        @keyframes freddyGlow {
+            0%, 100% { text-shadow: 0 0 50px #ff2222, 0 0 100px #ff2222, 0 0 200px #ff2222; }
+            50% { text-shadow: 0 0 80px #ff4444, 0 0 150px #ff4444, 0 0 300px #ff2222, 0 0 500px #cc0000; }
+        }
+        @keyframes foxyGlow {
+            0%, 100% { text-shadow: 0 0 50px #ff4400, 0 0 100px #ff4400, 0 0 200px #ff4400; }
+            25% { text-shadow: 0 0 80px #ff6600, 0 0 150px #ff6600, 0 0 300px #ff4400, 0 0 500px #cc3300; }
+            50% { text-shadow: 0 0 100px #ff8800, 0 0 200px #ff8800, 0 0 400px #ff4400, 0 0 600px #cc3300; }
+            75% { text-shadow: 0 0 80px #ff6600, 0 0 150px #ff6600, 0 0 300px #ff4400, 0 0 500px #cc3300; }
+        }
+
+        @keyframes screamerFlash {
+            0%, 100% { background: rgba(0,0,0,0.95); }
+            50% { background: rgba(255,255,255,0.15); }
+        }
+
+        @keyframes screamerPulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.08) rotate(-2deg); }
+            75% { transform: scale(0.95) rotate(2deg); }
+        }
+
+        /* ===== СТАТИКА ===== */
+        .screamer-overlay .screamer-static {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(255,255,255,0.05) 2px,
+                rgba(255,255,255,0.05) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0;
+            animation: staticNoise 0.03s infinite;
+        }
+
+        .screamer-overlay.active .screamer-static {
+            opacity: 0.4;
+        }
+
+        .screamer-overlay .screamer-scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 3px,
+                rgba(0,0,0,0.6) 3px,
+                rgba(0,0,0,0.6) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0;
+        }
+
+        .screamer-overlay.active .screamer-scanlines {
+            opacity: 0.5;
+            animation: scanlines 0.08s infinite;
+        }
+
+        /* ===== ВИНЬЕТКА ===== */
+        .screamer-overlay .screamer-vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%);
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.6;
+        }
+
+        @keyframes staticNoise {
+            0% { opacity: 0.3; transform: translate(0, 0); }
+            25% { opacity: 0.5; transform: translate(-2px, 1px); }
+            50% { opacity: 0.4; transform: translate(2px, -1px); }
+            75% { opacity: 0.6; transform: translate(-1px, 2px); }
+            100% { opacity: 0.3; transform: translate(1px, -2px); }
+        }
+
+        @keyframes scanlines {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(4px); }
+        }
+
+        /* ===== СТИЛИ ДЛЯ GAME OVER ===== */
+        .gameover-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.95);
+            z-index: 100000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: #ff0000;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            cursor: default;
+        }
+
+        .gameover-overlay.active {
+            display: flex;
+            animation: gameoverFade 0.5s ease;
+        }
+
+        .gameover-overlay .gameover-title {
+            font-size: 72px;
+            color: #ff0000;
+            text-shadow: 0 0 30px #ff0000, 0 0 60px #ff0000, 0 0 120px #ff0000;
+            letter-spacing: 10px;
+            margin-bottom: 20px;
+            animation: gameoverPulse 1.5s ease infinite;
+        }
+
+        .gameover-overlay .gameover-subtitle {
+            font-size: 28px;
+            color: #cc4444;
+            margin-bottom: 10px;
+        }
+
+        .gameover-overlay .gameover-time {
+            font-size: 18px;
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .gameover-overlay .gameover-btn {
+            padding: 12px 40px;
+            font-size: 18px;
+            background: transparent;
+            color: #ff4444;
+            border: 2px solid #ff4444;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .gameover-overlay .gameover-btn:hover {
+            background: #ff4444;
+            color: #000;
+            box-shadow: 0 0 30px rgba(255,68,68,0.3);
+        }
+
+        @keyframes gameoverFade {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes gameoverPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* ===== ВРЕМЕННЫЙ ВИЗУАЛЬНЫЙ ЭФФЕКТ ДЛЯ СКРИМЕРА ===== */
+        .screamer-overlay .screamer-extra {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.3;
+            animation: extraFlicker 0.1s infinite;
+        }
+
+        @keyframes extraFlicker {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.5; }
+        }
+
+        .screamer-overlay.bonnie-style .screamer-extra {
+            background: radial-gradient(ellipse at 30% 40%, rgba(200, 0, 255, 0.1), transparent 60%);
+        }
+        .screamer-overlay.chica-style .screamer-extra {
+            background: radial-gradient(ellipse at 70% 30%, rgba(255, 200, 0, 0.1), transparent 60%);
+        }
+        .screamer-overlay.freddy-style .screamer-extra {
+            background: radial-gradient(ellipse at 50% 50%, rgba(255, 0, 0, 0.15), transparent 60%);
+        }
+        .screamer-overlay.foxy-style .screamer-extra {
+            background: radial-gradient(ellipse at 20% 60%, rgba(255, 100, 0, 0.15), transparent 60%);
+        }
+
+        /* ===== ПРЕДУПРЕЖДЕНИЕ ОБ ОПАСНОСТИ ===== */
+        .danger-warning {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ff0000;
+            font-size: 48px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            text-shadow: 0 0 30px #ff0000, 0 0 60px #ff0000;
+            z-index: 99998;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            background: rgba(0,0,0,0.8);
+            padding: 30px 50px;
+            border: 3px solid #ff0000;
+            border-radius: 10px;
+            text-align: center;
+            animation: warningPulse 0.5s ease 3;
+        }
+
+        .danger-warning.active {
+            opacity: 1;
+        }
+
+        @keyframes warningPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
+        }
+    </style>
 </head>
 <body>
+    <!-- ===== СКРИМЕР (поверх всего) ===== -->
+    <div class="screamer-overlay" id="screamerOverlay">
+        <div class="screamer-bg"></div>
+        <div class="screamer-static"></div>
+        <div class="screamer-scanlines"></div>
+        <div class="screamer-vignette"></div>
+        <div class="screamer-extra"></div>
+        <div class="screamer-face" id="screamerFace">🐻</div>
+    </div>
+
+    <!-- ===== GAME OVER (после скримера) ===== -->
+    <div class="gameover-overlay" id="gameoverOverlay">
+        <div class="gameover-title">💀 GAME OVER</div>
+        <div class="gameover-subtitle" id="gameoverReason">Вы умерли</div>
+        <div class="gameover-time" id="gameoverTime">12:00 AM</div>
+        <button class="gameover-btn" id="gameoverBtn">↻ В МЕНЮ</button>
+    </div>
+
+    <!-- ===== ПРЕДУПРЕЖДЕНИЕ ОБ ОПАСНОСТИ ===== -->
+    <div class="danger-warning" id="dangerWarning">⚠️ ОПАСНОСТЬ!</div>
+
     <div class="game-container office-mode" id="gameContainer">
         <!-- Верхняя панель -->
         <div class="top-panel">
@@ -134,10 +511,8 @@
                 </div>
             </div>
 
-            <!-- ===== КНОПКА ЗАПИСКИ ===== -->
             <button class="note-btn" id="noteBtn">📋 ЗАПИСКА</button>
 
-            <!-- ===== ОКНО ЗАПИСКИ ===== -->
             <div class="note-overlay hidden" id="noteOverlay">
                 <div class="note-container" id="noteContainer">
                     <div class="note-header">
@@ -296,10 +671,9 @@
 
     <script>
         // ============================================================
-        //  ВСЯ ИГРОВАЯ ЛОГИКА (ОДИН ФАЙЛ)
+        //  ВСЯ ИГРОВАЯ ЛОГИКА
         // ============================================================
 
-        // ===== РЕЖИМ СЛОЖНОСТИ (ТОЛЬКО 2 РЕЖИМА) =====
         const gameMode = '{{ session('game_mode', 'easy') }}';
 
         const CONFIG = {
@@ -307,7 +681,9 @@
             POWER_DRAIN_PER_HOUR: 8,
             POWER_DRAIN_CAMERA: 0.5,
             POWER_DRAIN_DOOR: 2,
-            POWER_DRAIN_LIGHT: 1
+            POWER_DRAIN_LIGHT: 1,
+            // ===== ВРЕМЯ ДО ВХОДА В ОФИС (в секундах) =====
+            OFFICE_ENTRY_DELAY: 5
         };
 
         const AI_LEVELS = {
@@ -334,6 +710,10 @@
                 chica: 'cam_1a',
                 foxy: 'cam_1c'
             },
+            inOffice: { bonnie: false, chica: false },
+            // ===== СОСТОЯНИЕ У ДВЕРИ (ожидание входа) =====
+            atDoor: { bonnie: false, chica: false },
+            atDoorTimers: { bonnie: null, chica: null },
             foxyStage: 1,
             isFoxyRunning: false,
             cooldown: { freddy: 0, bonnie: 0, chica: 0, foxy: 0 }
@@ -343,7 +723,6 @@
             freddy: ['cam_1a', 'cam_1b', 'cam_7', 'cam_6', 'cam_4a', 'cam_4b', 'office_right'],
             bonnie: ['cam_1a', 'cam_1b', 'cam_2a', 'cam_2b', 'cam_3', 'cam_5', 'office_left'],
             chica: ['cam_1a', 'cam_1b', 'cam_4a', 'cam_4b', 'cam_6', 'cam_7', 'office_right']
-            // foxy сюда не входит — см. foxyStage / updateFoxy() / foxyStartRun()
         };
 
         const gameState = {
@@ -405,7 +784,14 @@
                 bonnie: document.getElementById('bonnieLed'),
                 chica: document.getElementById('chicaLed'),
                 foxy: document.getElementById('foxyLed')
-            }
+            },
+            screamerOverlay: document.getElementById('screamerOverlay'),
+            screamerFace: document.getElementById('screamerFace'),
+            gameoverOverlay: document.getElementById('gameoverOverlay'),
+            gameoverReason: document.getElementById('gameoverReason'),
+            gameoverTime: document.getElementById('gameoverTime'),
+            gameoverBtn: document.getElementById('gameoverBtn'),
+            dangerWarning: document.getElementById('dangerWarning')
         };
 
         let gameLoopInterval = null;
@@ -416,16 +802,109 @@
         let foxyRunTimeout = null;
         let powerDrainInterval = null;
         let powerOutageInterval = null;
-
-        // ============================================================
-        //  ЭКРАН ПОБЕДЫ (6:00 AM)
-        // ============================================================
+        const inOfficeLeaveTimers = { bonnie: null, chica: null };
+        let screamerTimeout = null;
+        let dangerTimeout = null;
 
         let victoryActive = false;
 
+        // ============================================================
+        //  СКРИМЕР И GAME OVER
+        // ============================================================
+
+        function showScreamer(faceEmoji, reason) {
+            if (gameState.isGameOver) return;
+            gameState.isGameOver = true;
+
+            clearInterval(gameLoopInterval);
+            clearInterval(aiStepInterval);
+            clearInterval(aiBoostInterval);
+            clearInterval(aiFoxyInterval);
+            clearInterval(minuteLoopInterval);
+            clearInterval(powerDrainInterval);
+            if (powerOutageInterval) clearInterval(powerOutageInterval);
+            clearTimeout(foxyRunTimeout);
+            Object.keys(inOfficeLeaveTimers).forEach(name => {
+                if (inOfficeLeaveTimers[name]) {
+                    clearTimeout(inOfficeLeaveTimers[name]);
+                    inOfficeLeaveTimers[name] = null;
+                }
+            });
+            // Очищаем таймеры у двери
+            Object.keys(aiState.atDoorTimers).forEach(name => {
+                if (aiState.atDoorTimers[name]) {
+                    clearTimeout(aiState.atDoorTimers[name]);
+                    aiState.atDoorTimers[name] = null;
+                }
+            });
+
+            const overlay = el.screamerOverlay;
+            const face = el.screamerFace;
+
+            overlay.className = 'screamer-overlay';
+            face.className = 'screamer-face';
+
+            face.textContent = faceEmoji;
+
+            let styleClass = '';
+            if (faceEmoji.includes('🐰')) {
+                styleClass = 'bonnie-style';
+                face.classList.add('bonnie');
+            } else if (faceEmoji.includes('🐤')) {
+                styleClass = 'chica-style';
+                face.classList.add('chica');
+            } else if (faceEmoji.includes('🐻')) {
+                styleClass = 'freddy-style';
+                face.classList.add('freddy');
+            } else if (faceEmoji.includes('🦊')) {
+                styleClass = 'foxy-style';
+                face.classList.add('foxy');
+            }
+
+            if (styleClass) {
+                overlay.classList.add(styleClass);
+            }
+
+            if (navigator.vibrate) {
+                navigator.vibrate([100, 50, 100, 50, 200]);
+            }
+
+            overlay.classList.add('active');
+
+            setTimeout(() => {
+                overlay.querySelector('.screamer-static').style.opacity = '0.6';
+            }, 800);
+
+            screamerTimeout = setTimeout(() => {
+                overlay.classList.remove('active');
+                overlay.querySelector('.screamer-static').style.opacity = '0';
+
+                el.gameoverReason.textContent = reason;
+                el.gameoverTime.textContent = el.time.textContent;
+                el.gameoverOverlay.classList.add('active');
+            }, 3000);
+        }
+
+        // ============================================================
+        //  ПРЕДУПРЕЖДЕНИЕ ОБ ОПАСНОСТИ
+        // ============================================================
+
+        function showDangerWarning() {
+            const warning = el.dangerWarning;
+            warning.classList.add('active');
+
+            if (dangerTimeout) clearTimeout(dangerTimeout);
+            dangerTimeout = setTimeout(() => {
+                warning.classList.remove('active');
+            }, 1500);
+        }
+
+        // ============================================================
+        //  ЭКРАН ПОБЕДЫ
+        // ============================================================
+
         function showVictoryScreen() {
             victoryActive = true;
-
             clearInterval(gameLoopInterval);
             clearInterval(aiStepInterval);
             clearInterval(aiBoostInterval);
@@ -435,19 +914,16 @@
             if (powerOutageInterval) clearInterval(powerOutageInterval);
 
             el.victoryScreen.classList.add('active');
-
             setTimeout(() => {
                 el.victoryScreen.classList.add('fade-in');
             }, 100);
 
-            const victoryTime = document.getElementById('victoryTime');
-            victoryTime.textContent = '6:00 AM';
-
+            document.getElementById('victoryTime').textContent = '6:00 AM';
             console.log('🎉 Ночь пройдена! 6:00 AM!');
         }
 
         // ============================================================
-        //  ЧИТЕРСКАЯ КОМБИНАЦИЯ (C + D + NumPad+)
+        //  ЧИТЕРСКАЯ КОМБИНАЦИЯ
         // ============================================================
 
         const keysPressed = {};
@@ -458,14 +934,11 @@
 
             if (keysPressed['c'] && keysPressed['d'] && keysPressed['+']) {
                 if (gameState.isGameOver) return;
-
                 console.log('🎮 ЧИТЕРСКАЯ КОМБИНАЦИЯ АКТИВИРОВАНА!');
                 showWarning('⚡ ПРОПУСК НОЧИ АКТИВИРОВАН!');
-
                 gameState.time = 6;
                 gameState.minute = 0;
                 updateTime();
-
                 showVictoryScreen();
             }
         });
@@ -498,6 +971,9 @@
             aiState.positions.bonnie = 'cam_1a';
             aiState.positions.chica = 'cam_1a';
             aiState.positions.foxy = 'cam_1c';
+            aiState.inOffice = { bonnie: false, chica: false };
+            aiState.atDoor = { bonnie: false, chica: false };
+            aiState.atDoorTimers = { bonnie: null, chica: null };
             aiState.foxyStage = 1;
             aiState.isFoxyRunning = false;
             aiState.cooldown = { freddy: 0, bonnie: 0, chica: 0, foxy: 0 };
@@ -526,10 +1002,6 @@
 
         function makeAIStep() {
             if (gameState.isGameOver) return;
-            // 'foxy' сюда не входит — им управляет ИСКЛЮЧИТЕЛЬНО updateFoxy() через
-            // foxyStage. Раньше он одновременно жил в этой системе (PATHS.foxy) и в
-            // системе стадий занавеса — из-за этого он мог "телепортом" добраться до
-            // офиса и убить, пока индикатор всё ещё показывал стадию 1 (занавес закрыт).
             const names = ['freddy', 'bonnie', 'chica'];
             names.forEach(name => {
                 if (aiState.cooldown[name] > 0) {
@@ -550,13 +1022,19 @@
             const path = PATHS[name];
             if (!path) return;
 
+            if (aiState.inOffice[name]) return;
+            if (aiState.atDoor[name]) return; // Уже ждёт у двери
+
             const currentPos = aiState.positions[name];
-            const currentIndex = path.indexOf(currentPos);
+
+            if (name === 'freddy' && currentPos === 'office_right') return;
 
             if (currentPos === 'office_left' || currentPos === 'office_right') {
                 attackAnimatronic(name);
                 return;
             }
+
+            const currentIndex = path.indexOf(currentPos);
 
             if (currentIndex >= path.length - 1) {
                 attackAnimatronic(name);
@@ -567,57 +1045,303 @@
             aiState.positions[name] = nextPos;
             updateAnimatronicIndicator(name);
             updateDoorVisitors();
+
+            if (nextPos === 'office_left' || nextPos === 'office_right') {
+                attackAnimatronic(name);
+            }
+        }
+
+        function retreatAnimatronic(name) {
+            const path = PATHS[name];
+            if (!path) return;
+
+            // Если аниматроник ждал у двери - отменяем таймер
+            if (aiState.atDoor[name]) {
+                aiState.atDoor[name] = false;
+                if (aiState.atDoorTimers[name]) {
+                    clearTimeout(aiState.atDoorTimers[name]);
+                    aiState.atDoorTimers[name] = null;
+                }
+                console.log(`⏹️ ${name.toUpperCase()} перестал ждать у двери (отступление)`);
+            }
+
+            const currentIndex = path.indexOf(aiState.positions[name]);
+            const backStep = Math.min(2, currentIndex);
+            const fallbackIndex = Math.max(0, currentIndex - backStep);
+            aiState.positions[name] = path[fallbackIndex];
+            aiState.cooldown[name] = 3 + Math.floor(Math.random() * 2);
+            console.log(`🚶 ${name.toUpperCase()} отступил на ${backStep} шага назад`);
+            updateAnimatronicIndicator(name);
+            updateDoorVisitors();
+        }
+
+        // ===== НОВАЯ ФУНКЦИЯ - ЗАДЕРЖКА ПЕРЕД ВХОДОМ В ОФИС =====
+        function startOfficeEntryDelay(name) {
+            const door = name === 'bonnie' ? 'left' : 'right';
+            const isClosed = door === 'left' ? gameState.leftDoorClosed : gameState.rightDoorClosed;
+
+            // Если дверь закрыта - отступаем
+            if (isClosed) {
+                console.log(`🚪 ${name.toUpperCase()} у ${door} двери, но она закрыта → отступление`);
+                retreatAnimatronic(name);
+                return;
+            }
+
+            // Отмечаем что аниматроник ждёт у двери
+            aiState.atDoor[name] = true;
+            console.log(`⏳ ${name.toUpperCase()} у ${door} двери! Войдёт через ${CONFIG.OFFICE_ENTRY_DELAY} секунд...`);
+
+            // Показываем предупреждение
+            showDangerWarning();
+            showWarning(`⚠️ ${name.toUpperCase()} у ${door} двери! Закройте дверь!`);
+
+            // Запускаем таймер входа в офис
+            if (aiState.atDoorTimers[name]) {
+                clearTimeout(aiState.atDoorTimers[name]);
+            }
+
+            aiState.atDoorTimers[name] = setTimeout(() => {
+                // Проверяем, не закрыли ли дверь за это время
+                const doorNow = name === 'bonnie' ? 'left' : 'right';
+                const isClosedNow = doorNow === 'left' ? gameState.leftDoorClosed : gameState.rightDoorClosed;
+
+                if (isClosedNow) {
+                    // Дверь закрыли - отступаем
+                    console.log(`🚪 ${name.toUpperCase()} у двери, но её закрыли! Отступление.`);
+                    aiState.atDoor[name] = false;
+                    aiState.atDoorTimers[name] = null;
+                    retreatAnimatronic(name);
+                    return;
+                }
+
+                // Дверь открыта - входим в офис
+                console.log(`🚪 ${name.toUpperCase()} вошёл в офис через ${CONFIG.OFFICE_ENTRY_DELAY} секунд!`);
+                aiState.atDoor[name] = false;
+                aiState.atDoorTimers[name] = null;
+                enterOffice(name);
+            }, CONFIG.OFFICE_ENTRY_DELAY * 1000);
+        }
+
+        function enterOffice(name) {
+            aiState.inOffice[name] = true;
+            console.log(`👻 ${name.toUpperCase()} проник в офис! Двери и свет не помогут.`);
+
+            if (inOfficeLeaveTimers[name]) {
+                clearTimeout(inOfficeLeaveTimers[name]);
+                inOfficeLeaveTimers[name] = null;
+            }
+
+            if (!gameState.isTabletMode) {
+                startOfficeLeaveTimer(name);
+            } else {
+                console.log(`⏳ ${name.toUpperCase()} в офисе. Игрок смотрит в планшет - таймер не запущен. Ждём опускания планшета.`);
+            }
+
+            updateOfficeControls();
+            updateDoorVisitors();
+            updateAnimatronicIndicator(name);
+        }
+
+        function startOfficeLeaveTimer(name) {
+            if (inOfficeLeaveTimers[name]) {
+                clearTimeout(inOfficeLeaveTimers[name]);
+                inOfficeLeaveTimers[name] = null;
+            }
+
+            const delay = 9000 + Math.floor(Math.random() * 4000);
+            console.log(`⏱️ Запущен таймер для ${name.toUpperCase()} (${delay}мс). Он уйдёт если планшет не будет поднят.`);
+
+            inOfficeLeaveTimers[name] = setTimeout(() => {
+                if (gameState.isGameOver) return;
+                if (!aiState.inOffice[name]) return;
+
+                if (gameState.isTabletMode) {
+                    console.log(`⏳ ${name.toUpperCase()} всё ещё в офисе, но планшет поднят. Таймер приостановлен.`);
+                    inOfficeLeaveTimers[name] = setTimeout(() => {
+                        startOfficeLeaveTimer(name);
+                    }, 2000);
+                    return;
+                }
+
+                aiState.inOffice[name] = false;
+                aiState.positions[name] = name === 'bonnie' ? 'cam_2b' : 'cam_4b';
+                aiState.cooldown[name] = 4 + Math.floor(Math.random() * 3);
+                console.log(`🚶 ${name.toUpperCase()} покинул офис (планшет был опущен)`);
+                updateAnimatronicIndicator(name);
+                updateOfficeControls();
+                updateDoorVisitors();
+                inOfficeLeaveTimers[name] = null;
+            }, delay);
         }
 
         function attackAnimatronic(name) {
+            if (name === 'freddy') {
+                if (gameState.rightDoorClosed) {
+                    console.log('🚪 Фредди у правой двери, но она закрыта');
+                    retreatAnimatronic('freddy');
+                } else {
+                    console.log('🐻 Фредди у правой двери — закройте дверь или не включайте свет!');
+                    aiState.positions.freddy = 'office_right';
+                    updateAnimatronicIndicator('freddy');
+                    updateDoorVisitors();
+                }
+                return;
+            }
+
+            if (name === 'bonnie' || name === 'chica') {
+                const door = name === 'bonnie' ? 'left' : 'right';
+                const isClosed = door === 'left' ? gameState.leftDoorClosed : gameState.rightDoorClosed;
+
+                if (isClosed) {
+                    console.log(`🚪 ${name.toUpperCase()} стучится в ${door} дверь, но она закрыта`);
+                    retreatAnimatronic(name);
+                } else {
+                    // ===== ЗАДЕРЖКА ПЕРЕД ВХОДОМ =====
+                    startOfficeEntryDelay(name);
+                }
+                return;
+            }
+
             const door = aiState.positions[name] === 'office_left' ? 'left' : 'right';
             const isClosed = door === 'left' ? gameState.leftDoorClosed : gameState.rightDoorClosed;
 
             if (isClosed) {
-                console.log(`🚪 ${name.toUpperCase()} стучится в ${door} дверь, но она закрыта`);
-
-                const path = PATHS[name];
-                if (path) {
-                    const currentIndex = path.indexOf(aiState.positions[name]);
-                    const backStep = Math.min(2, currentIndex);
-                    const fallbackIndex = Math.max(0, currentIndex - backStep);
-                    aiState.positions[name] = path[fallbackIndex];
-                    console.log(`🚶 ${name.toUpperCase()} отступил на ${backStep} шага назад`);
-                }
-
-                aiState.cooldown[name] = 3 + Math.floor(Math.random() * 2);
-                updateAnimatronicIndicator(name);
-                updateDoorVisitors();
+                retreatAnimatronic(name);
             } else {
-                gameOver(`${name.toUpperCase()} проник в офис!`);
+                const emojiMap = {
+                    'freddy': '🐻',
+                    'bonnie': '🐰',
+                    'chica': '🐤'
+                };
+                showScreamer(emojiMap[name] || '💀', `${name.toUpperCase()} проник в офис!`);
             }
         }
 
-        // ===== ВИДИМОСТЬ АНИМАТРОНИКОВ В КОРИДОРЕ ЗА ДВЕРЬЮ =====
-        // Если Бонни/Фредди/Чика дошли до самого порога (office_left/office_right),
-        // они должны быть видны в коридоре за дверным проёмом, пока дверь не закрыта —
-        // ровно как в оригинале, где их можно заметить до того, как решишь закрыться.
+        function toggleTablet() {
+            if (gameState.isBlackout) return;
+            if (gameState.isGameOver) return;
+
+            if (gameState.isTabletMode) {
+                // ОПУСКАЕМ планшет - проверяем скример
+                if (aiState.inOffice.bonnie) {
+                    console.log('💀 Бонни в офисе! Игрок опускает планшет -> СКРИМЕР!');
+                    showScreamer('🐰', '🐰 Бонни в офисе!');
+                    return;
+                }
+                if (aiState.inOffice.chica) {
+                    console.log('💀 Чика в офисе! Игрок опускает планшет -> СКРИМЕР!');
+                    showScreamer('🐤', '🐤 Чика в офисе!');
+                    return;
+                }
+
+                gameState.isTabletMode = false;
+                el.container.classList.remove('tablet-mode');
+                el.container.classList.add('office-mode');
+                el.tabletToggle.textContent = '📱 ПОДНЯТЬ ПЛАНШЕТ';
+                el.tabletToggle.classList.add('office-mode-btn');
+                el.tabletToggle.style.borderColor = '#44ff44';
+                el.tabletToggle.style.color = '#44ff44';
+
+                el.cameraBtns.forEach(btn => {
+                    btn.classList.add('disabled');
+                    btn.style.opacity = '0.3';
+                    btn.style.cursor = 'not-allowed';
+                });
+
+                updateOfficeControls();
+                updateUsage();
+                console.log('📱 Планшет опущен');
+
+                if (aiState.inOffice.bonnie && !inOfficeLeaveTimers.bonnie) {
+                    startOfficeLeaveTimer('bonnie');
+                }
+                if (aiState.inOffice.chica && !inOfficeLeaveTimers.chica) {
+                    startOfficeLeaveTimer('chica');
+                }
+                return;
+            }
+
+            // ПОДНИМАЕМ планшет
+            gameState.isTabletMode = true;
+            el.container.classList.remove('office-mode');
+            el.container.classList.add('tablet-mode');
+            el.tabletToggle.textContent = '📱 ОПУСТИТЬ ПЛАНШЕТ';
+            el.tabletToggle.classList.remove('office-mode-btn');
+            el.tabletToggle.style.borderColor = '#ffaa44';
+            el.tabletToggle.style.color = '#ffaa44';
+
+            el.cameraBtns.forEach(btn => {
+                btn.classList.remove('disabled');
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+            });
+
+            el.leftDoor.classList.add('disabled');
+            el.rightDoor.classList.add('disabled');
+            el.leftLight.classList.add('disabled');
+            el.rightLight.classList.add('disabled');
+
+            if (inOfficeLeaveTimers.bonnie) {
+                clearTimeout(inOfficeLeaveTimers.bonnie);
+                inOfficeLeaveTimers.bonnie = null;
+                console.log('⏸️ Таймер Бонни приостановлен (планшет поднят)');
+            }
+            if (inOfficeLeaveTimers.chica) {
+                clearTimeout(inOfficeLeaveTimers.chica);
+                inOfficeLeaveTimers.chica = null;
+                console.log('⏸️ Таймер Чики приостановлен (планшет поднят)');
+            }
+
+            switchCamera(gameState.currentCamera);
+            console.log('📱 Планшет поднят');
+        }
+
+        function updateHallwayLights() {
+            el.officeDoorLeft.classList.toggle('lit', gameState.leftLightOn);
+            el.officeDoorRight.classList.toggle('lit', gameState.rightLightOn);
+            el.leftLight.classList.toggle('active', gameState.leftLightOn);
+            el.rightLight.classList.toggle('active', gameState.rightLightOn);
+        }
+
+        function updateOfficeControls() {
+            const blockLeft = aiState.inOffice.bonnie;
+            const blockRight = aiState.inOffice.chica;
+
+            if (gameState.isTabletMode) {
+                el.leftDoor.classList.add('disabled');
+                el.rightDoor.classList.add('disabled');
+                el.leftLight.classList.add('disabled');
+                el.rightLight.classList.add('disabled');
+                return;
+            }
+
+            el.leftDoor.classList.toggle('disabled', blockLeft);
+            el.leftLight.classList.toggle('disabled', blockLeft);
+            el.rightDoor.classList.toggle('disabled', blockRight);
+            el.rightLight.classList.toggle('disabled', blockRight);
+        }
+
         function updateDoorVisitors() {
             const leftVisitor = document.getElementById('leftHallwayVisitor');
             const rightVisitor = document.getElementById('rightHallwayVisitor');
             if (!leftVisitor || !rightVisitor) return;
 
-            if (aiState.positions.bonnie === 'office_left') {
+            leftVisitor.classList.remove('visible');
+            rightVisitor.classList.remove('visible');
+
+            if (gameState.leftLightOn && aiState.positions.bonnie === 'office_left' && !aiState.inOffice.bonnie) {
                 leftVisitor.textContent = '🐰';
                 leftVisitor.classList.add('visible');
-            } else {
-                leftVisitor.classList.remove('visible');
             }
 
-            // Правая дверь делят Фредди и Чика — показываем того, кто реально дошёл
-            if (aiState.positions.freddy === 'office_right') {
-                rightVisitor.textContent = '🐻';
-                rightVisitor.classList.add('visible');
-            } else if (aiState.positions.chica === 'office_right') {
-                rightVisitor.textContent = '🐤';
-                rightVisitor.classList.add('visible');
-            } else {
-                rightVisitor.classList.remove('visible');
+            if (gameState.rightLightOn) {
+                if (aiState.positions.freddy === 'office_right') {
+                    rightVisitor.textContent = '🐻';
+                    rightVisitor.classList.add('visible');
+                } else if (aiState.positions.chica === 'office_right' && !aiState.inOffice.chica) {
+                    rightVisitor.textContent = '🐤';
+                    rightVisitor.classList.add('visible');
+                }
             }
         }
 
@@ -625,7 +1349,6 @@
             const led = el.leds[name];
             if (!led) return;
 
-            // ===== СЛОЖНЫЙ РЕЖИМ: ИНДИКАТОРЫ СКРЫТЫ =====
             if (gameMode === 'hard') {
                 led.className = 'led';
                 led.style.background = '#1a1a1a';
@@ -637,11 +1360,31 @@
 
             const pos = aiState.positions[name];
             const level = aiState.levels[name];
+            const atDoor = aiState.atDoor[name];
 
             led.style.animation = 'none';
 
             if (name === 'foxy') {
                 updateFoxyIndicator(led);
+                return;
+            }
+
+            if (aiState.inOffice[name]) {
+                led.className = 'led red';
+                led.style.background = '#ff4444';
+                led.style.borderColor = '#ff4444';
+                led.style.boxShadow = '0 0 20px rgba(255,68,68,0.4)';
+                led.style.animation = 'dangerPulse 0.5s infinite';
+                return;
+            }
+
+            if (atDoor) {
+                // Аниматроник у двери - МЕРЦАЮЩИЙ КРАСНЫЙ (опасность!)
+                led.className = 'led red';
+                led.style.background = '#ff4444';
+                led.style.borderColor = '#ff4444';
+                led.style.boxShadow = '0 0 20px rgba(255,68,68,0.4)';
+                led.style.animation = 'dangerPulse 0.8s infinite';
                 return;
             }
 
@@ -745,8 +1488,6 @@
                 return;
             }
 
-            // ===== ПРАВИЛЬНАЯ ЦВЕТОВАЯ СХЕМА ДЛЯ ФОКСИ =====
-            // Стадия 1: Спит в бухте — ЗЕЛЁНЫЙ
             if (stage === 1) {
                 led.className = 'led green';
                 led.style.background = '#44ff44';
@@ -756,7 +1497,6 @@
                 return;
             }
 
-            // Стадия 2: Выглядывает — ОРАНЖЕВЫЙ (предупреждение)
             if (stage === 2) {
                 led.className = 'led orange';
                 led.style.background = '#ff8800';
@@ -766,7 +1506,6 @@
                 return;
             }
 
-            // Стадия 3: Готов бежать — КРАСНЫЙ (опасность близко)
             if (stage === 3) {
                 led.className = 'led red';
                 led.style.background = '#ff4444';
@@ -776,7 +1515,6 @@
                 return;
             }
 
-            // Стадия 4: Бежит! — КРАСНЫЙ МЕРЦАЮЩИЙ (немедленная угроза)
             if (stage === 4) {
                 led.className = 'led red';
                 led.style.background = '#ff4444';
@@ -835,34 +1573,9 @@
                     aiState.isFoxyRunning = false;
                     aiState.positions.foxy = 'cam_1c';
                 } else {
-                    playScreamer('🦊', '🦊 Фокси добрался до офиса!');
+                    showScreamer('🦊', '🦊 Фокси добрался до офиса!');
                 }
             }, 4000);
-        }
-
-        // ===== ОБЩИЙ СКРИМЕР (переиспользуется для любого аниматроника) =====
-        // Показывает морду на весь экран, трясёт кадр, затем помехи, и только
-        // после этого — настоящий game over. Раньше атака убивала мгновенным
-        // alert() без какой-либо визуальной реакции.
-        function playScreamer(faceEmoji, reason) {
-            if (gameState.isGameOver) return;
-
-            el.powerOutageOverlay.classList.add('active');
-            const face = el.screamerLayer.querySelector('.screamer-face');
-            if (face) face.textContent = faceEmoji;
-            el.screamerLayer.classList.add('active');
-
-            if (navigator.vibrate) {
-                navigator.vibrate(300);
-            }
-
-            setTimeout(() => {
-                el.staticBurst.classList.add('active');
-            }, 1500);
-
-            setTimeout(() => {
-                gameOver(reason);
-            }, 3000);
         }
 
         function calculatePowerDrain(actions) {
@@ -917,14 +1630,12 @@
             }, 1000);
         }
 
-        // ===== ОТКЛЮЧЕНИЕ ЭЛЕКТРИЧЕСТВА (FULL POWER OUTAGE) =====
         function triggerBlackout() {
             if (gameState.isGameOver || gameState.isBlackout) return;
             gameState.isBlackout = true;
             gameState.powerOutage.active = true;
             gameState.powerOutage.timer = 0;
 
-            // Двери принудительно открываются
             if (gameState.leftDoorClosed) {
                 gameState.leftDoorClosed = false;
                 el.leftDoor.querySelector('.status').textContent = 'ОТКРЫТА';
@@ -942,7 +1653,6 @@
             gameState.leftLightOn = false;
             gameState.rightLightOn = false;
 
-            // Блокируем всё управление
             el.leftDoor.classList.add('disabled');
             el.rightDoor.classList.add('disabled');
             el.leftLight.classList.add('disabled');
@@ -952,7 +1662,6 @@
             el.container.classList.add('office-mode');
             gameState.isTabletMode = false;
 
-            // Выключаем индикаторы
             document.querySelectorAll('.led').forEach(led => {
                 led.className = 'led';
                 led.style.background = '#1a1a1a';
@@ -961,7 +1670,6 @@
                 led.style.animation = 'none';
             });
 
-            // Отключаем камеры
             el.cameraBtns.forEach(btn => {
                 btn.classList.add('disabled');
                 btn.style.opacity = '0.1';
@@ -970,13 +1678,11 @@
             el.cameraLabel.textContent = 'ОТКЛЮЧЕНО';
             el.cameraLabel.style.color = '#222';
 
-            // Показываем оверлей отключения
             el.powerOutageOverlay.classList.add('active');
 
             console.log('⚡ ОТКЛЮЧЕНИЕ ЭЛЕКТРИЧЕСТВА!');
             showWarning('⚡ ЭНЕРГИЯ ЗАКОНЧИЛАСЬ!');
 
-            // Запускаем таймер отключения
             powerOutageInterval = setInterval(updatePowerOutage, 1000);
         }
 
@@ -1040,7 +1746,7 @@
                 setTimeout(() => {
                     clearInterval(powerOutageInterval);
                     gameState.powerOutage.active = false;
-                    gameOver('🔴 Фредди добрался до офиса!');
+                    showScreamer('🐻', '🔴 Фредди добрался до офиса!');
                 }, 3000);
             }
         }
@@ -1203,6 +1909,16 @@
                 return;
             }
             if (gameState.isGameOver || gameState.isBlackout) return;
+
+            if (door === 'left' && aiState.inOffice.bonnie) {
+                showWarning('⛔ Бонни уже в офисе — дверь не поможет!');
+                return;
+            }
+            if (door === 'right' && aiState.inOffice.chica) {
+                showWarning('⛔ Чика уже в офисе — дверь не поможет!');
+                return;
+            }
+
             if (door === 'left') {
                 gameState.leftDoorClosed = !gameState.leftDoorClosed;
                 const status = el.leftDoor.querySelector('.status');
@@ -1213,6 +1929,15 @@
                 if (gameState.leftDoorClosed && gameState.power > 0) {
                     gameState.power = Math.max(0, gameState.power - CONFIG.POWER_DRAIN_DOOR);
                     updatePower();
+                }
+                // Если закрыли дверь, а аниматроник ждал у двери - отступаем
+                if (gameState.leftDoorClosed) {
+                    if (aiState.atDoor.bonnie) {
+                        retreatAnimatronic('bonnie');
+                    }
+                    if (aiState.positions.bonnie === 'office_left' && !aiState.inOffice.bonnie) {
+                        retreatAnimatronic('bonnie');
+                    }
                 }
             } else if (door === 'right') {
                 gameState.rightDoorClosed = !gameState.rightDoorClosed;
@@ -1225,6 +1950,17 @@
                     gameState.power = Math.max(0, gameState.power - CONFIG.POWER_DRAIN_DOOR);
                     updatePower();
                 }
+                if (gameState.rightDoorClosed) {
+                    if (aiState.atDoor.chica) {
+                        retreatAnimatronic('chica');
+                    }
+                    if (aiState.positions.freddy === 'office_right') {
+                        retreatAnimatronic('freddy');
+                    }
+                    if (aiState.positions.chica === 'office_right' && !aiState.inOffice.chica) {
+                        retreatAnimatronic('chica');
+                    }
+                }
             }
             updateUsage();
         }
@@ -1235,76 +1971,40 @@
                 return;
             }
             if (gameState.isGameOver || gameState.isBlackout) return;
+            if (door === 'left' && aiState.inOffice.bonnie) {
+                showWarning('⛔ Бонни уже в офисе — свет не поможет!');
+                return;
+            }
+            if (door === 'right' && aiState.inOffice.chica) {
+                showWarning('⛔ Чика уже в офисе — свет не поможет!');
+                return;
+            }
+
             if (door === 'left') {
                 gameState.leftLightOn = !gameState.leftLightOn;
             } else if (door === 'right') {
                 gameState.rightLightOn = !gameState.rightLightOn;
             }
             gameState.isLightOn = gameState.leftLightOn || gameState.rightLightOn;
+
+            if (door === 'right' && gameState.rightLightOn && aiState.positions.freddy === 'office_right') {
+                gameState.rightLightOn = false;
+                gameState.isLightOn = gameState.leftLightOn;
+                updateHallwayLights();
+                updateDoorVisitors();
+                showScreamer('🐻', '🐻 Фредди добрался до офиса!');
+                return;
+            }
+
             if (gameState.power > 0) {
                 gameState.power = Math.max(0, gameState.power - CONFIG.POWER_DRAIN_LIGHT);
                 updatePower();
             }
-            const view = document.querySelector('.camera-view');
-            view.style.boxShadow = '0 0 60px rgba(255,255,200,0.4)';
-            setTimeout(() => view.style.boxShadow = 'none', 400);
+
+            updateHallwayLights();
+            updateDoorVisitors();
             console.log(`🔦 Свет на ${door} двери ${gameState[door + 'LightOn'] ? 'включён' : 'выключен'}`);
             updateUsage();
-        }
-
-        function toggleTablet() {
-            if (gameState.isBlackout) return;
-            gameState.isTabletMode = !gameState.isTabletMode;
-            if (gameState.isTabletMode) {
-                el.container.classList.remove('office-mode');
-                el.container.classList.add('tablet-mode');
-                el.tabletToggle.textContent = '📱 ОПУСТИТЬ ПЛАНШЕТ';
-                el.tabletToggle.classList.remove('office-mode-btn');
-                el.tabletToggle.style.borderColor = '#ffaa44';
-                el.tabletToggle.style.color = '#ffaa44';
-                el.cameraBtns.forEach(btn => {
-                    btn.classList.remove('disabled');
-                    btn.style.opacity = '1';
-                    btn.style.cursor = 'pointer';
-                });
-                el.leftDoor.classList.add('disabled');
-                el.rightDoor.classList.add('disabled');
-                el.leftLight.classList.add('disabled');
-                el.rightLight.classList.add('disabled');
-                switchCamera(gameState.currentCamera);
-            } else {
-                el.container.classList.remove('tablet-mode');
-                el.container.classList.add('office-mode');
-                el.tabletToggle.textContent = '📱 ПОДНЯТЬ ПЛАНШЕТ';
-                el.tabletToggle.classList.add('office-mode-btn');
-                el.tabletToggle.style.borderColor = '#44ff44';
-                el.tabletToggle.style.color = '#44ff44';
-                el.cameraBtns.forEach(btn => {
-                    btn.classList.add('disabled');
-                    btn.style.opacity = '0.3';
-                    btn.style.cursor = 'not-allowed';
-                });
-                el.leftDoor.classList.remove('disabled');
-                el.rightDoor.classList.remove('disabled');
-                el.leftLight.classList.remove('disabled');
-                el.rightLight.classList.remove('disabled');
-            }
-            updateUsage();
-        }
-
-        function gameOver(reason) {
-            if (gameState.isGameOver) return;
-            gameState.isGameOver = true;
-            clearInterval(gameLoopInterval);
-            clearInterval(aiStepInterval);
-            clearInterval(aiBoostInterval);
-            clearInterval(aiFoxyInterval);
-            clearInterval(minuteLoopInterval);
-            clearInterval(powerDrainInterval);
-            if (powerOutageInterval) clearInterval(powerOutageInterval);
-            clearTimeout(foxyRunTimeout);
-            alert(`💀 ${reason}\nВы прожили до ${el.time.textContent}`);
-            window.location.href = '{{ route('menu') }}';
         }
 
         function advanceHour() {
@@ -1346,8 +2046,12 @@
             completeNight(0, Math.round(powerUsed));
         });
 
+        el.gameoverBtn.addEventListener('click', () => {
+            window.location.href = '{{ route('menu') }}';
+        });
+
         // ============================================================
-        //  ЗАПУСК (НАЧИНАЕМ С ОФИСА)
+        //  ЗАПУСК
         // ============================================================
 
         el.container.classList.add('office-mode');
@@ -1369,6 +2073,8 @@
         });
 
         initAI(gameState.night);
+        updateHallwayLights();
+        updateOfficeControls();
         updateDoorVisitors();
 
         updateTime();
@@ -1391,22 +2097,19 @@
         }, 1200);
 
         console.log('🎮 FNAF 1 - Ночь', gameState.night);
-        console.log('📹 Загружено 11 камер');
-        console.log('⚡ Система USAGE активирована (динамический расход)');
-        console.log('📋 Система записок активирована');
-        console.log('🤖 Система ИИ активирована (уровни 0-20)');
-        console.log('🟢 Индикаторы: ЧЁРНЫЙ(неактивен) → ЗЕЛЁНЫЙ(далеко) → ЖЁЛТЫЙ(близко) → КРАСНЫЙ(опасность!)');
-        console.log('🚪 Аниматроники отступают и возвращаются — баланс восстановлен!');
-        console.log('🦊 Фокси теперь бежит с левой стороны!');
-        console.log('🦊 Индикатор Фокси синхронизирован со стадиями на камере!');
-        console.log('🟢 Детальная цветовая схема индикаторов активирована!');
-        console.log('🎮 Custom Night: поддержка пользовательских настроек ИИ активирована!');
-        console.log('⭐ Система звёзд активирована!');
-        console.log('⌨️ Читерская комбинация: C + D + NumPad+');
-        console.log('🏢 Игра начинается с офиса!');
-        console.log('🌅 Экран победы 6:00 AM активирован!');
-        console.log('⚡ Механика отключения электричества активирована!');
-        console.log(`🎮 Режим сложности: ${gameMode === 'hard' ? '🔴 СЛОЖНЫЙ' : '🟢 ЛЁГКИЙ'}`);
+        console.log('========================================');
+        console.log('🔧 НОВАЯ МЕХАНИКА - ЗАДЕРЖКА ПЕРЕД ВХОДОМ:');
+        console.log(`   ⏱️ Когда Бонни/Чика подходят к двери - есть ${CONFIG.OFFICE_ENTRY_DELAY} секунд чтобы закрыть дверь!`);
+        console.log('   ⚠️ Показывается предупреждение "ОПАСНОСТЬ!"');
+        console.log('   🚪 Если закрыть дверь - аниматроник отступает');
+        console.log('   🚪 Если не закрыть - входит в офис');
+        console.log('========================================');
+        console.log('🎨 УНИКАЛЬНЫЕ ВИЗУАЛЬНЫЕ СКРИМЕРЫ:');
+        console.log('   🐰 БОННИ  → Фиолетовое свечение');
+        console.log('   🐤 ЧИКА   → Оранжевое/жёлтое свечение');
+        console.log('   🐻 ФРЕДДИ → Красное свечение');
+        console.log('   🦊 ФОКСИ  → Огненно-красное свечение (мерцающее)');
+        console.log('========================================');
     </script>
 </body>
 </html>
