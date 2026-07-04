@@ -1,10 +1,10 @@
 <?php
 
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\CustomNightController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Session;
-use App\Http\Controllers\CustomNightController;
 
 // ========== МАРШРУТЫ МЕНЮ ==========
 Route::get('/', [MenuController::class, 'index'])->name('menu');
@@ -24,7 +24,7 @@ Route::get('/camera/{name}', function (\Illuminate\Http\Request $request, $name)
     $foxy_stage = (int) $request->query('foxy_stage', 1);
     $foxy_running = $request->query('foxy_running', '0') === '1';
 
-    // ===== СОСТОЯНИЕ СВЕТА (ОТ JS, А НЕ ИЗ СЕССИИ — ТУДА ЕГО НИКТО НЕ ПИСАЛ) =====
+    // ===== СОСТОЯНИЕ СВЕТА (ОТ JS, А НЕ ИЗ СЕССИИ) =====
     $light_left = $request->query('light_left', '0') === '1';
     $light_right = $request->query('light_right', '0') === '1';
 

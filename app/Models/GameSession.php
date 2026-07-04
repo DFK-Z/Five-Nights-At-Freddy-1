@@ -15,7 +15,8 @@ class GameSession extends Model
         'completed_night',
         'high_score',
         'power_used',
-        'is_completed'
+        'is_completed',
+        'stars'
     ];
 
     public function unlockNextNight()
@@ -25,6 +26,14 @@ class GameSession extends Model
         $nextNight = $this->night + 1;
         if ($nextNight > $this->max_night) {
             $this->max_night = $nextNight;
+            $this->save();
+        }
+    }
+
+    public function addStars(Int $newStars)
+    {
+        if ($newStars > $this->stars) {
+            $this->stars = $newStars;
             $this->save();
         }
     }
