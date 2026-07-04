@@ -114,9 +114,6 @@ body {
     color: #444;
 }
 
-.divider-space {
-    height: 50px;
-}
 
 /* ===== МЕНЮ СПИСОК ===== */
 .menu-list {
@@ -296,6 +293,24 @@ body {
     color: #ff4444;
     box-shadow: 0 0 20px rgba(255,68,68,0.15);
     background: rgba(255,68,68,0.05);
+}
+
+/* ===== ПОДСКАЗКА РЕЖИМА ===== */
+.mode-hint {
+    margin-top: 6px;
+    color: #444;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-align: left;
+    padding-left: 2px;
+}
+
+.mode-hint .highlight-green {
+    color: #44ff44;
+}
+
+.mode-hint .highlight-red {
+    color: #ff4444;
 }
 
 /* ===== ПРАВАЯ ЧАСТЬ: СИЛУЭТ ===== */

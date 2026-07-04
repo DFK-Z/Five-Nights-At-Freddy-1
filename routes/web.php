@@ -29,6 +29,9 @@ Route::get('/camera/{name}', function (\Illuminate\Http\Request $request, $name)
     $light_left = $request->query('light_left', '0') === '1';
     $light_right = $request->query('light_right', '0') === '1';
 
+    // ===== РЕЖИМ СЛОЖНОСТИ (ПЕРЕДАЁТСЯ ИЗ МЕНЮ) =====
+    $difficulty = $request->query('mode', Session::get('game_mode', 'easy'));
+
     // ===== СПИСОК ВСЕХ 11 КАМЕР =====
     $validCameras = [
         'cam_1a', 'cam_1b', 'cam_1c',
@@ -52,7 +55,8 @@ Route::get('/camera/{name}', function (\Illuminate\Http\Request $request, $name)
                 'light_left' => $light_left,
                 'light_right' => $light_right,
                 'current_night' => Session::get('current_night', 1),
-                'power' => Session::get('power', 100)
+                'power' => Session::get('power', 100),
+                'difficulty' => $difficulty // ← ПЕРЕДАЁМ РЕЖИМ В КАМЕРЫ
             ]);
         }
     }
@@ -70,7 +74,7 @@ Route::post('/set-mode', function (Request $request) {
     $mode = $request->mode;
     if (in_array($mode, ['easy', 'hard'])) {
         Session::put('game_mode', $mode);
-        return response()->json(['success' => true]);
+        return response()->json(['success' => true, 'mode' => $mode]);
     }
-    return response()->json(['success' => false], 400);
+    return response()->json(['success' => false, 'message' => 'Invalid mode'], 400);
 })->name('set.mode');

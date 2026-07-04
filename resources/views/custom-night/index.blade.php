@@ -226,7 +226,7 @@
             {{-- Фредди --}}
             <div class="slider-group">
                 <div class="slider-label">
-                    <span class="name">🐻 ФРЕДДИ</span>
+                    <span class="name">🐻 ФРЕДДИ ФАЗБЕР</span>
                     <span class="value" id="freddyValue">0</span>
                 </div>
                 <input type="range" name="freddy" id="freddySlider" min="0" max="20" value="0" oninput="updateValue('freddy', this.value)">

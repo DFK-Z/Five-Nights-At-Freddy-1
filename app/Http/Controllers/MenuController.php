@@ -25,27 +25,29 @@ class MenuController extends Controller
         return view('menu', compact('session'));
     }
 
-    public function startNight($night)
-    {
-        $session = GameSession::latest()->first();
+    public function startNight(Int $night, Request $request)
+{
+    $session = GameSession::latest()->first();
 
-        if ($night > $session->max_night) {
-            return redirect()->route('menu')->with('error', 'Эта ночь ещё не открыта!');
-        }
-
-        $session->update([
-            'night' => $night,
-            'is_completed' => false,
-            'power_used' => 0
-        ]);
-
-        // Если это 7-я ночь — очищаем пользовательские настройки ИИ
-        if ($night == 7) {
-            session()->forget('custom_ai_levels');
-        }
-
-        return view('game', compact('session'));
+    if ($night > $session->max_night) {
+        return redirect()->route('menu')->with('error', 'Эта ночь ещё не открыта!');
     }
+
+    $difficulty = $request->query('difficulty', $session->difficulty ?? 'normal');
+
+    $session->update([
+        'night' => $night,
+        'is_completed' => false,
+        'power_used' => 0,
+        'difficulty' => $difficulty
+    ]);
+
+    if ($night == 7) {
+        session()->forget('custom_ai_levels');
+    }
+
+    return view('game', compact('session'));
+}
 
     public function completeNight(Request $request)
 {

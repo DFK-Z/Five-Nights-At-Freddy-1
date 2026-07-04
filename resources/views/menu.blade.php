@@ -52,7 +52,7 @@
                             @if ($i == 7)
                                 <a href="{{ route('custom.night') }}">СВОЯ НОЧЬ</a>
                             @else
-                                <a href="{{ route('night.start', $i) }}">НОЧЬ {{ $i }}</a>
+                                <a href="{{ route('night.start', ['night' => $i, 'mode' => session('game_mode', 'easy')]) }}">НОЧЬ {{ $i }}</a>
                             @endif
                             @if ($isCompleted)
                                 <span class="stars">★★★</span>
@@ -72,7 +72,7 @@
                 </li>
             </ul>
 
-            <!-- ===== РЕЖИМЫ СЛОЖНОСТИ (ТОЛЬКО 2 КНОПКИ) ===== -->
+            <!-- ===== РЕЖИМЫ СЛОЖНОСТИ ===== -->
             <div class="mode-selector">
                 <span class="mode-label">⚡ РЕЖИМ:</span>
                 <button class="mode-btn {{ session('game_mode', 'easy') === 'easy' ? 'active' : '' }}"
@@ -83,6 +83,15 @@
                         onclick="setMode('hard')">
                     🔴 СЛОЖНЫЙ
                 </button>
+            </div>
+
+            <!-- ===== ПОДСКАЗКА РЕЖИМА ===== -->
+            <div class="mode-hint" id="modeHint">
+                @if (session('game_mode', 'easy') === 'easy')
+                    🟢 Индикаторы опасности <span class="highlight-green">видны</span>
+                @else
+                    🔴 Индикаторы опасности <span class="highlight-red">скрыты</span>
+                @endif
             </div>
 
             <div class="stats-line">
@@ -99,7 +108,7 @@
         </div>
 
         <div class="menu-footer-bar">
-            <span>v0.1</span>
+            <span>v0.5</span>
             <span>fan-made project</span>
         </div>
     </div>
@@ -132,8 +141,29 @@
                             btn.classList.add('active');
                         }
                     });
+
+                    // Обновляем подсказку
+                    const hint = document.getElementById('modeHint');
+                    if (mode === 'easy') {
+                        hint.innerHTML = '🟢 Индикаторы опасности <span class="highlight-green">видны</span>';
+                    } else {
+                        hint.innerHTML = '🔴 Индикаторы опасности <span class="highlight-red">скрыты</span>';
+                    }
+
+                    // Обновляем ссылки на ночи
+                    document.querySelectorAll('.menu-list a').forEach(link => {
+                        const href = link.getAttribute('href');
+                        if (href && href !== '#' && !href.includes('custom-night')) {
+                            const url = new URL(href, window.location.origin);
+                            url.searchParams.set('mode', mode);
+                            link.setAttribute('href', url.toString());
+                        }
+                    });
+
                     // Перезагружаем страницу для применения настроек
-                    location.reload();
+                    setTimeout(() => {
+                        location.reload();
+                    }, 300);
                 }
             })
             .catch(error => {
@@ -141,6 +171,19 @@
                 alert('❌ Ошибка при смене режима!');
             });
         }
+
+        // ===== ПРИ ЗАГРУЗКЕ: ПРИМЕНЯЕМ РЕЖИМ К ССЫЛКАМ =====
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentMode = '{{ session('game_mode', 'easy') }}';
+            document.querySelectorAll('.menu-list a').forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && href !== '#' && !href.includes('custom-night')) {
+                    const url = new URL(href, window.location.origin);
+                    url.searchParams.set('mode', currentMode);
+                    link.setAttribute('href', url.toString());
+                }
+            });
+        });
 
         console.log('🎮 Режим сложности:', '{{ session('game_mode', 'easy') }}');
     </script>

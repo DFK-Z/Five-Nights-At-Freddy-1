@@ -9,15 +9,16 @@ class GameSession extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'night',
-        'max_night',
-        'completed_night',
-        'high_score',
-        'power_used',
-        'is_completed',
-        'stars'
-    ];
+protected $fillable = [
+    'night',
+    'max_night',
+    'completed_night',
+    'high_score',
+    'power_used',
+    'is_completed',
+    'stars',
+    'difficulty'
+];
 
     public function unlockNextNight()
     {
