@@ -691,6 +691,8 @@
                 return;
             }
 
+            // ===== ПРАВИЛЬНАЯ ЦВЕТОВАЯ СХЕМА ДЛЯ ФОКСИ =====
+            // Стадия 1: Спит в бухте — ЗЕЛЁНЫЙ
             if (stage === 1) {
                 led.className = 'led green';
                 led.style.background = '#44ff44';
@@ -700,15 +702,17 @@
                 return;
             }
 
+            // Стадия 2: Выглядывает — ОРАНЖЕВЫЙ (предупреждение)
             if (stage === 2) {
                 led.className = 'led orange';
-                led.style.background = '#ffaa44';
-                led.style.borderColor = '#ffaa44';
-                led.style.boxShadow = '0 0 15px rgba(255,170,68,0.3)';
+                led.style.background = '#ff8800';
+                led.style.borderColor = '#ff8800';
+                led.style.boxShadow = '0 0 15px rgba(255,136,0,0.3)';
                 led.style.animation = 'none';
                 return;
             }
 
+            // Стадия 3: Готов бежать — КРАСНЫЙ (опасность близко)
             if (stage === 3) {
                 led.className = 'led red';
                 led.style.background = '#ff4444';
@@ -718,6 +722,7 @@
                 return;
             }
 
+            // Стадия 4: Бежит! — КРАСНЫЙ МЕРЦАЮЩИЙ (немедленная угроза)
             if (stage === 4) {
                 led.className = 'led red';
                 led.style.background = '#ff4444';
