@@ -68,24 +68,58 @@
 
         <!-- Офис -->
         <div class="office-view" id="officeView">
-            <div class="office-lamp"></div>
+            <div class="office-lamp">
+                <div class="office-lamp-face"></div>
+            </div>
             <div class="cobweb tl"></div>
             <div class="cobweb tr"></div>
             <div class="office-wall">
-                <div class="office-poster small-left">рисунки детей</div>
-                <div class="office-poster main">ПРАЗДНИК!</div>
-                <div class="office-poster small-right">расписание</div>
+                <div class="office-poster small-left">
+                    <span class="drawing d1"></span>
+                    <span class="drawing d2"></span>
+                    <span class="drawing d3"></span>
+                </div>
+                <div class="office-poster main">
+                    ПРАЗДНИК!
+                    <div class="office-shelf-figures">
+                        <div class="shelf-figure freddy"></div>
+                        <div class="shelf-figure bonnie"></div>
+                    </div>
+                </div>
+                <div class="office-poster small-right">
+                    <span class="drawing d1"></span>
+                    <span class="drawing d2"></span>
+                    <span class="drawing d3"></span>
+                    <span class="drawing d4"></span>
+                </div>
             </div>
+            <div class="office-red-stripe"></div>
             <div class="office-doorframe left" id="officeDoorLeft">
+                <div class="door-hallway">
+                    <div class="hallway-floor"></div>
+                    <div class="hallway-visitor" id="leftHallwayVisitor"></div>
+                </div>
                 <div class="office-door-panel"></div>
             </div>
             <div class="office-doorframe right" id="officeDoorRight">
+                <div class="door-hallway">
+                    <div class="hallway-floor"></div>
+                    <div class="hallway-visitor" id="rightHallwayVisitor"></div>
+                </div>
                 <div class="office-door-panel"></div>
             </div>
             <div class="office-floor"></div>
+            <div class="office-spiral s1"></div>
+            <div class="office-spiral s2"></div>
+            <div class="desk-drawers">
+                <div class="drawer"></div>
+                <div class="drawer"></div>
+            </div>
             <div class="office-desk">
+                <div class="desk-plushie left">🧸</div>
                 <div class="desk-monitor">MON</div>
                 <div class="desk-fan"></div>
+                <div class="desk-party-blower">🎉</div>
                 <div class="desk-tally">
                     <div>НОЧЬ {{ $session->night }}</div>
                     <div>
@@ -532,6 +566,7 @@
             const nextPos = path[currentIndex + 1];
             aiState.positions[name] = nextPos;
             updateAnimatronicIndicator(name);
+            updateDoorVisitors();
         }
 
         function attackAnimatronic(name) {
@@ -552,8 +587,37 @@
 
                 aiState.cooldown[name] = 3 + Math.floor(Math.random() * 2);
                 updateAnimatronicIndicator(name);
+                updateDoorVisitors();
             } else {
                 gameOver(`${name.toUpperCase()} проник в офис!`);
+            }
+        }
+
+        // ===== ВИДИМОСТЬ АНИМАТРОНИКОВ В КОРИДОРЕ ЗА ДВЕРЬЮ =====
+        // Если Бонни/Фредди/Чика дошли до самого порога (office_left/office_right),
+        // они должны быть видны в коридоре за дверным проёмом, пока дверь не закрыта —
+        // ровно как в оригинале, где их можно заметить до того, как решишь закрыться.
+        function updateDoorVisitors() {
+            const leftVisitor = document.getElementById('leftHallwayVisitor');
+            const rightVisitor = document.getElementById('rightHallwayVisitor');
+            if (!leftVisitor || !rightVisitor) return;
+
+            if (aiState.positions.bonnie === 'office_left') {
+                leftVisitor.textContent = '🐰';
+                leftVisitor.classList.add('visible');
+            } else {
+                leftVisitor.classList.remove('visible');
+            }
+
+            // Правая дверь делят Фредди и Чика — показываем того, кто реально дошёл
+            if (aiState.positions.freddy === 'office_right') {
+                rightVisitor.textContent = '🐻';
+                rightVisitor.classList.add('visible');
+            } else if (aiState.positions.chica === 'office_right') {
+                rightVisitor.textContent = '🐤';
+                rightVisitor.classList.add('visible');
+            } else {
+                rightVisitor.classList.remove('visible');
             }
         }
 
@@ -1305,6 +1369,7 @@
         });
 
         initAI(gameState.night);
+        updateDoorVisitors();
 
         updateTime();
         updatePower();
