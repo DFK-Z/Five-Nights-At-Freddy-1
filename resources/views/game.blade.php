@@ -13,7 +13,6 @@
         <div class="top-panel">
             <div class="time" id="gameTime">12:00 AM</div>
             <div class="night">НОЧЬ {{ $session->night }}</div>
-            <div class="power">⚡ <span id="powerLevel">100</span>%</div>
             <div class="mode-indicator" id="modeIndicator">
                 {{ session('game_mode', 'easy') === 'hard' ? '🔴' : '🟢' }}
             </div>
@@ -309,8 +308,8 @@
         const PATHS = {
             freddy: ['cam_1a', 'cam_1b', 'cam_7', 'cam_6', 'cam_4a', 'cam_4b', 'office_right'],
             bonnie: ['cam_1a', 'cam_1b', 'cam_2a', 'cam_2b', 'cam_3', 'cam_5', 'office_left'],
-            chica: ['cam_1a', 'cam_1b', 'cam_4a', 'cam_4b', 'cam_6', 'cam_7', 'office_right'],
-            foxy: ['cam_1c', 'cam_2a', 'office_left']
+            chica: ['cam_1a', 'cam_1b', 'cam_4a', 'cam_4b', 'cam_6', 'cam_7', 'office_right']
+            // foxy сюда не входит — см. foxyStage / updateFoxy() / foxyStartRun()
         };
 
         const gameState = {
@@ -341,7 +340,6 @@
         const el = {
             container: document.getElementById('gameContainer'),
             time: document.getElementById('gameTime'),
-            powerLevel: document.getElementById('powerLevel'),
             powerDisplay: document.getElementById('powerDisplay'),
             powerBar: document.getElementById('powerBar'),
             cameraLabel: document.getElementById('cameraLabel'),
@@ -494,7 +492,11 @@
 
         function makeAIStep() {
             if (gameState.isGameOver) return;
-            const names = ['freddy', 'bonnie', 'chica', 'foxy'];
+            // 'foxy' сюда не входит — им управляет ИСКЛЮЧИТЕЛЬНО updateFoxy() через
+            // foxyStage. Раньше он одновременно жил в этой системе (PATHS.foxy) и в
+            // системе стадий занавеса — из-за этого он мог "телепортом" добраться до
+            // офиса и убить, пока индикатор всё ещё показывал стадию 1 (занавес закрыт).
+            const names = ['freddy', 'bonnie', 'chica'];
             names.forEach(name => {
                 if (aiState.cooldown[name] > 0) {
                     aiState.cooldown[name]--;
@@ -518,30 +520,18 @@
             const currentIndex = path.indexOf(currentPos);
 
             if (currentPos === 'office_left' || currentPos === 'office_right') {
-                if (name === 'foxy') {
-                    foxyAttack();
-                } else {
-                    attackAnimatronic(name);
-                }
+                attackAnimatronic(name);
                 return;
             }
 
             if (currentIndex >= path.length - 1) {
-                if (name === 'foxy') {
-                    foxyAttack();
-                } else {
-                    attackAnimatronic(name);
-                }
+                attackAnimatronic(name);
                 return;
             }
 
             const nextPos = path[currentIndex + 1];
             aiState.positions[name] = nextPos;
             updateAnimatronicIndicator(name);
-
-            if (name === 'foxy' && nextPos === 'cam_2a' && aiState.foxyStage === 4) {
-                foxyStartRun();
-            }
         }
 
         function attackAnimatronic(name) {
@@ -781,15 +771,34 @@
                     aiState.isFoxyRunning = false;
                     aiState.positions.foxy = 'cam_1c';
                 } else {
-                    gameOver('🦊 Фокси добрался до офиса!');
+                    playScreamer('🦊', '🦊 Фокси добрался до офиса!');
                 }
             }, 4000);
         }
 
-        function foxyAttack() {
-            if (!gameState.leftDoorClosed) {
-                gameOver('🦊 Фокси ворвался в офис!');
+        // ===== ОБЩИЙ СКРИМЕР (переиспользуется для любого аниматроника) =====
+        // Показывает морду на весь экран, трясёт кадр, затем помехи, и только
+        // после этого — настоящий game over. Раньше атака убивала мгновенным
+        // alert() без какой-либо визуальной реакции.
+        function playScreamer(faceEmoji, reason) {
+            if (gameState.isGameOver) return;
+
+            el.powerOutageOverlay.classList.add('active');
+            const face = el.screamerLayer.querySelector('.screamer-face');
+            if (face) face.textContent = faceEmoji;
+            el.screamerLayer.classList.add('active');
+
+            if (navigator.vibrate) {
+                navigator.vibrate(300);
             }
+
+            setTimeout(() => {
+                el.staticBurst.classList.add('active');
+            }, 1500);
+
+            setTimeout(() => {
+                gameOver(reason);
+            }, 3000);
         }
 
         function calculatePowerDrain(actions) {
@@ -1044,12 +1053,10 @@
 
         function updatePower() {
             const p = Math.round(gameState.power);
-            el.powerLevel.textContent = p;
             el.powerDisplay.textContent = p + '%';
             el.powerBar.style.width = p + '%';
             const isLow = p < 20;
             const isMedium = p >= 20 && p < 50;
-            el.powerLevel.style.color = isLow ? '#ff4444' : isMedium ? '#ffaa44' : '#44ff44';
             el.powerDisplay.style.color = isLow ? '#ff4444' : isMedium ? '#ffaa44' : '#44ff44';
             el.powerBar.style.background = isLow ? '#ff4444' : isMedium ? '#ffaa44' : '#44ff44';
         }
