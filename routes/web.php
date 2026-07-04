@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
+use App\Models\GameSession;
 
 // ========== МАРШРУТЫ МЕНЮ ==========
 Route::get('/', [MenuController::class, 'index'])->name('menu');
@@ -56,7 +57,7 @@ Route::get('/camera/{name}', function (\Illuminate\Http\Request $request, $name)
                 'light_right' => $light_right,
                 'current_night' => Session::get('current_night', 1),
                 'power' => Session::get('power', 100),
-                'difficulty' => $difficulty // ← ПЕРЕДАЁМ РЕЖИМ В КАМЕРЫ
+                'difficulty' => $difficulty
             ]);
         }
     }
@@ -78,3 +79,21 @@ Route::post('/set-mode', function (Request $request) {
     }
     return response()->json(['success' => false, 'message' => 'Invalid mode'], 400);
 })->name('set.mode');
+
+// ===== ЧИТ-КОД: РАЗБЛОКИРОВКА ВСЕХ НОЧЕЙ (U + N + L) =====
+Route::post('/unlock-all', function (Request $request) {
+    $session = GameSession::latest()->first();
+
+    if (!$session) {
+        return response()->json(['success' => false, 'message' => 'Сессия не найдена'], 404);
+    }
+
+    // Разблокируем все 7 ночей
+    $session->update([
+        'max_night' => 7,
+        'completed_night' => 7,
+        'stars' => 3 // Даём 3 звезды за заслуги
+    ]);
+
+    return response()->json(['success' => true, 'max_night' => 7]);
+})->name('unlock.all');

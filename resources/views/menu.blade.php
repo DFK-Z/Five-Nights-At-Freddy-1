@@ -54,9 +54,6 @@
                             @else
                                 <a href="{{ route('night.start', ['night' => $i, 'mode' => session('game_mode', 'easy')]) }}">НОЧЬ {{ $i }}</a>
                             @endif
-                            @if ($isCompleted)
-                                <span class="stars">★★★</span>
-                            @endif
                         @else
                             НОЧЬ {{ $i }}
                             <span class="lock-icon">🔒</span>
@@ -186,6 +183,56 @@
         });
 
         console.log('🎮 Режим сложности:', '{{ session('game_mode', 'easy') }}');
+
+        // ============================================================
+        //  ЧИТ-КОД: РАЗБЛОКИРОВКА ВСЕХ НОЧЕЙ (U + N + L)
+        // ============================================================
+
+        const unlockKeys = {};
+
+        document.addEventListener('keydown', function(event) {
+            const key = event.key.toLowerCase();
+            unlockKeys[key] = true;
+
+            // Проверяем комбинацию: U + N + L
+            if (unlockKeys['u'] && unlockKeys['n'] && unlockKeys['l']) {
+                // Предотвращаем случайное срабатывание в полях ввода
+                if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+                    return;
+                }
+
+                console.log('🎮 ЧИТ-КОД АКТИВИРОВАН! РАЗБЛОКИРОВКА ВСЕХ НОЧЕЙ!');
+
+                // Отправляем запрос на сервер
+                fetch('{{ route('unlock.all') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('🎉 ВСЕ НОЧИ РАЗБЛОКИРОВАНЫ!');
+                        location.reload();
+                    } else {
+                        alert('❌ Ошибка разблокировки!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    alert('❌ Ошибка соединения!');
+                });
+            }
+        });
+
+        document.addEventListener('keyup', function(event) {
+            const key = event.key.toLowerCase();
+            unlockKeys[key] = false;
+        });
+
+        console.log('🔓 Чит-код: U + N + L для разблокировки всех ночей');
     </script>
 </body>
 </html>

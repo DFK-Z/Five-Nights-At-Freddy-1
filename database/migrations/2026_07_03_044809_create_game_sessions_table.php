@@ -15,6 +15,9 @@ return new class extends Migration
             $table->integer('high_score')->default(0); // Очки (например, время выживания)
             $table->integer('power_used')->default(0); // Потрачено энергии
             $table->boolean('is_completed')->default(false); // Пройдена ли ночь
+            $table->integer('stars')->default(0);
+            $table->integer('completed_night')->default(0); // последняя пройденная ночь
+            $table->string('difficulty')->default('easy');  // ← ДОБАВЬ ЭТУ СТРОКУ!
             $table->timestamps();
         });
     }
@@ -22,5 +25,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('game_sessions');
+        Schema::table('game_sessions', function (Blueprint $table) {
+            $table->dropColumn('difficulty');
+            $table->dropColumn('stars');
+        });
     }
 };
