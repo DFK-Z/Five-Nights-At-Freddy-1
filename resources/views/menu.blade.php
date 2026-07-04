@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Five Nights At Freddy's</title>
     <!-- ===== ПОДКЛЮЧАЕМ ВНЕШНИЙ CSS ===== -->
     <link rel="stylesheet" href="{{ asset('css/menu.css') }}">
@@ -71,6 +72,19 @@
                 </li>
             </ul>
 
+            <!-- ===== РЕЖИМЫ СЛОЖНОСТИ (ТОЛЬКО 2 КНОПКИ) ===== -->
+            <div class="mode-selector">
+                <span class="mode-label">⚡ РЕЖИМ:</span>
+                <button class="mode-btn {{ session('game_mode', 'easy') === 'easy' ? 'active' : '' }}"
+                        onclick="setMode('easy')">
+                    🟢 ЛЁГКИЙ
+                </button>
+                <button class="mode-btn {{ session('game_mode', 'easy') === 'hard' ? 'active' : '' }}"
+                        onclick="setMode('hard')">
+                    🔴 СЛОЖНЫЙ
+                </button>
+            </div>
+
             <div class="stats-line">
                 Текущая ночь: {{ $session->night }}<br>
                 Рекорд: {{ $session->high_score }} очков
@@ -89,5 +103,46 @@
             <span>fan-made project</span>
         </div>
     </div>
+
+    <script>
+        // ============================================================
+        //  УПРАВЛЕНИЕ РЕЖИМАМИ СЛОЖНОСТИ
+        // ============================================================
+
+        function setMode(mode) {
+            fetch('{{ route('set.mode') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ mode: mode })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Обновляем активную кнопку
+                    document.querySelectorAll('.mode-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    document.querySelectorAll('.mode-btn').forEach(btn => {
+                        const btnText = btn.textContent.trim();
+                        if ((mode === 'easy' && btnText.includes('ЛЁГКИЙ')) ||
+                            (mode === 'hard' && btnText.includes('СЛОЖНЫЙ'))) {
+                            btn.classList.add('active');
+                        }
+                    });
+                    // Перезагружаем страницу для применения настроек
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('❌ Ошибка при смене режима!');
+            });
+        }
+
+        console.log('🎮 Режим сложности:', '{{ session('game_mode', 'easy') }}');
+    </script>
 </body>
 </html>

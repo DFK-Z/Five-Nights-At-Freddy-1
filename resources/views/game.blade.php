@@ -14,6 +14,9 @@
             <div class="time" id="gameTime">12:00 AM</div>
             <div class="night">НОЧЬ {{ $session->night }}</div>
             <div class="power">⚡ <span id="powerLevel">100</span>%</div>
+            <div class="mode-indicator" id="modeIndicator">
+                {{ session('game_mode', 'easy') === 'hard' ? '🔴' : '🟢' }}
+            </div>
         </div>
 
         <!-- Левая панель -->
@@ -169,6 +172,19 @@
                     <button class="victory-btn" id="victoryBtn">▶ ПРОДОЛЖИТЬ</button>
                 </div>
             </div>
+
+            <!-- ===== ЭФФЕКТ ОТКЛЮЧЕНИЯ ЭЛЕКТРИЧЕСТВА ===== -->
+            <div class="power-outage-overlay" id="powerOutageOverlay">
+                <div class="blackout-layer" id="blackoutLayer"></div>
+                <div class="freddy-music" id="freddyMusic">
+                    <div class="music-icon">🎵</div>
+                    <div class="music-text">...Фредди играет...</div>
+                </div>
+                <div class="screamer-layer" id="screamerLayer">
+                    <div class="screamer-face">🐻</div>
+                </div>
+                <div class="static-burst" id="staticBurst"></div>
+            </div>
         </div>
 
         <!-- Правая панель -->
@@ -250,6 +266,9 @@
         //  ВСЯ ИГРОВАЯ ЛОГИКА (ОДИН ФАЙЛ)
         // ============================================================
 
+        // ===== РЕЖИМ СЛОЖНОСТИ (ТОЛЬКО 2 РЕЖИМА) =====
+        const gameMode = '{{ session('game_mode', 'easy') }}';
+
         const CONFIG = {
             HOUR_DURATION: 90000,
             POWER_DRAIN_PER_HOUR: 8,
@@ -308,7 +327,15 @@
             isLightOn: false,
             leftLightOn: false,
             rightLightOn: false,
-            isBlackout: false
+            isBlackout: false,
+            powerOutage: {
+                active: false,
+                timer: 0,
+                phase: 'waiting',
+                musicStarted: false,
+                blackoutStarted: false,
+                screamerShown: false
+            }
         };
 
         const el = {
@@ -336,6 +363,11 @@
             noteCloseBtn: document.getElementById('noteCloseBtn'),
             victoryScreen: document.getElementById('victoryScreen'),
             victoryBtn: document.getElementById('victoryBtn'),
+            powerOutageOverlay: document.getElementById('powerOutageOverlay'),
+            blackoutLayer: document.getElementById('blackoutLayer'),
+            freddyMusic: document.getElementById('freddyMusic'),
+            screamerLayer: document.getElementById('screamerLayer'),
+            staticBurst: document.getElementById('staticBurst'),
             leds: {
                 freddy: document.getElementById('freddyLed'),
                 bonnie: document.getElementById('bonnieLed'),
@@ -351,6 +383,7 @@
         let minuteLoopInterval = null;
         let foxyRunTimeout = null;
         let powerDrainInterval = null;
+        let powerOutageInterval = null;
 
         // ============================================================
         //  ЭКРАН ПОБЕДЫ (6:00 AM)
@@ -367,6 +400,7 @@
             clearInterval(aiFoxyInterval);
             clearInterval(minuteLoopInterval);
             clearInterval(powerDrainInterval);
+            if (powerOutageInterval) clearInterval(powerOutageInterval);
 
             el.victoryScreen.classList.add('active');
 
@@ -536,6 +570,16 @@
         function updateAnimatronicIndicator(name) {
             const led = el.leds[name];
             if (!led) return;
+
+            // ===== СЛОЖНЫЙ РЕЖИМ: ИНДИКАТОРЫ СКРЫТЫ =====
+            if (gameMode === 'hard') {
+                led.className = 'led';
+                led.style.background = '#1a1a1a';
+                led.style.borderColor = '#2a2a2a';
+                led.style.boxShadow = 'none';
+                led.style.animation = 'none';
+                return;
+            }
 
             const pos = aiState.positions[name];
             const level = aiState.levels[name];
@@ -788,23 +832,21 @@
                 gameState.power = Math.max(0, gameState.power - drainPerSecond);
                 updatePower();
 
-                if (gameState.power <= 0) {
+                if (gameState.power <= 0 && !gameState.isBlackout) {
                     clearInterval(powerDrainInterval);
                     triggerBlackout();
                 }
             }, 1000);
         }
 
-        // ===== ОТКЛЮЧЕНИЕ ЭЛЕКТРИЧЕСТВА =====
-        // Двери сами поднимаются (если были закрыты), кнопки дверей/света отключаются,
-        // офис визуально "умирает" — становится холодным, серым, безжизненным.
-        // Через небольшую паузу — гейм овер (Фредди/кто-то доберётся до тебя в темноте).
+        // ===== ОТКЛЮЧЕНИЕ ЭЛЕКТРИЧЕСТВА (FULL POWER OUTAGE) =====
         function triggerBlackout() {
             if (gameState.isGameOver || gameState.isBlackout) return;
             gameState.isBlackout = true;
+            gameState.powerOutage.active = true;
+            gameState.powerOutage.timer = 0;
 
-            // Двери принудительно открываются, если были закрыты — держать их закрытыми
-            // без электричества физически нечем
+            // Двери принудительно открываются
             if (gameState.leftDoorClosed) {
                 gameState.leftDoorClosed = false;
                 el.leftDoor.querySelector('.status').textContent = 'ОТКРЫТА';
@@ -822,27 +864,107 @@
             gameState.leftLightOn = false;
             gameState.rightLightOn = false;
 
-            // Кнопки дверей/света больше не реагируют
+            // Блокируем всё управление
             el.leftDoor.classList.add('disabled');
             el.rightDoor.classList.add('disabled');
             el.leftLight.classList.add('disabled');
             el.rightLight.classList.add('disabled');
-
-            // Планшет тоже бесполезен без питания — камеры гаснут
             el.tabletToggle.classList.add('disabled');
             el.container.classList.remove('tablet-mode');
             el.container.classList.add('office-mode');
             gameState.isTabletMode = false;
 
-            // Холодный, мёртвый вид офиса — вентилятор и лампа замирают
-            el.officeView.classList.add('blackout');
-            el.container.classList.add('blackout');
+            // Выключаем индикаторы
+            document.querySelectorAll('.led').forEach(led => {
+                led.className = 'led';
+                led.style.background = '#1a1a1a';
+                led.style.borderColor = '#2a2a2a';
+                led.style.boxShadow = 'none';
+                led.style.animation = 'none';
+            });
 
-            showWarning('⚡ ЭНЕРГИЯ ЗАКОНЧИЛАСЬ...');
+            // Отключаем камеры
+            el.cameraBtns.forEach(btn => {
+                btn.classList.add('disabled');
+                btn.style.opacity = '0.1';
+            });
+            el.cameraImage.innerHTML = '<div style="color: #111; font-size: 24px;">📹</div>';
+            el.cameraLabel.textContent = 'ОТКЛЮЧЕНО';
+            el.cameraLabel.style.color = '#222';
 
-            setTimeout(() => {
-                gameOver('💀 Электричество кончилось, и тьма забрала вас...');
-            }, 4000);
+            // Показываем оверлей отключения
+            el.powerOutageOverlay.classList.add('active');
+
+            console.log('⚡ ОТКЛЮЧЕНИЕ ЭЛЕКТРИЧЕСТВА!');
+            showWarning('⚡ ЭНЕРГИЯ ЗАКОНЧИЛАСЬ!');
+
+            // Запускаем таймер отключения
+            powerOutageInterval = setInterval(updatePowerOutage, 1000);
+        }
+
+        function updatePowerOutage() {
+            gameState.powerOutage.timer++;
+            const timer = gameState.powerOutage.timer;
+
+            if (timer <= 30) {
+                gameState.powerOutage.phase = 'waiting';
+                if (timer % 5 === 0) {
+                    const lamp = document.querySelector('.office-lamp');
+                    if (lamp) {
+                        lamp.style.opacity = Math.random() > 0.7 ? '0.2' : '1';
+                        setTimeout(() => { lamp.style.opacity = '1'; }, 200);
+                    }
+                }
+                return;
+            }
+
+            if (timer <= 60) {
+                gameState.powerOutage.phase = 'music';
+                if (!gameState.powerOutage.musicStarted) {
+                    gameState.powerOutage.musicStarted = true;
+                    el.freddyMusic.classList.add('active');
+                    console.log('🎵 Фредди играет...');
+                }
+                if (timer > 50) {
+                    const progress = (timer - 50) / 10;
+                    el.blackoutLayer.style.opacity = progress * 0.5;
+                }
+                return;
+            }
+
+            if (timer <= 65) {
+                gameState.powerOutage.phase = 'blackout';
+                if (!gameState.powerOutage.blackoutStarted) {
+                    gameState.powerOutage.blackoutStarted = true;
+                    el.blackoutLayer.classList.add('active');
+                    el.freddyMusic.classList.remove('active');
+                    console.log('🌑 Затемнение...');
+                }
+                return;
+            }
+
+            if (!gameState.powerOutage.screamerShown) {
+                gameState.powerOutage.screamerShown = true;
+                gameState.powerOutage.phase = 'screamer';
+
+                el.screamerLayer.classList.add('active');
+
+                if (navigator.vibrate) {
+                    navigator.vibrate(300);
+                }
+
+                console.log('💀 СКРИМЕР!');
+
+                setTimeout(() => {
+                    el.staticBurst.classList.add('active');
+                }, 1500);
+
+                setTimeout(() => {
+                    clearInterval(powerOutageInterval);
+                    gameState.powerOutage.active = false;
+                    gameOver('🔴 Фредди добрался до офиса!');
+                }, 3000);
+            }
         }
 
         function completeNight(score, powerUsed) {
@@ -1103,6 +1225,7 @@
             clearInterval(aiFoxyInterval);
             clearInterval(minuteLoopInterval);
             clearInterval(powerDrainInterval);
+            if (powerOutageInterval) clearInterval(powerOutageInterval);
             clearTimeout(foxyRunTimeout);
             alert(`💀 ${reason}\nВы прожили до ${el.time.textContent}`);
             window.location.href = '{{ route('menu') }}';
@@ -1205,6 +1328,8 @@
         console.log('⌨️ Читерская комбинация: C + D + NumPad+');
         console.log('🏢 Игра начинается с офиса!');
         console.log('🌅 Экран победы 6:00 AM активирован!');
+        console.log('⚡ Механика отключения электричества активирована!');
+        console.log(`🎮 Режим сложности: ${gameMode === 'hard' ? '🔴 СЛОЖНЫЙ' : '🟢 ЛЁГКИЙ'}`);
     </script>
 </body>
 </html>

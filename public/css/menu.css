@@ -233,6 +233,71 @@ body {
     color: #88bb88;
 }
 
+/* ============================================================
+   РЕЖИМЫ СЛОЖНОСТИ (ТОЛЬКО 2 КНОПКИ)
+   ============================================================ */
+
+.mode-selector {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    border-top: 1px solid #1a1a1a;
+    padding-top: 18px;
+}
+
+.mode-label {
+    color: #666;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.mode-btn {
+    background: #0a0a0a;
+    border: 2px solid #2a2a2a;
+    color: #888;
+    padding: 6px 16px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+}
+
+.mode-btn:hover {
+    border-color: #666;
+    color: #ccc;
+    transform: scale(1.02);
+}
+
+/* Лёгкий режим — зелёный акцент */
+.mode-btn[onclick*="easy"]:hover {
+    border-color: #44ff44;
+    color: #44ff44;
+}
+.mode-btn[onclick*="easy"].active {
+    border-color: #44ff44;
+    color: #44ff44;
+    box-shadow: 0 0 20px rgba(68,255,68,0.15);
+    background: rgba(68,255,68,0.05);
+}
+
+/* Сложный режим — красный акцент */
+.mode-btn[onclick*="hard"]:hover {
+    border-color: #ff4444;
+    color: #ff4444;
+}
+.mode-btn[onclick*="hard"].active {
+    border-color: #ff4444;
+    color: #ff4444;
+    box-shadow: 0 0 20px rgba(255,68,68,0.15);
+    background: rgba(255,68,68,0.05);
+}
+
 /* ===== ПРАВАЯ ЧАСТЬ: СИЛУЭТ ===== */
 .menu-right {
     position: absolute;

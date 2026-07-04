@@ -5,6 +5,7 @@ use App\Http\Controllers\CustomNightController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Http\Request;
 
 // ========== МАРШРУТЫ МЕНЮ ==========
 Route::get('/', [MenuController::class, 'index'])->name('menu');
@@ -63,3 +64,13 @@ Route::get('/camera/{name}', function (\Illuminate\Http\Request $request, $name)
 // ===== ПОЛЬЗОВАТЕЛЬСКАЯ НОЧЬ (CUSTOM NIGHT) =====
 Route::get('/custom-night', [CustomNightController::class, 'index'])->name('custom.night');
 Route::post('/night/custom', [CustomNightController::class, 'start'])->name('night.start.custom');
+
+// ===== РЕЖИМЫ СЛОЖНОСТИ (ТОЛЬКО 2 КНОПКИ) =====
+Route::post('/set-mode', function (Request $request) {
+    $mode = $request->mode;
+    if (in_array($mode, ['easy', 'hard'])) {
+        Session::put('game_mode', $mode);
+        return response()->json(['success' => true]);
+    }
+    return response()->json(['success' => false], 400);
+})->name('set.mode');
