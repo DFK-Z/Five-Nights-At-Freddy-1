@@ -1837,6 +1837,20 @@ body {
     pointer-events: none;
 }
 
+/* ===== ВЕСЬ HUD ПРОПАДАЕТ БЕЗ ЭЛЕКТРИЧЕСТВА =====
+   Энергия, usage, кнопки дверей/света, время, ночь, кнопка планшета,
+   лампочки угрозы — всё это физически работает от того же электричества,
+   которое только что закончилось. */
+.game-container.blackout .top-panel,
+.game-container.blackout .bottom-panel,
+.game-container.blackout .right-panel {
+    display: none !important;
+}
+.game-container.blackout ~ .back-btn,
+.game-container.blackout ~ .tablet-toggle-btn {
+    display: none !important;
+}
+
 /* ============================================================
    ЭФФЕКТ ОТКЛЮЧЕНИЯ ЭЛЕКТРИЧЕСТВА / СКРИМЕР
    (переиспользуется и для Фокси, и для Фредди — только эмодзи и текст разные)
@@ -1938,4 +1952,10 @@ body {
 @keyframes staticFlicker {
     0%, 100% { opacity: 0.85; }
     50% { opacity: 1; }
+}
+
+/* Мигающий красный индикатор записи на CAM 6 (кухня, аудио-режим) */
+@keyframes kitchenRecPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
 }

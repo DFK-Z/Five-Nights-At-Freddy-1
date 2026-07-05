@@ -1653,6 +1653,12 @@
             gameState.leftLightOn = false;
             gameState.rightLightOn = false;
 
+            // Офис визуально "умирает" — тёплые тона гаснут, всё становится
+            // холодным, серым, синеватым и хмурым (CSS уже был готов, просто
+            // раньше этот класс никогда не навешивался)
+            el.officeView.classList.add('blackout');
+            el.container.classList.add('blackout');
+
             el.leftDoor.classList.add('disabled');
             el.rightDoor.classList.add('disabled');
             el.leftLight.classList.add('disabled');
@@ -1692,6 +1698,18 @@
 
             if (timer <= 30) {
                 gameState.powerOutage.phase = 'waiting';
+
+                // T+15 сек — Фредди появляется у левой двери, светятся только его глаза
+                if (timer === 15) {
+                    el.officeDoorLeft.classList.add('lit');
+                    const leftVisitor = document.getElementById('leftHallwayVisitor');
+                    if (leftVisitor) {
+                        leftVisitor.textContent = '🐻';
+                        leftVisitor.classList.add('visible');
+                    }
+                    console.log('🐻 Фредди появился у левой двери...');
+                }
+
                 if (timer % 5 === 0) {
                     const lamp = document.querySelector('.office-lamp');
                     if (lamp) {
