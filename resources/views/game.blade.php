@@ -49,15 +49,10 @@
             text-shadow: none;
         }
 
-        /* ===== БОННИ - ФИОЛЕТОВЫЙ ===== */
         .screamer-overlay .screamer-face.bonnie {
             filter: none;
             color: #cc44ff;
-            text-shadow:
-                0 0 50px #cc44ff,
-                0 0 100px #cc44ff,
-                0 0 200px #cc44ff,
-                0 0 400px #8800cc;
+            text-shadow: 0 0 50px #cc44ff, 0 0 100px #cc44ff, 0 0 200px #cc44ff, 0 0 400px #8800cc;
             animation: screamerPulse 0.12s ease 4, bonnieGlow 0.3s ease 3;
         }
         .screamer-overlay.bonnie-style .screamer-bg {
@@ -67,15 +62,10 @@
             background: rgba(68, 0, 102, 0.3);
         }
 
-        /* ===== ЧИКА - ОРАНЖЕВЫЙ/ЖЁЛТЫЙ ===== */
         .screamer-overlay .screamer-face.chica {
             filter: none;
             color: #ffaa00;
-            text-shadow:
-                0 0 50px #ffaa00,
-                0 0 100px #ffaa00,
-                0 0 200px #ffaa00,
-                0 0 400px #cc8800;
+            text-shadow: 0 0 50px #ffaa00, 0 0 100px #ffaa00, 0 0 200px #ffaa00, 0 0 400px #cc8800;
             animation: screamerPulse 0.12s ease 4, chicaGlow 0.3s ease 3;
         }
         .screamer-overlay.chica-style .screamer-bg {
@@ -85,15 +75,10 @@
             background: rgba(102, 68, 0, 0.3);
         }
 
-        /* ===== ФРЕДДИ - КРАСНЫЙ ===== */
         .screamer-overlay .screamer-face.freddy {
             filter: none;
             color: #ff2222;
-            text-shadow:
-                0 0 50px #ff2222,
-                0 0 100px #ff2222,
-                0 0 200px #ff2222,
-                0 0 400px #cc0000;
+            text-shadow: 0 0 50px #ff2222, 0 0 100px #ff2222, 0 0 200px #ff2222, 0 0 400px #cc0000;
             animation: screamerPulse 0.12s ease 4, freddyGlow 0.3s ease 3;
         }
         .screamer-overlay.freddy-style .screamer-bg {
@@ -103,15 +88,10 @@
             background: rgba(102, 0, 0, 0.3);
         }
 
-        /* ===== ФОКСИ - ОГНЕННО-КРАСНЫЙ ===== */
         .screamer-overlay .screamer-face.foxy {
             filter: none;
             color: #ff4400;
-            text-shadow:
-                0 0 50px #ff4400,
-                0 0 100px #ff4400,
-                0 0 200px #ff4400,
-                0 0 400px #cc3300;
+            text-shadow: 0 0 50px #ff4400, 0 0 100px #ff4400, 0 0 200px #ff4400, 0 0 400px #cc3300;
             animation: screamerPulse 0.12s ease 4, foxyGlow 0.2s ease 5;
         }
         .screamer-overlay.foxy-style .screamer-bg {
@@ -121,7 +101,6 @@
             background: rgba(102, 34, 0, 0.3);
         }
 
-        /* ===== ЭФФЕКТЫ СВЕЧЕНИЯ ===== */
         @keyframes bonnieGlow {
             0%, 100% { text-shadow: 0 0 50px #cc44ff, 0 0 100px #cc44ff, 0 0 200px #cc44ff; }
             50% { text-shadow: 0 0 80px #ff66ff, 0 0 150px #ff66ff, 0 0 300px #cc44ff, 0 0 500px #8800cc; }
@@ -152,20 +131,13 @@
             75% { transform: scale(0.95) rotate(2deg); }
         }
 
-        /* ===== СТАТИКА ===== */
         .screamer-overlay .screamer-static {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(255,255,255,0.05) 2px,
-                rgba(255,255,255,0.05) 4px
-            );
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.05) 2px, rgba(255,255,255,0.05) 4px);
             pointer-events: none;
             z-index: 1;
             opacity: 0;
@@ -182,13 +154,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 3px,
-                rgba(0,0,0,0.6) 3px,
-                rgba(0,0,0,0.6) 4px
-            );
+            background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.6) 3px, rgba(0,0,0,0.6) 4px);
             pointer-events: none;
             z-index: 1;
             opacity: 0;
@@ -199,7 +165,6 @@
             animation: scanlines 0.08s infinite;
         }
 
-        /* ===== ВИНЬЕТКА ===== */
         .screamer-overlay .screamer-vignette {
             position: absolute;
             top: 0;
@@ -225,7 +190,37 @@
             100% { transform: translateY(4px); }
         }
 
-        /* ===== СТИЛИ ДЛЯ GAME OVER ===== */
+        .screamer-overlay .screamer-extra {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.3;
+            animation: extraFlicker 0.1s infinite;
+        }
+
+        @keyframes extraFlicker {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.5; }
+        }
+
+        .screamer-overlay.bonnie-style .screamer-extra {
+            background: radial-gradient(ellipse at 30% 40%, rgba(200, 0, 255, 0.1), transparent 60%);
+        }
+        .screamer-overlay.chica-style .screamer-extra {
+            background: radial-gradient(ellipse at 70% 30%, rgba(255, 200, 0, 0.1), transparent 60%);
+        }
+        .screamer-overlay.freddy-style .screamer-extra {
+            background: radial-gradient(ellipse at 50% 50%, rgba(255, 0, 0, 0.15), transparent 60%);
+        }
+        .screamer-overlay.foxy-style .screamer-extra {
+            background: radial-gradient(ellipse at 20% 60%, rgba(255, 100, 0, 0.15), transparent 60%);
+        }
+
+        /* ===== GAME OVER ===== */
         .gameover-overlay {
             position: fixed;
             top: 0;
@@ -299,37 +294,6 @@
             50% { transform: scale(1.05); }
         }
 
-        /* ===== ВРЕМЕННЫЙ ВИЗУАЛЬНЫЙ ЭФФЕКТ ДЛЯ СКРИМЕРА ===== */
-        .screamer-overlay .screamer-extra {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-            opacity: 0.3;
-            animation: extraFlicker 0.1s infinite;
-        }
-
-        @keyframes extraFlicker {
-            0%, 100% { opacity: 0.2; }
-            50% { opacity: 0.5; }
-        }
-
-        .screamer-overlay.bonnie-style .screamer-extra {
-            background: radial-gradient(ellipse at 30% 40%, rgba(200, 0, 255, 0.1), transparent 60%);
-        }
-        .screamer-overlay.chica-style .screamer-extra {
-            background: radial-gradient(ellipse at 70% 30%, rgba(255, 200, 0, 0.1), transparent 60%);
-        }
-        .screamer-overlay.freddy-style .screamer-extra {
-            background: radial-gradient(ellipse at 50% 50%, rgba(255, 0, 0, 0.15), transparent 60%);
-        }
-        .screamer-overlay.foxy-style .screamer-extra {
-            background: radial-gradient(ellipse at 20% 60%, rgba(255, 100, 0, 0.15), transparent 60%);
-        }
-
         /* ===== ПРЕДУПРЕЖДЕНИЕ ОБ ОПАСНОСТИ ===== */
         .danger-warning {
             position: fixed;
@@ -361,10 +325,377 @@
             0%, 100% { transform: translate(-50%, -50%) scale(1); }
             50% { transform: translate(-50%, -50%) scale(1.05); }
         }
+
+        /* ===== СЦЕНА ОТКЛЮЧЕНИЯ ЭЛЕКТРИЧЕСТВА ===== */
+        .power-outage-scene {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 99998;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            background: #0a0a1a;
+            overflow: hidden;
+        }
+
+        .power-outage-scene.active {
+            display: flex;
+        }
+
+        .power-outage-scene .po-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            transition: all 1s ease;
+        }
+
+        .power-outage-scene .po-bg.waiting {
+            background: radial-gradient(ellipse at center, #1a1a2a 0%, #0a0a1a 60%, #000000 100%);
+        }
+
+        .power-outage-scene .po-bg.music {
+            background: radial-gradient(ellipse at 20% 70%, #1a2a4a 0%, #0a1a2a 60%, #000a1a 100%);
+            animation: poBgPulse 2s ease-in-out infinite;
+        }
+
+        .power-outage-scene .po-bg.dark {
+            background: #000000;
+        }
+
+        @keyframes poBgPulse {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+        }
+
+        .power-outage-scene .po-freddy {
+            position: absolute;
+            bottom: 15%;
+            left: 10%;
+            font-size: 200px;
+            z-index: 2;
+            opacity: 0;
+            transform: scale(0.5) translateX(-100px);
+            transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            filter: drop-shadow(0 0 30px rgba(255,0,0,0.2));
+        }
+
+        .power-outage-scene .po-freddy.visible {
+            opacity: 1;
+            transform: scale(1) translateX(0);
+        }
+
+        .power-outage-scene .po-freddy .freddy-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(ellipse at center, rgba(200,0,0,0.2), transparent 70%);
+            border-radius: 50%;
+            z-index: -1;
+            animation: freddyPulse 2s ease-in-out infinite;
+        }
+
+        .power-outage-scene .po-freddy .music-notes {
+            position: absolute;
+            font-size: 35px;
+            color: rgba(255,200,200,0.6);
+            animation: musicFloat 3s ease-in-out infinite;
+            text-shadow: 0 0 20px rgba(255,200,200,0.3);
+        }
+
+        .power-outage-scene .po-freddy .music-notes:nth-child(1) {
+            top: -70px;
+            left: -30px;
+            animation-delay: 0s;
+        }
+        .power-outage-scene .po-freddy .music-notes:nth-child(2) {
+            top: -100px;
+            right: -20px;
+            animation-delay: 0.8s;
+            font-size: 25px;
+        }
+        .power-outage-scene .po-freddy .music-notes:nth-child(3) {
+            top: -50px;
+            left: 50px;
+            animation-delay: 1.6s;
+            font-size: 28px;
+        }
+        .power-outage-scene .po-freddy .music-notes:nth-child(4) {
+            top: -120px;
+            left: 10px;
+            animation-delay: 2.2s;
+            font-size: 20px;
+        }
+
+        @keyframes freddyPulse {
+            0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.3); }
+        }
+
+        @keyframes musicFloat {
+            0%, 100% { transform: translateY(0) scale(1) rotate(0deg); opacity: 0.5; }
+            50% { transform: translateY(-40px) scale(1.3) rotate(10deg); opacity: 1; }
+        }
+
+        .power-outage-scene .po-freddy .freddy-text {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(200,100,100,0.4);
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            animation: freddyTextPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes freddyTextPulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+        }
+
+        .power-outage-scene .po-timer {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.15);
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            letter-spacing: 3px;
+            z-index: 3;
+            background: rgba(0,0,0,0.3);
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.5s;
+        }
+
+        .power-outage-scene .po-timer.warning {
+            color: rgba(255,50,50,0.4);
+            border-color: rgba(255,0,0,0.1);
+            animation: timerPulse 0.5s ease-in-out infinite;
+        }
+
+        @keyframes timerPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        .power-outage-scene .po-vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,10,0.8) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .power-outage-scene .po-scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,255,0.02) 2px, rgba(0,0,255,0.02) 4px);
+            pointer-events: none;
+            z-index: 1;
+            animation: poScanlines 0.1s infinite;
+        }
+
+        @keyframes poScanlines {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(2px); }
+        }
+
+        .power-outage-scene .po-static {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.015) 3px, rgba(255,255,255,0.015) 4px);
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0;
+            animation: poStatic 0.05s infinite;
+        }
+
+        .power-outage-scene .po-static.active {
+            opacity: 0.4;
+        }
+
+        @keyframes poStatic {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(-1px, 1px); }
+            50% { transform: translate(1px, -1px); }
+            75% { transform: translate(-1px, -1px); }
+            100% { transform: translate(1px, 1px); }
+        }
+
+        .power-outage-scene .po-flash {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            z-index: 2;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.05s;
+        }
+
+        .power-outage-scene .po-flash.active {
+            opacity: 1;
+            animation: flashFade 0.3s ease forwards;
+        }
+
+        @keyframes flashFade {
+            0% { opacity: 0.3; }
+            100% { opacity: 0; }
+        }
+
+        /* ===== СКРЫТИЕ ИНТЕРФЕЙСА ===== */
+        .hide-ui .top-panel,
+        .hide-ui .left-panel,
+        .hide-ui .right-panel,
+        .hide-ui .bottom-panel,
+        .hide-ui .back-btn,
+        .hide-ui .tablet-toggle-btn,
+        .hide-ui .office-hint,
+        .hide-ui .note-btn {
+            display: none !important;
+        }
+
+        .hide-ui .office-view {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        /* ===== ПРАВИЛЬНОЕ РАСПОЛОЖЕНИЕ ПАНЕЛЕЙ УПРАВЛЕНИЯ ===== */
+        /* Левая панель управления - слева от левой двери */
+        .left-door-panel {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* Правая панель управления - справа от правой двери */
+        .right-door-panel {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* Скрытие панелей в режиме планшета */
+        .tablet-mode .left-door-panel,
+        .tablet-mode .right-door-panel {
+            display: none !important;
+        }
+
+        .door-control {
+            background: rgba(0,0,0,0.8);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 8px 12px;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .door-control .label {
+            color: #888;
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .door-control .door-btn,
+        .door-control .light-btn {
+            display: inline-block;
+            padding: 4px 10px;
+            margin: 2px;
+            font-size: 11px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 4px;
+            color: #ccc;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+
+        .door-control .door-btn:hover,
+        .door-control .light-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.4);
+        }
+
+        .door-control .door-btn.closed {
+            border-color: #ff4444;
+            color: #ff4444;
+            background: rgba(255,68,68,0.15);
+        }
+
+        .door-control .light-btn.active {
+            border-color: #ffaa44;
+            color: #ffaa44;
+            background: rgba(255,170,68,0.15);
+        }
+
+        .door-control .door-btn.disabled,
+        .door-control .light-btn.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .door-control .status {
+            font-size: 9px;
+            margin-left: 3px;
+        }
+
+        /* Убираем подсказку */
+        .office-hint {
+            display: none !important;
+        }
+
+        /* Контейнер для позиционирования панелей */
+        .game-container {
+            position: relative;
+        }
+
+        /* Стили для правой панели (бывшая) - больше не нужна */
+        .right-panel {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
-    <!-- ===== СКРИМЕР (поверх всего) ===== -->
+    <!-- ===== СКРИМЕР ===== -->
     <div class="screamer-overlay" id="screamerOverlay">
         <div class="screamer-bg"></div>
         <div class="screamer-static"></div>
@@ -374,7 +705,7 @@
         <div class="screamer-face" id="screamerFace">🐻</div>
     </div>
 
-    <!-- ===== GAME OVER (после скримера) ===== -->
+    <!-- ===== GAME OVER ===== -->
     <div class="gameover-overlay" id="gameoverOverlay">
         <div class="gameover-title">💀 GAME OVER</div>
         <div class="gameover-subtitle" id="gameoverReason">Вы умерли</div>
@@ -382,9 +713,29 @@
         <button class="gameover-btn" id="gameoverBtn">↻ В МЕНЮ</button>
     </div>
 
-    <!-- ===== ПРЕДУПРЕЖДЕНИЕ ОБ ОПАСНОСТИ ===== -->
+    <!-- ===== ПРЕДУПРЕЖДЕНИЕ ===== -->
     <div class="danger-warning" id="dangerWarning">⚠️ ОПАСНОСТЬ!</div>
 
+    <!-- ===== СЦЕНА ОТКЛЮЧЕНИЯ ===== -->
+    <div class="power-outage-scene" id="powerOutageScene">
+        <div class="po-bg waiting" id="poBg"></div>
+        <div class="po-vignette"></div>
+        <div class="po-scanlines"></div>
+        <div class="po-static" id="poStatic"></div>
+        <div class="po-flash" id="poFlash"></div>
+        <div class="po-freddy" id="poFreddy">
+            <div class="freddy-glow"></div>
+            <span class="music-notes">♪</span>
+            <span class="music-notes">♫</span>
+            <span class="music-notes">♪</span>
+            <span class="music-notes">♫</span>
+            🐻
+            <div class="freddy-text">...Фредди играет...</div>
+        </div>
+        <div class="po-timer" id="poTimer">⚡ 30</div>
+    </div>
+
+    <!-- ===== ИГРОВОЙ КОНТЕЙНЕР ===== -->
     <div class="game-container office-mode" id="gameContainer">
         <!-- Верхняя панель -->
         <div class="top-panel">
@@ -436,9 +787,7 @@
 
         <!-- Центр -->
         <div class="camera-view" id="cameraView">
-            <div id="cameraImage">
-                <!-- Сюда через AJAX подгружаются файлы из cameras/ -->
-            </div>
+            <div id="cameraImage"></div>
             <div class="static-overlay"></div>
             <div class="camera-label" id="cameraLabel">CAM 1A — СЦЕНА</div>
         </div>
@@ -566,12 +915,7 @@
                 </div>
             </div>
 
-            <div class="office-hint">
-                🚪 Двери и свет — кнопками справа &nbsp;•&nbsp;
-                <span class="highlight">поднимите планшет</span>, чтобы смотреть камеры
-            </div>
-
-            <!-- ===== ЭКРАН ПОБЕДЫ (6:00 AM) ===== -->
+            <!-- ===== ЭКРАН ПОБЕДЫ ===== -->
             <div class="victory-screen" id="victoryScreen">
                 <div class="victory-overlay"></div>
                 <div class="victory-content">
@@ -580,36 +924,29 @@
                     <button class="victory-btn" id="victoryBtn">▶ ПРОДОЛЖИТЬ</button>
                 </div>
             </div>
+        </div>
 
-            <!-- ===== ЭФФЕКТ ОТКЛЮЧЕНИЯ ЭЛЕКТРИЧЕСТВА ===== -->
-            <div class="power-outage-overlay" id="powerOutageOverlay">
-                <div class="blackout-layer" id="blackoutLayer"></div>
-                <div class="freddy-music" id="freddyMusic">
-                    <div class="music-icon">🎵</div>
-                    <div class="music-text">...Фредди играет...</div>
-                </div>
-                <div class="screamer-layer" id="screamerLayer">
-                    <div class="screamer-face">🐻</div>
-                </div>
-                <div class="static-burst" id="staticBurst"></div>
+        <!-- ===== ПАНЕЛИ УПРАВЛЕНИЯ (правильное расположение) ===== -->
+
+        <!-- Левая панель управления - слева от левой двери -->
+        <div class="left-door-panel" id="leftDoorPanel">
+            <div class="door-control">
+                <div class="label">🚪 ЛЕВАЯ</div>
+                <button class="door-btn" id="leftDoor">
+                    <span class="status">ОТКР.</span>
+                </button>
+                <button class="light-btn" id="leftLight">💡</button>
             </div>
         </div>
 
-        <!-- Правая панель -->
-        <div class="right-panel">
+        <!-- Правая панель управления - справа от правой двери -->
+        <div class="right-door-panel" id="rightDoorPanel">
             <div class="door-control">
-                <div class="label">ЛЕВАЯ ДВЕРЬ</div>
-                <button class="door-btn" id="leftDoor">
-                    🚪 <span class="status">ОТКРЫТА</span>
-                </button>
-                <button class="light-btn" id="leftLight">💡 СВЕТ</button>
-            </div>
-            <div class="door-control">
-                <div class="label">ПРАВАЯ ДВЕРЬ</div>
+                <div class="label">🚪 ПРАВАЯ</div>
                 <button class="door-btn" id="rightDoor">
-                    🚪 <span class="status">ОТКРЫТА</span>
+                    <span class="status">ОТКР.</span>
                 </button>
-                <button class="light-btn" id="rightLight">💡 СВЕТ</button>
+                <button class="light-btn" id="rightLight">💡</button>
             </div>
         </div>
 
@@ -671,7 +1008,7 @@
 
     <script>
         // ============================================================
-        //  ВСЯ ИГРОВАЯ ЛОГИКА
+        //  ВСЯ ИГРОВАЯ ЛОГИКА (полная, как в предыдущей версии)
         // ============================================================
 
         const gameMode = '{{ session('game_mode', 'easy') }}';
@@ -682,8 +1019,10 @@
             POWER_DRAIN_CAMERA: 0.5,
             POWER_DRAIN_DOOR: 2,
             POWER_DRAIN_LIGHT: 1,
-            // ===== ВРЕМЯ ДО ВХОДА В ОФИС (в секундах) =====
-            OFFICE_ENTRY_DELAY: 5
+            OFFICE_ENTRY_DELAY: 5,
+            POWER_OUTAGE_WAIT: 30,
+            POWER_OUTAGE_MUSIC: 15,
+            POWER_OUTAGE_DARK: 5
         };
 
         const AI_LEVELS = {
@@ -711,7 +1050,6 @@
                 foxy: 'cam_1c'
             },
             inOffice: { bonnie: false, chica: false },
-            // ===== СОСТОЯНИЕ У ДВЕРИ (ожидание входа) =====
             atDoor: { bonnie: false, chica: false },
             atDoorTimers: { bonnie: null, chica: null },
             foxyStage: 1,
@@ -744,9 +1082,7 @@
                 active: false,
                 timer: 0,
                 phase: 'waiting',
-                musicStarted: false,
-                blackoutStarted: false,
-                screamerShown: false
+                sceneActive: false
             }
         };
 
@@ -774,11 +1110,6 @@
             noteCloseBtn: document.getElementById('noteCloseBtn'),
             victoryScreen: document.getElementById('victoryScreen'),
             victoryBtn: document.getElementById('victoryBtn'),
-            powerOutageOverlay: document.getElementById('powerOutageOverlay'),
-            blackoutLayer: document.getElementById('blackoutLayer'),
-            freddyMusic: document.getElementById('freddyMusic'),
-            screamerLayer: document.getElementById('screamerLayer'),
-            staticBurst: document.getElementById('staticBurst'),
             leds: {
                 freddy: document.getElementById('freddyLed'),
                 bonnie: document.getElementById('bonnieLed'),
@@ -791,7 +1122,13 @@
             gameoverReason: document.getElementById('gameoverReason'),
             gameoverTime: document.getElementById('gameoverTime'),
             gameoverBtn: document.getElementById('gameoverBtn'),
-            dangerWarning: document.getElementById('dangerWarning')
+            dangerWarning: document.getElementById('dangerWarning'),
+            powerOutageScene: document.getElementById('powerOutageScene'),
+            poBg: document.getElementById('poBg'),
+            poFreddy: document.getElementById('poFreddy'),
+            poTimer: document.getElementById('poTimer'),
+            poStatic: document.getElementById('poStatic'),
+            poFlash: document.getElementById('poFlash')
         };
 
         let gameLoopInterval = null;
@@ -805,7 +1142,6 @@
         const inOfficeLeaveTimers = { bonnie: null, chica: null };
         let screamerTimeout = null;
         let dangerTimeout = null;
-
         let victoryActive = false;
 
         // ============================================================
@@ -830,13 +1166,18 @@
                     inOfficeLeaveTimers[name] = null;
                 }
             });
-            // Очищаем таймеры у двери
             Object.keys(aiState.atDoorTimers).forEach(name => {
                 if (aiState.atDoorTimers[name]) {
                     clearTimeout(aiState.atDoorTimers[name]);
                     aiState.atDoorTimers[name] = null;
                 }
             });
+
+            if (gameState.powerOutage.sceneActive) {
+                el.powerOutageScene.classList.remove('active');
+                el.container.classList.remove('hide-ui');
+                gameState.powerOutage.sceneActive = false;
+            }
 
             const overlay = el.screamerOverlay;
             const face = el.screamerFace;
@@ -886,21 +1227,161 @@
         }
 
         // ============================================================
-        //  ПРЕДУПРЕЖДЕНИЕ ОБ ОПАСНОСТИ
+        //  СЦЕНА ОТКЛЮЧЕНИЯ
         // ============================================================
 
-        function showDangerWarning() {
-            const warning = el.dangerWarning;
-            warning.classList.add('active');
+        function startPowerOutageScene() {
+            if (gameState.isGameOver || gameState.powerOutage.sceneActive) return;
 
-            if (dangerTimeout) clearTimeout(dangerTimeout);
-            dangerTimeout = setTimeout(() => {
-                warning.classList.remove('active');
-            }, 1500);
+            clearInterval(gameLoopInterval);
+            clearInterval(aiStepInterval);
+            clearInterval(aiBoostInterval);
+            clearInterval(aiFoxyInterval);
+            clearInterval(minuteLoopInterval);
+            clearInterval(powerDrainInterval);
+            clearTimeout(foxyRunTimeout);
+            Object.keys(inOfficeLeaveTimers).forEach(name => {
+                if (inOfficeLeaveTimers[name]) {
+                    clearTimeout(inOfficeLeaveTimers[name]);
+                    inOfficeLeaveTimers[name] = null;
+                }
+            });
+
+            gameState.powerOutage.sceneActive = true;
+            gameState.powerOutage.timer = 0;
+            gameState.powerOutage.phase = 'waiting';
+
+            el.container.classList.add('hide-ui');
+
+            const scene = el.powerOutageScene;
+            const bg = el.poBg;
+            const freddy = el.poFreddy;
+            const timer = el.poTimer;
+            const stat = el.poStatic;
+
+            scene.classList.add('active');
+            bg.className = 'po-bg waiting';
+            freddy.classList.remove('visible');
+            stat.classList.remove('active');
+            timer.textContent = '⚡ 30';
+            timer.className = 'po-timer';
+
+            console.log('⚡ СЦЕНА ОТКЛЮЧЕНИЯ ЭЛЕКТРИЧЕСТВА НАЧАЛАСЬ!');
+
+            if (powerOutageInterval) clearInterval(powerOutageInterval);
+            powerOutageInterval = setInterval(updatePowerOutageScene, 1000);
+        }
+
+        function updatePowerOutageScene() {
+            gameState.powerOutage.timer++;
+            const timer = gameState.powerOutage.timer;
+            const scene = el.powerOutageScene;
+            const bg = el.poBg;
+            const freddy = el.poFreddy;
+            const timerEl = el.poTimer;
+            const stat = el.poStatic;
+            const flash = el.poFlash;
+
+            if (timer <= CONFIG.POWER_OUTAGE_WAIT) {
+                const remaining = CONFIG.POWER_OUTAGE_WAIT - timer;
+                timerEl.textContent = `⚡ ${remaining}`;
+                timerEl.className = 'po-timer';
+
+                if (timer % 2 === 0) {
+                    flash.classList.remove('active');
+                    setTimeout(() => {
+                        flash.classList.add('active');
+                        setTimeout(() => {
+                            flash.classList.remove('active');
+                        }, 200);
+                    }, 50);
+                }
+                return;
+            }
+
+            if (timer <= CONFIG.POWER_OUTAGE_WAIT + CONFIG.POWER_OUTAGE_MUSIC) {
+                const musicTimer = timer - CONFIG.POWER_OUTAGE_WAIT;
+                const totalMusic = CONFIG.POWER_OUTAGE_MUSIC;
+                timerEl.textContent = `🎵 ${musicTimer}/${totalMusic}`;
+                timerEl.className = 'po-timer warning';
+
+                bg.className = 'po-bg music';
+
+                if (!freddy.classList.contains('visible')) {
+                    freddy.classList.add('visible');
+                    console.log('🎵 Фредди играет музыку! (15 секунд)');
+                }
+
+                if (musicTimer > 3) {
+                    stat.classList.add('active');
+                }
+
+                if (musicTimer % 3 === 0) {
+                    flash.classList.remove('active');
+                    setTimeout(() => {
+                        flash.classList.add('active');
+                        setTimeout(() => {
+                            flash.classList.remove('active');
+                        }, 150);
+                    }, 50);
+                }
+                return;
+            }
+
+            if (timer <= CONFIG.POWER_OUTAGE_WAIT + CONFIG.POWER_OUTAGE_MUSIC + CONFIG.POWER_OUTAGE_DARK) {
+                const darkTimer = timer - CONFIG.POWER_OUTAGE_WAIT - CONFIG.POWER_OUTAGE_MUSIC;
+                const totalDark = CONFIG.POWER_OUTAGE_DARK;
+                timerEl.textContent = `🌑 ${darkTimer}/${totalDark}`;
+                timerEl.className = 'po-timer warning';
+
+                bg.className = 'po-bg dark';
+                freddy.classList.remove('visible');
+                stat.classList.add('active');
+
+                if (darkTimer === 1) {
+                    flash.classList.remove('active');
+                    setTimeout(() => {
+                        flash.classList.add('active');
+                        setTimeout(() => {
+                            flash.classList.remove('active');
+                        }, 300);
+                    }, 50);
+                    console.log('🌑 ПОЛНАЯ ТЬМА! (5 секунд)');
+                }
+                return;
+            }
+
+            if (!gameState.isGameOver) {
+                timerEl.textContent = '💀';
+                timerEl.className = 'po-timer warning';
+
+                console.log('💀 СКРИМЕР ФРЕДДИ!');
+
+                flash.classList.remove('active');
+                setTimeout(() => {
+                    flash.classList.add('active');
+                    setTimeout(() => {
+                        flash.classList.remove('active');
+                    }, 200);
+                }, 50);
+
+                setTimeout(() => {
+                    scene.classList.remove('active');
+                    el.container.classList.remove('hide-ui');
+                    gameState.powerOutage.sceneActive = false;
+
+                    clearInterval(powerOutageInterval);
+                    powerOutageInterval = null;
+
+                    setTimeout(() => {
+                        showScreamer('🐻', '🔴 Фредди добрался до офиса!');
+                    }, 300);
+                }, 500);
+            }
         }
 
         // ============================================================
-        //  ЭКРАН ПОБЕДЫ
+        //  ОСТАЛЬНЫЕ ФУНКЦИИ (сокращены для экономии места, но полные)
         // ============================================================
 
         function showVictoryScreen() {
@@ -913,6 +1394,12 @@
             clearInterval(powerDrainInterval);
             if (powerOutageInterval) clearInterval(powerOutageInterval);
 
+            if (gameState.powerOutage.sceneActive) {
+                el.powerOutageScene.classList.remove('active');
+                el.container.classList.remove('hide-ui');
+                gameState.powerOutage.sceneActive = false;
+            }
+
             el.victoryScreen.classList.add('active');
             setTimeout(() => {
                 el.victoryScreen.classList.add('fade-in');
@@ -922,10 +1409,7 @@
             console.log('🎉 Ночь пройдена! 6:00 AM!');
         }
 
-        // ============================================================
-        //  ЧИТЕРСКАЯ КОМБИНАЦИЯ
-        // ============================================================
-
+        // ===== ЧИТЕРСКАЯ КОМБИНАЦИЯ =====
         const keysPressed = {};
 
         document.addEventListener('keydown', (event) => {
@@ -947,10 +1431,7 @@
             keysPressed[event.key.toLowerCase()] = false;
         });
 
-        // ============================================================
-        //  ФУНКЦИИ ИИ
-        // ============================================================
-
+        // ===== ФУНКЦИИ ИИ =====
         function initAI(night) {
             if (night === 7 && window.customAiLevels) {
                 const custom = window.customAiLevels;
@@ -1001,7 +1482,7 @@
         }
 
         function makeAIStep() {
-            if (gameState.isGameOver) return;
+            if (gameState.isGameOver || gameState.powerOutage.sceneActive) return;
             const names = ['freddy', 'bonnie', 'chica'];
             names.forEach(name => {
                 if (aiState.cooldown[name] > 0) {
@@ -1023,7 +1504,7 @@
             if (!path) return;
 
             if (aiState.inOffice[name]) return;
-            if (aiState.atDoor[name]) return; // Уже ждёт у двери
+            if (aiState.atDoor[name]) return;
 
             const currentPos = aiState.positions[name];
 
@@ -1055,7 +1536,6 @@
             const path = PATHS[name];
             if (!path) return;
 
-            // Если аниматроник ждал у двери - отменяем таймер
             if (aiState.atDoor[name]) {
                 aiState.atDoor[name] = false;
                 if (aiState.atDoorTimers[name]) {
@@ -1075,38 +1555,31 @@
             updateDoorVisitors();
         }
 
-        // ===== НОВАЯ ФУНКЦИЯ - ЗАДЕРЖКА ПЕРЕД ВХОДОМ В ОФИС =====
         function startOfficeEntryDelay(name) {
             const door = name === 'bonnie' ? 'left' : 'right';
             const isClosed = door === 'left' ? gameState.leftDoorClosed : gameState.rightDoorClosed;
 
-            // Если дверь закрыта - отступаем
             if (isClosed) {
                 console.log(`🚪 ${name.toUpperCase()} у ${door} двери, но она закрыта → отступление`);
                 retreatAnimatronic(name);
                 return;
             }
 
-            // Отмечаем что аниматроник ждёт у двери
             aiState.atDoor[name] = true;
             console.log(`⏳ ${name.toUpperCase()} у ${door} двери! Войдёт через ${CONFIG.OFFICE_ENTRY_DELAY} секунд...`);
 
-            // Показываем предупреждение
             showDangerWarning();
             showWarning(`⚠️ ${name.toUpperCase()} у ${door} двери! Закройте дверь!`);
 
-            // Запускаем таймер входа в офис
             if (aiState.atDoorTimers[name]) {
                 clearTimeout(aiState.atDoorTimers[name]);
             }
 
             aiState.atDoorTimers[name] = setTimeout(() => {
-                // Проверяем, не закрыли ли дверь за это время
                 const doorNow = name === 'bonnie' ? 'left' : 'right';
                 const isClosedNow = doorNow === 'left' ? gameState.leftDoorClosed : gameState.rightDoorClosed;
 
                 if (isClosedNow) {
-                    // Дверь закрыли - отступаем
                     console.log(`🚪 ${name.toUpperCase()} у двери, но её закрыли! Отступление.`);
                     aiState.atDoor[name] = false;
                     aiState.atDoorTimers[name] = null;
@@ -1114,7 +1587,6 @@
                     return;
                 }
 
-                // Дверь открыта - входим в офис
                 console.log(`🚪 ${name.toUpperCase()} вошёл в офис через ${CONFIG.OFFICE_ENTRY_DELAY} секунд!`);
                 aiState.atDoor[name] = false;
                 aiState.atDoorTimers[name] = null;
@@ -1131,10 +1603,10 @@
                 inOfficeLeaveTimers[name] = null;
             }
 
-            if (!gameState.isTabletMode) {
+            if (!gameState.isTabletMode && !gameState.powerOutage.sceneActive) {
                 startOfficeLeaveTimer(name);
-            } else {
-                console.log(`⏳ ${name.toUpperCase()} в офисе. Игрок смотрит в планшет - таймер не запущен. Ждём опускания планшета.`);
+            } else if (gameState.powerOutage.sceneActive) {
+                console.log(`⏳ ${name.toUpperCase()} в офисе, но идёт сцена отключения`);
             }
 
             updateOfficeControls();
@@ -1155,8 +1627,8 @@
                 if (gameState.isGameOver) return;
                 if (!aiState.inOffice[name]) return;
 
-                if (gameState.isTabletMode) {
-                    console.log(`⏳ ${name.toUpperCase()} всё ещё в офисе, но планшет поднят. Таймер приостановлен.`);
+                if (gameState.isTabletMode || gameState.powerOutage.sceneActive) {
+                    console.log(`⏳ ${name.toUpperCase()} всё ещё в офисе, но планшет поднят или идёт сцена. Таймер приостановлен.`);
                     inOfficeLeaveTimers[name] = setTimeout(() => {
                         startOfficeLeaveTimer(name);
                     }, 2000);
@@ -1196,7 +1668,6 @@
                     console.log(`🚪 ${name.toUpperCase()} стучится в ${door} дверь, но она закрыта`);
                     retreatAnimatronic(name);
                 } else {
-                    // ===== ЗАДЕРЖКА ПЕРЕД ВХОДОМ =====
                     startOfficeEntryDelay(name);
                 }
                 return;
@@ -1217,12 +1688,13 @@
             }
         }
 
+        // ===== УПРАВЛЕНИЕ ПЛАНШЕТОМ =====
         function toggleTablet() {
-            if (gameState.isBlackout) return;
+            if (gameState.isBlackout || gameState.powerOutage.sceneActive) return;
             if (gameState.isGameOver) return;
 
             if (gameState.isTabletMode) {
-                // ОПУСКАЕМ планшет - проверяем скример
+                // ОПУСКАЕМ планшет
                 if (aiState.inOffice.bonnie) {
                     console.log('💀 Бонни в офисе! Игрок опускает планшет -> СКРИМЕР!');
                     showScreamer('🐰', '🐰 Бонни в офисе!');
@@ -1276,6 +1748,8 @@
                 btn.style.cursor = 'pointer';
             });
 
+            // Панели управления скрываются автоматически через CSS
+            // Дополнительно блокируем кнопки
             el.leftDoor.classList.add('disabled');
             el.rightDoor.classList.add('disabled');
             el.leftLight.classList.add('disabled');
@@ -1296,6 +1770,31 @@
             console.log('📱 Планшет поднят');
         }
 
+        // ============================================================
+        //  ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+        // ============================================================
+
+        function showDangerWarning() {
+            const warning = el.dangerWarning;
+            warning.classList.add('active');
+
+            if (dangerTimeout) clearTimeout(dangerTimeout);
+            dangerTimeout = setTimeout(() => {
+                warning.classList.remove('active');
+            }, 1500);
+        }
+
+        function showWarning(message) {
+            document.querySelectorAll('.warning-message').forEach(el => el.remove());
+            const warning = document.createElement('div');
+            warning.className = 'warning-message';
+            warning.textContent = message;
+            document.body.appendChild(warning);
+            setTimeout(() => {
+                if (warning.parentNode) warning.remove();
+            }, 2000);
+        }
+
         function updateHallwayLights() {
             el.officeDoorLeft.classList.toggle('lit', gameState.leftLightOn);
             el.officeDoorRight.classList.toggle('lit', gameState.rightLightOn);
@@ -1307,7 +1806,7 @@
             const blockLeft = aiState.inOffice.bonnie;
             const blockRight = aiState.inOffice.chica;
 
-            if (gameState.isTabletMode) {
+            if (gameState.isTabletMode || gameState.powerOutage.sceneActive) {
                 el.leftDoor.classList.add('disabled');
                 el.rightDoor.classList.add('disabled');
                 el.leftLight.classList.add('disabled');
@@ -1379,7 +1878,6 @@
             }
 
             if (atDoor) {
-                // Аниматроник у двери - МЕРЦАЮЩИЙ КРАСНЫЙ (опасность!)
                 led.className = 'led red';
                 led.style.background = '#ff4444';
                 led.style.borderColor = '#ff4444';
@@ -1404,15 +1902,7 @@
                 return;
             }
 
-            if (pos === 'cam_1b' || pos === 'dining_area') {
-                led.className = 'led green';
-                led.style.background = '#44ff44';
-                led.style.borderColor = '#44ff44';
-                led.style.boxShadow = '0 0 15px rgba(68,255,68,0.3)';
-                return;
-            }
-
-            if (pos === 'cam_5' || pos === 'backstage') {
+            if (pos === 'cam_1b' || pos === 'dining_area' || pos === 'cam_5' || pos === 'backstage') {
                 led.className = 'led green';
                 led.style.background = '#44ff44';
                 led.style.borderColor = '#44ff44';
@@ -1428,15 +1918,7 @@
                 return;
             }
 
-            if (pos === 'cam_6' || pos === 'kitchen') {
-                led.className = 'led orange';
-                led.style.background = '#ffaa44';
-                led.style.borderColor = '#ffaa44';
-                led.style.boxShadow = '0 0 15px rgba(255,170,68,0.3)';
-                return;
-            }
-
-            if (pos === 'cam_3' || pos === 'closet') {
+            if (pos === 'cam_6' || pos === 'kitchen' || pos === 'cam_3' || pos === 'closet') {
                 led.className = 'led orange';
                 led.style.background = '#ffaa44';
                 led.style.borderColor = '#ffaa44';
@@ -1526,7 +2008,7 @@
         }
 
         function updateFoxy() {
-            if (gameState.isGameOver || aiState.isFoxyRunning) return;
+            if (gameState.isGameOver || aiState.isFoxyRunning || gameState.powerOutage.sceneActive) return;
             if (gameState.night < 2) return;
 
             const watchingCove = gameState.isTabletMode && gameState.currentCamera === 'cam_1c';
@@ -1566,7 +2048,7 @@
             console.log('🏃 Фокси бежит к офису!');
 
             foxyRunTimeout = setTimeout(() => {
-                if (gameState.isGameOver) return;
+                if (gameState.isGameOver || gameState.powerOutage.sceneActive) return;
                 if (gameState.leftDoorClosed) {
                     showWarning('💥 ДВЕРЬ ВЫДЕРЖАЛА!');
                     aiState.foxyStage = 1;
@@ -1577,6 +2059,10 @@
                 }
             }, 4000);
         }
+
+        // ============================================================
+        //  ЭНЕРГИЯ И ИНТЕРФЕЙС
+        // ============================================================
 
         function calculatePowerDrain(actions) {
             let drain = 1;
@@ -1614,7 +2100,7 @@
 
         function startPowerDrain() {
             powerDrainInterval = setInterval(() => {
-                if (gameState.isGameOver) return;
+                if (gameState.isGameOver || gameState.powerOutage.sceneActive) return;
 
                 const activeActions = updateUsage();
                 const drainPerHour = calculatePowerDrain(activeActions);
@@ -1625,218 +2111,9 @@
 
                 if (gameState.power <= 0 && !gameState.isBlackout) {
                     clearInterval(powerDrainInterval);
-                    triggerBlackout();
+                    startPowerOutageScene();
                 }
             }, 1000);
-        }
-
-        function triggerBlackout() {
-            if (gameState.isGameOver || gameState.isBlackout) return;
-            gameState.isBlackout = true;
-            gameState.powerOutage.active = true;
-            gameState.powerOutage.timer = 0;
-
-            if (gameState.leftDoorClosed) {
-                gameState.leftDoorClosed = false;
-                el.leftDoor.querySelector('.status').textContent = 'ОТКРЫТА';
-                el.leftDoor.classList.remove('closed');
-                el.leftDoorLed.className = 'led';
-                el.officeDoorLeft.classList.remove('shut');
-            }
-            if (gameState.rightDoorClosed) {
-                gameState.rightDoorClosed = false;
-                el.rightDoor.querySelector('.status').textContent = 'ОТКРЫТА';
-                el.rightDoor.classList.remove('closed');
-                el.rightDoorLed.className = 'led';
-                el.officeDoorRight.classList.remove('shut');
-            }
-            gameState.leftLightOn = false;
-            gameState.rightLightOn = false;
-
-            // Офис визуально "умирает" — тёплые тона гаснут, всё становится
-            // холодным, серым, синеватым и хмурым (CSS уже был готов, просто
-            // раньше этот класс никогда не навешивался)
-            el.officeView.classList.add('blackout');
-            el.container.classList.add('blackout');
-
-            el.leftDoor.classList.add('disabled');
-            el.rightDoor.classList.add('disabled');
-            el.leftLight.classList.add('disabled');
-            el.rightLight.classList.add('disabled');
-            el.tabletToggle.classList.add('disabled');
-            el.container.classList.remove('tablet-mode');
-            el.container.classList.add('office-mode');
-            gameState.isTabletMode = false;
-
-            document.querySelectorAll('.led').forEach(led => {
-                led.className = 'led';
-                led.style.background = '#1a1a1a';
-                led.style.borderColor = '#2a2a2a';
-                led.style.boxShadow = 'none';
-                led.style.animation = 'none';
-            });
-
-            el.cameraBtns.forEach(btn => {
-                btn.classList.add('disabled');
-                btn.style.opacity = '0.1';
-            });
-            el.cameraImage.innerHTML = '<div style="color: #111; font-size: 24px;">📹</div>';
-            el.cameraLabel.textContent = 'ОТКЛЮЧЕНО';
-            el.cameraLabel.style.color = '#222';
-
-            el.powerOutageOverlay.classList.add('active');
-
-            console.log('⚡ ОТКЛЮЧЕНИЕ ЭЛЕКТРИЧЕСТВА!');
-            showWarning('⚡ ЭНЕРГИЯ ЗАКОНЧИЛАСЬ!');
-
-            powerOutageInterval = setInterval(updatePowerOutage, 1000);
-        }
-
-        function updatePowerOutage() {
-            gameState.powerOutage.timer++;
-            const timer = gameState.powerOutage.timer;
-
-            if (timer <= 30) {
-                gameState.powerOutage.phase = 'waiting';
-
-                // T+15 сек — Фредди появляется у левой двери, светятся только его глаза
-                if (timer === 15) {
-                    el.officeDoorLeft.classList.add('lit');
-                    const leftVisitor = document.getElementById('leftHallwayVisitor');
-                    if (leftVisitor) {
-                        leftVisitor.textContent = '🐻';
-                        leftVisitor.classList.add('visible');
-                    }
-                    console.log('🐻 Фредди появился у левой двери...');
-                }
-
-                if (timer % 5 === 0) {
-                    const lamp = document.querySelector('.office-lamp');
-                    if (lamp) {
-                        lamp.style.opacity = Math.random() > 0.7 ? '0.2' : '1';
-                        setTimeout(() => { lamp.style.opacity = '1'; }, 200);
-                    }
-                }
-                return;
-            }
-
-            if (timer <= 60) {
-                gameState.powerOutage.phase = 'music';
-                if (!gameState.powerOutage.musicStarted) {
-                    gameState.powerOutage.musicStarted = true;
-                    el.freddyMusic.classList.add('active');
-                    console.log('🎵 Фредди играет...');
-                }
-                if (timer > 50) {
-                    const progress = (timer - 50) / 10;
-                    el.blackoutLayer.style.opacity = progress * 0.5;
-                }
-                return;
-            }
-
-            if (timer <= 65) {
-                gameState.powerOutage.phase = 'blackout';
-                if (!gameState.powerOutage.blackoutStarted) {
-                    gameState.powerOutage.blackoutStarted = true;
-                    el.blackoutLayer.classList.add('active');
-                    el.freddyMusic.classList.remove('active');
-                    console.log('🌑 Затемнение...');
-                }
-                return;
-            }
-
-            if (!gameState.powerOutage.screamerShown) {
-                gameState.powerOutage.screamerShown = true;
-                gameState.powerOutage.phase = 'screamer';
-
-                el.screamerLayer.classList.add('active');
-
-                if (navigator.vibrate) {
-                    navigator.vibrate(300);
-                }
-
-                console.log('💀 СКРИМЕР!');
-
-                setTimeout(() => {
-                    el.staticBurst.classList.add('active');
-                }, 1500);
-
-                setTimeout(() => {
-                    clearInterval(powerOutageInterval);
-                    gameState.powerOutage.active = false;
-                    showScreamer('🐻', '🔴 Фредди добрался до офиса!');
-                }, 3000);
-            }
-        }
-
-        function completeNight(score, powerUsed) {
-            fetch('{{ route('night.complete') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({ score: score || 0, power_used: powerUsed || 0 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.href = '{{ route('menu') }}';
-                } else {
-                    alert('❌ Ошибка сохранения прогресса!');
-                    window.location.href = '{{ route('menu') }}';
-                }
-            })
-            .catch(error => {
-                console.error('Ошибка:', error);
-                alert('❌ Ошибка соединения!');
-                window.location.href = '{{ route('menu') }}';
-            });
-        }
-
-        function showWarning(message) {
-            document.querySelectorAll('.warning-message').forEach(el => el.remove());
-            const warning = document.createElement('div');
-            warning.className = 'warning-message';
-            warning.textContent = message;
-            document.body.appendChild(warning);
-            setTimeout(() => {
-                if (warning.parentNode) warning.remove();
-            }, 2000);
-        }
-
-        function openNote() {
-            if (el.noteOverlay) {
-                el.noteOverlay.classList.remove('hidden');
-                el.noteOverlay.style.display = 'flex';
-                if (el.noteBtn) el.noteBtn.classList.remove('pulse');
-            }
-        }
-
-        function closeNote() {
-            if (el.noteOverlay) {
-                el.noteOverlay.classList.add('hidden');
-                el.noteOverlay.style.display = 'none';
-                if (el.noteBtn && !el.noteBtn.classList.contains('pulse')) {
-                    el.noteBtn.classList.add('pulse');
-                }
-            }
-        }
-
-        function updateTime() {
-            const hours = 12 + gameState.time;
-            const ampm = hours >= 12 ? 'AM' : 'PM';
-            const displayHours = hours > 12 ? hours - 12 : hours;
-            const displayMinutes = String(gameState.minute).padStart(2, '0');
-            el.time.textContent = `${displayHours}:${displayMinutes} ${ampm}`;
-        }
-
-        function minuteTick() {
-            if (gameState.isGameOver) return;
-            const msPerGameMinute = CONFIG.HOUR_DURATION / 60;
-            const elapsed = Date.now() - gameState.hourStartTimestamp;
-            gameState.minute = Math.min(59, Math.floor(elapsed / msPerGameMinute));
-            updateTime();
         }
 
         function updatePower() {
@@ -1849,9 +2126,25 @@
             el.powerBar.style.background = isLow ? '#ff4444' : isMedium ? '#ffaa44' : '#44ff44';
         }
 
+        function updateTime() {
+            const hours = 12 + gameState.time;
+            const ampm = hours >= 12 ? 'AM' : 'PM';
+            const displayHours = hours > 12 ? hours - 12 : hours;
+            const displayMinutes = String(gameState.minute).padStart(2, '0');
+            el.time.textContent = `${displayHours}:${displayMinutes} ${ampm}`;
+        }
+
+        function minuteTick() {
+            if (gameState.isGameOver || gameState.powerOutage.sceneActive) return;
+            const msPerGameMinute = CONFIG.HOUR_DURATION / 60;
+            const elapsed = Date.now() - gameState.hourStartTimestamp;
+            gameState.minute = Math.min(59, Math.floor(elapsed / msPerGameMinute));
+            updateTime();
+        }
+
         function switchCamera(camera) {
-            if (!gameState.isTabletMode) {
-                showWarning('⛔ Поднимите планшет чтобы смотреть камеры!');
+            if (!gameState.isTabletMode || gameState.powerOutage.sceneActive) {
+                if (!gameState.powerOutage.sceneActive) showWarning('⛔ Поднимите планшет чтобы смотреть камеры!');
                 return;
             }
             if (gameState.isGameOver) return;
@@ -1922,8 +2215,8 @@
         }
 
         function toggleDoor(door) {
-            if (gameState.isTabletMode) {
-                showWarning('⛔ Опустите планшет чтобы управлять дверями!');
+            if (gameState.isTabletMode || gameState.powerOutage.sceneActive) {
+                if (!gameState.powerOutage.sceneActive) showWarning('⛔ Опустите планшет чтобы управлять дверями!');
                 return;
             }
             if (gameState.isGameOver || gameState.isBlackout) return;
@@ -1940,7 +2233,7 @@
             if (door === 'left') {
                 gameState.leftDoorClosed = !gameState.leftDoorClosed;
                 const status = el.leftDoor.querySelector('.status');
-                status.textContent = gameState.leftDoorClosed ? 'ЗАКРЫТА' : 'ОТКРЫТА';
+                status.textContent = gameState.leftDoorClosed ? 'ЗАКР.' : 'ОТКР.';
                 el.leftDoor.classList.toggle('closed', gameState.leftDoorClosed);
                 el.leftDoorLed.className = 'led ' + (gameState.leftDoorClosed ? 'red' : 'green');
                 el.officeDoorLeft.classList.toggle('shut', gameState.leftDoorClosed);
@@ -1948,7 +2241,6 @@
                     gameState.power = Math.max(0, gameState.power - CONFIG.POWER_DRAIN_DOOR);
                     updatePower();
                 }
-                // Если закрыли дверь, а аниматроник ждал у двери - отступаем
                 if (gameState.leftDoorClosed) {
                     if (aiState.atDoor.bonnie) {
                         retreatAnimatronic('bonnie');
@@ -1960,7 +2252,7 @@
             } else if (door === 'right') {
                 gameState.rightDoorClosed = !gameState.rightDoorClosed;
                 const status = el.rightDoor.querySelector('.status');
-                status.textContent = gameState.rightDoorClosed ? 'ЗАКРЫТА' : 'ОТКРЫТА';
+                status.textContent = gameState.rightDoorClosed ? 'ЗАКР.' : 'ОТКР.';
                 el.rightDoor.classList.toggle('closed', gameState.rightDoorClosed);
                 el.rightDoorLed.className = 'led ' + (gameState.rightDoorClosed ? 'red' : 'green');
                 el.officeDoorRight.classList.toggle('shut', gameState.rightDoorClosed);
@@ -1984,8 +2276,8 @@
         }
 
         function toggleLight(door) {
-            if (gameState.isTabletMode) {
-                showWarning('⛔ Опустите планшет чтобы включить свет!');
+            if (gameState.isTabletMode || gameState.powerOutage.sceneActive) {
+                if (!gameState.powerOutage.sceneActive) showWarning('⛔ Опустите планшет чтобы включить свет!');
                 return;
             }
             if (gameState.isGameOver || gameState.isBlackout) return;
@@ -2026,7 +2318,7 @@
         }
 
         function advanceHour() {
-            if (gameState.isGameOver) return;
+            if (gameState.isGameOver || gameState.powerOutage.sceneActive) return;
             gameState.time += 1;
             gameState.minute = 0;
             gameState.hourStartTimestamp = Date.now();
@@ -2038,13 +2330,56 @@
             console.log(`⏰ ${gameState.time}:00 AM, Энергия: ${Math.round(gameState.power)}%`);
         }
 
+        function completeNight(score, powerUsed) {
+            fetch('{{ route('night.complete') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ score: score || 0, power_used: powerUsed || 0 })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '{{ route('menu') }}';
+                } else {
+                    alert('❌ Ошибка сохранения прогресса!');
+                    window.location.href = '{{ route('menu') }}';
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('❌ Ошибка соединения!');
+                window.location.href = '{{ route('menu') }}';
+            });
+        }
+
+        function openNote() {
+            if (el.noteOverlay) {
+                el.noteOverlay.classList.remove('hidden');
+                el.noteOverlay.style.display = 'flex';
+                if (el.noteBtn) el.noteBtn.classList.remove('pulse');
+            }
+        }
+
+        function closeNote() {
+            if (el.noteOverlay) {
+                el.noteOverlay.classList.add('hidden');
+                el.noteOverlay.style.display = 'none';
+                if (el.noteBtn && !el.noteBtn.classList.contains('pulse')) {
+                    el.noteBtn.classList.add('pulse');
+                }
+            }
+        }
+
         // ============================================================
         //  ОБРАБОТЧИКИ СОБЫТИЙ
         // ============================================================
 
         el.cameraBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                if (!gameState.isGameOver && gameState.isTabletMode) {
+                if (!gameState.isGameOver && gameState.isTabletMode && !gameState.powerOutage.sceneActive) {
                     switchCamera(btn.dataset.camera);
                 }
             });
@@ -2116,17 +2451,18 @@
 
         console.log('🎮 FNAF 1 - Ночь', gameState.night);
         console.log('========================================');
-        console.log('🔧 НОВАЯ МЕХАНИКА - ЗАДЕРЖКА ПЕРЕД ВХОДОМ:');
-        console.log(`   ⏱️ Когда Бонни/Чика подходят к двери - есть ${CONFIG.OFFICE_ENTRY_DELAY} секунд чтобы закрыть дверь!`);
-        console.log('   ⚠️ Показывается предупреждение "ОПАСНОСТЬ!"');
-        console.log('   🚪 Если закрыть дверь - аниматроник отступает');
-        console.log('   🚪 Если не закрыть - входит в офис');
+        console.log('✅ ИСПРАВЛЕНИЯ:');
+        console.log('   🎯 Левая панель управления — слева от левой двери');
+        console.log('   🎯 Правая панель управления — справа от правой двери');
+        console.log('   📱 При поднятии планшета — панели управления скрываются');
+        console.log('   📱 При опускании планшета — панели управления появляются');
+        console.log('   ❌ Убрана подсказка "поднимите планшет"');
         console.log('========================================');
-        console.log('🎨 УНИКАЛЬНЫЕ ВИЗУАЛЬНЫЕ СКРИМЕРЫ:');
-        console.log('   🐰 БОННИ  → Фиолетовое свечение');
-        console.log('   🐤 ЧИКА   → Оранжевое/жёлтое свечение');
-        console.log('   🐻 ФРЕДДИ → Красное свечение');
-        console.log('   🦊 ФОКСИ  → Огненно-красное свечение (мерцающее)');
+        console.log('⚡ СЦЕНА ОТКЛЮЧЕНИЯ ЭЛЕКТРИЧЕСТВА:');
+        console.log(`   ⏱️ 30 сек — ожидание`);
+        console.log(`   🎵 15 сек — Фредди играет музыку`);
+        console.log(`   🌑 5 сек — полная тьма`);
+        console.log(`   💀 Скример Фредди!`);
         console.log('========================================');
     </script>
 </body>
